@@ -36,6 +36,8 @@ type ServicioAsistencia interface {
 	CorregirRegistro(ctx context.Context, usuarioID, registroID int64, estado, observacion, motivo string) error
 	PlazoEdicion(ctx context.Context) (ParametrosAsistencia, error)
 	ConfigurarPlazo(ctx context.Context, usuarioID int64, horas int) error
+	ExportarDocente(ctx context.Context, docenteID int64, desde, hasta time.Time) ([]RegistroExportacion, error)
+	ExportarSeccion(ctx context.Context, seccionID, cursoID int64, desde, hasta time.Time) ([]RegistroExportacion, error)
 }
 
 // Dependencias reúne lo que el manejador de asistencia necesita.
@@ -77,6 +79,13 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Post("/asistencia/asignaciones/{id}/cierre", m.cerrarAsignacion)
 		escritura.Post("/asistencia/consulta/correccion", m.corregirAsistencia)
 		escritura.Post("/configuracion/asistencia", m.configurarParametros)
+	})
+
+	enrutador.Group(func(exportacion chi.Router) {
+		exportacion.Use(intermediarios.RequerirRol(m.sesiones,
+			intermediarios.RolAdministrador, intermediarios.RolDocente, intermediarios.RolDirector))
+		exportacion.Get("/asistencia/exportar", m.formularioExportacion)
+		exportacion.Get("/asistencia/exportar/archivo", m.descargarExportacion)
 	})
 
 	enrutador.Group(func(clase chi.Router) {

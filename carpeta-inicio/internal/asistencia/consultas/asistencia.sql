@@ -116,6 +116,12 @@ FROM marcaciones
 WHERE fecha = $1
   AND alumno_id = ANY($2::bigint[]);
 
+-- name: ListarMarcacionesPorRangoYAlumnos :many
+SELECT id, alumno_id, fecha, hora, estado, creada_en
+FROM marcaciones
+WHERE fecha BETWEEN $1 AND $2
+  AND alumno_id = ANY($3::bigint[]);
+
 -- name: ObtenerParametrosAsistencia :one
 SELECT plazo_edicion_horas, actualizado_por, actualizado_en
 FROM parametros_asistencia

@@ -392,6 +392,46 @@ func (q *Queries) ListarMarcacionesPorFechaYAlumnos(ctx context.Context, arg Lis
 	return items, nil
 }
 
+const listarMarcacionesPorRangoYAlumnos = `-- name: ListarMarcacionesPorRangoYAlumnos :many
+SELECT id, alumno_id, fecha, hora, estado, creada_en
+FROM marcaciones
+WHERE fecha BETWEEN $1 AND $2
+  AND alumno_id = ANY($3::bigint[])
+`
+
+type ListarMarcacionesPorRangoYAlumnosParams struct {
+	Fecha   pgtype.Date
+	Fecha_2 pgtype.Date
+	Column3 []int64
+}
+
+func (q *Queries) ListarMarcacionesPorRangoYAlumnos(ctx context.Context, arg ListarMarcacionesPorRangoYAlumnosParams) ([]Marcacione, error) {
+	rows, err := q.db.Query(ctx, listarMarcacionesPorRangoYAlumnos, arg.Fecha, arg.Fecha_2, arg.Column3)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Marcacione
+	for rows.Next() {
+		var i Marcacione
+		if err := rows.Scan(
+			&i.ID,
+			&i.AlumnoID,
+			&i.Fecha,
+			&i.Hora,
+			&i.Estado,
+			&i.CreadaEn,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listarRegistrosClase = `-- name: ListarRegistrosClase :many
 SELECT id, alumno_id, fecha, curso_id, seccion_id, bloque_numero, estado,
        observacion, docente_id, creado_en, actualizado_en

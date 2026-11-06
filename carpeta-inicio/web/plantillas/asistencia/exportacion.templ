@@ -1,0 +1,52 @@
+package vista
+
+import (
+	"fmt"
+
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Exportacion(usuario string, rol string, tokenCSRF string, secciones []SeccionOpcion, desde string, hasta string, mensajeError string) {
+	@paginas.BaseSesion("Exportar asistencia", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/asistencia" class="text-sm font-medium text-blue-700">← Asistencia</a>
+				<h1 class="mt-1 text-2xl font-semibold">Exportar asistencia</h1>
+				<p class="mt-1 text-sm text-slate-600">Descarga CSV con el registro del docente y la hora de ingreso QR.</p>
+			</div>
+		</div>
+
+		if mensajeError != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensajeError }</p>
+		}
+
+		<form method="get" action="/asistencia/exportar/archivo" class="mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-4">
+			<label class="block">
+				<span class="text-sm font-medium">Desde *</span>
+				<input type="date" name="desde" value={ desde } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+			</label>
+			<label class="block">
+				<span class="text-sm font-medium">Hasta *</span>
+				<input type="date" name="hasta" value={ hasta } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+			</label>
+			if rol != "docente" {
+				<label class="block">
+					<span class="text-sm font-medium">Sección *</span>
+					<select name="seccion_id" required class="mt-1 w-full rounded border border-slate-300 p-2">
+						<option value="">Seleccione una sección</option>
+						for _, seccion := range secciones {
+							<option value={ fmt.Sprintf("%d", seccion.ID) }>{ seccion.Etiqueta }</option>
+						}
+					</select>
+				</label>
+			} else {
+				<p class="sm:col-span-2 lg:col-span-1 text-sm text-slate-600">
+					Como docente se exportan solo sus propios cursos y secciones.
+				</p>
+			}
+			<div class="flex items-end">
+				<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Descargar CSV</button>
+			</div>
+		</form>
+	}
+}

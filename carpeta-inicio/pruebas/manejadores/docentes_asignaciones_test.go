@@ -142,19 +142,22 @@ func TestDocentes_AdministradorRestableceYDesactiva(t *testing.T) {
 }
 
 type asistenciaFalsa struct {
-	asignaciones   []asistencia.AsignacionVista
-	creada         *asistencia.DatosAsignacion
-	cerrada        int64
-	clases         []asistencia.ClaseAsignada
-	detalle        asistencia.ClaseDetalle
-	guardados      []asistencia.CambioRegistro
-	marcarCreados  int
-	consulta       []asistencia.ConsultaRegistro
-	corregido      *asistencia.ConsultaRegistro
-	correccionErr  error
-	plazo          asistencia.ParametrosAsistencia
-	plazoNuevo     int
-	bloqueRecibido int
+	asignaciones      []asistencia.AsignacionVista
+	creada            *asistencia.DatosAsignacion
+	cerrada           int64
+	clases            []asistencia.ClaseAsignada
+	detalle           asistencia.ClaseDetalle
+	guardados         []asistencia.CambioRegistro
+	marcarCreados     int
+	consulta          []asistencia.ConsultaRegistro
+	corregido         *asistencia.ConsultaRegistro
+	correccionErr     error
+	plazo             asistencia.ParametrosAsistencia
+	plazoNuevo        int
+	bloqueRecibido    int
+	exportados        []asistencia.RegistroExportacion
+	exportarDocenteID int64
+	exportarSeccionID int64
 }
 
 func (a *asistenciaFalsa) ListarAsignaciones(context.Context) ([]asistencia.AsignacionVista, error) {
@@ -220,6 +223,16 @@ func (a *asistenciaFalsa) PlazoEdicion(context.Context) (asistencia.ParametrosAs
 func (a *asistenciaFalsa) ConfigurarPlazo(_ context.Context, _ int64, horas int) error {
 	a.plazoNuevo = horas
 	return nil
+}
+
+func (a *asistenciaFalsa) ExportarDocente(_ context.Context, docenteID int64, _, _ time.Time) ([]asistencia.RegistroExportacion, error) {
+	a.exportarDocenteID = docenteID
+	return a.exportados, nil
+}
+
+func (a *asistenciaFalsa) ExportarSeccion(_ context.Context, seccionID, _ int64, _, _ time.Time) ([]asistencia.RegistroExportacion, error) {
+	a.exportarSeccionID = seccionID
+	return a.exportados, nil
 }
 
 func nuevoManejadorAsistencia(t *testing.T, falso *asistenciaFalsa) (*asistencia.Manejador, *scs.SessionManager) {

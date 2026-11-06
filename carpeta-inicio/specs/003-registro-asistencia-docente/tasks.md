@@ -157,13 +157,13 @@
 
 ## Fase 7: Exportación (transversal)
 
-- [ ] T075 [P] Escribir pruebas unitarias del CSV y sus columnas en `pruebas/unidad/asistencia_exportacion_test.go`
-- [ ] T076 [P] Escribir pruebas de integración de la exportación y sus permisos en `pruebas/integracion/asistencia_exportacion_test.go`
-- [ ] T077 Implementar `ExportarCSV` en `internal/asistencia/servicio_exportacion.go`
-- [ ] T078 Implementar `GET /asistencia/exportar` y `GET /asistencia/exportar/archivo` en `internal/asistencia/manejador_consulta.go`
-- [ ] T079 Crear la plantilla `exportacion.templ` en `web/plantillas/asistencia/`
-- [ ] T080 Escribir las pruebas de manejadores de exportación en `pruebas/manejadores/asistencia_exportacion_test.go`
-- [ ] T081 Escribir la prueba E2E de descarga CSV en `pruebas/e2e/asistencia_exportacion_test.spec.ts`
+- [X] T075 [P] Escribir pruebas unitarias del CSV y sus columnas en `pruebas/unidad/asistencia_exportacion_test.go`
+- [X] T076 [P] Escribir pruebas de integración de la exportación y sus permisos en `pruebas/integracion/asistencia_exportacion_test.go`
+- [X] T077 Implementar `ExportarCSV` en `internal/asistencia/servicio_exportacion.go`
+- [X] T078 Implementar `GET /asistencia/exportar` y `GET /asistencia/exportar/archivo` en `internal/asistencia/manejador_consulta.go`
+- [X] T079 Crear la plantilla `exportacion.templ` en `web/plantillas/asistencia/`
+- [X] T080 Escribir las pruebas de manejadores de exportación en `pruebas/manejadores/asistencia_exportacion_test.go`
+- [X] T081 Escribir la prueba E2E de descarga CSV en `pruebas/e2e/asistencia_exportacion_test.spec.ts`
 
 **Punto de control**: exportación disponible para docente, administrador y director según permisos.
 

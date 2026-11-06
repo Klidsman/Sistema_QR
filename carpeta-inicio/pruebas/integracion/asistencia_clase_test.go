@@ -131,6 +131,27 @@ func TestAsistenciaClase_ListaGuardaMarcasYDiferencias(t *testing.T) {
 		[]asistencia.CambioRegistro{{AlumnoID: alumnoConQR, Estado: asistencia.EstadoPresente}})
 	assert.ErrorIs(t, err, asistencia.ErrFechaFutura)
 
+	exportados, err := servicio.ExportarDocente(ctx, docenteID, hoy, hoy)
+	require.NoError(t, err)
+	require.Len(t, exportados, 2)
+	for _, fila := range exportados {
+		if fila.Identificador == "80001111" {
+			assert.Equal(t, "Ríos, Ana", fila.Alumno)
+			assert.Equal(t, "07:42", fila.HoraQR)
+			assert.Equal(t, asistencia.EstadoFalta, fila.Estado)
+			assert.Equal(t, "Matemática", fila.Curso)
+		}
+	}
+
+	csvExportado, err := asistencia.GenerarCSV(exportados)
+	require.NoError(t, err)
+	assert.Contains(t, string(csvExportado), "identificador")
+	assert.Contains(t, string(csvExportado), "Ríos, Ana")
+
+	porSeccion, err := servicio.ExportarSeccion(ctx, seccionID, 0, hoy, hoy)
+	require.NoError(t, err)
+	assert.Len(t, porSeccion, 2)
+
 	var creadosAuditados, marcasMasivas int
 	require.NoError(t, pool.QueryRow(ctx,
 		`SELECT count(*) FROM auditoria WHERE entidad = $1 AND accion = $2`,

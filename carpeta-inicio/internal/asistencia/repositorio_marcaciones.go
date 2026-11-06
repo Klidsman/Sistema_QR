@@ -31,3 +31,27 @@ func (r *Repositorio) ListarMarcacionesPorFechaYAlumnos(ctx context.Context, fec
 	}
 	return marcaciones, nil
 }
+
+// ListarMarcacionesPorRangoYAlumnos devuelve las marcaciones del rango para los alumnos.
+func (r *Repositorio) ListarMarcacionesPorRangoYAlumnos(ctx context.Context, desde, hasta time.Time, alumnoIDs []int64) ([]Marcacion, error) {
+	filas, err := r.consultas.ListarMarcacionesPorRangoYAlumnos(ctx, generado.ListarMarcacionesPorRangoYAlumnosParams{
+		Fecha:   pgtype.Date{Time: desde, Valid: true},
+		Fecha_2: pgtype.Date{Time: hasta, Valid: true},
+		Column3: alumnoIDs,
+	})
+	if err != nil {
+		return nil, err
+	}
+	marcaciones := make([]Marcacion, 0, len(filas))
+	for _, fila := range filas {
+		marcaciones = append(marcaciones, Marcacion{
+			ID:       fila.ID,
+			AlumnoID: fila.AlumnoID,
+			Fecha:    fila.Fecha.Time,
+			Hora:     fila.Hora.Time,
+			Estado:   fila.Estado,
+			CreadaEn: fila.CreadaEn.Time,
+		})
+	}
+	return marcaciones, nil
+}
