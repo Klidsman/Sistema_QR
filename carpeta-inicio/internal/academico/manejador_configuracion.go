@@ -145,13 +145,14 @@ func (m *Manejador) anio(respuesta http.ResponseWriter, peticion *http.Request) 
 }
 
 func (m *Manejador) crearAnio(respuesta http.ResponseWriter, peticion *http.Request) {
+	nombre := peticion.PostFormValue("nombre")
 	datos, err := datosAnioDeFormulario(peticion)
 	if err != nil {
-		m.renderizarAnio(respuesta, peticion, http.StatusUnprocessableEntity, mensajeDeError(err), "", "")
+		m.renderizarAnio(respuesta, peticion, http.StatusUnprocessableEntity, mensajeDeError(err), "", nombre)
 		return
 	}
 	if _, err := m.configuracion.CrearAnio(peticion.Context(), m.usuarioID(peticion.Context()), datos); err != nil {
-		m.renderizarAnio(respuesta, peticion, http.StatusUnprocessableEntity, mensajeDeError(err), "", "")
+		m.renderizarAnio(respuesta, peticion, http.StatusUnprocessableEntity, mensajeDeError(err), "", datos.Nombre)
 		return
 	}
 	http.Redirect(respuesta, peticion, "/configuracion/anio?ok=creado", http.StatusSeeOther)

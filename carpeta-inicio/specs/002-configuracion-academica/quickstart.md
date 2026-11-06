@@ -135,6 +135,41 @@ Cobertura esperada:
 - `pruebas/manejadores`: permisos del director, CSRF y errores de validación.
 - `pruebas/e2e`: año, secciones, horario, feriado, bloques, horario semanal y consulta histórica.
 
+## Resultados de la validación
+
+**Fecha**: 2026-11-06 | **Entorno**: Windows, Go 1.27.3, Docker Desktop, PostgreSQL 16 en el puerto
+5433, Playwright con Chromium.
+
+| Escenario | Resultado | Evidencia |
+|---|---|---|
+| Preparación y migraciones `0009`–`0017` | Cumple | Subida y reversión completa verificadas en `pruebas/integracion/migraciones_test.go`. |
+| 1. Año, grados, secciones y turnos | Cumple | Pruebas de manejadores y E2E de alta de grado, creación de sección y cambio de turno. |
+| 2. Horarios y tolerancias con vigencia | Cumple | Integración de versionado y E2E de guardado y rechazo de cierre inválido. |
+| 3. Feriados y suspensiones | Cumple | Integración por alcance y E2E de alta y confirmación de solapamiento. |
+| 4. Umbrales de alerta | Cumple | Integración de versionado y E2E de valor actual y cambio futuro. |
+| 5. Consulta histórica | Cumple | Integración con consulta antes y después de cambios; E2E de fecha dentro y fuera del año. |
+| 6. Bloques de clase | Cumple | Integración de solapamiento y fuera de horario; E2E de alta y rechazo. |
+| 7. Cursos y horario semanal | Cumple | Integración de cursos, curso de otro grado y reemplazo; E2E de asignación de una celda. |
+| Permisos del director | Cumple | `pruebas/manejadores/configuracion_permisos_completos_test.go`: 403 en toda escritura salvo turnos y horas de bloques. |
+| CSRF | Cumple | `pruebas/manejadores/configuracion_seguridad_test.go`: sin token y token incorrecto responden 403. |
+| Auditoría | Cumple | `pruebas/integracion/academico_auditoria_test.go` verifica las 13 acciones de configuración. |
+| Compatibilidad con la feature 001 | Cumple | Suite completa y E2E de alumnos, importación y carnés sin cambios. |
+| Pruebas automáticas | Cumple | `go test ./...` sin errores. |
+| Pruebas E2E | Cumple | 16 pruebas de Playwright aprobadas. |
+| Lint | Cumple | `golangci-lint run ./...` con 0 issues. |
+| Rendimiento | Cumple | Consulta de año que cubre la fecha: 0.3 ms; listado de secciones del año activo: 0.2 ms (EXPLAIN ANALYZE). |
+| Integridad de datos | Cumple | 0 secciones sin turno y 0 alumnos con más de un QR activo en la base de desarrollo. |
+
+**Observaciones**:
+
+- En este entorno Windows, una política de Control de Aplicaciones bloqueó la ejecución de
+  binarios recién compilados. Las pruebas Go y el servidor se ejecutaron dentro de contenedores
+  `golang:1.27`; las pruebas E2E se ejecutaron contra el servidor en Docker con el puerto 8099
+  publicado.
+- La migración `0010` traslada el turno de las secciones a `turnos_seccion`, pero conserva los
+  datos de demostración de la feature 001 sin cambios funcionales.
+- El director puede modificar únicamente horarios de turno y horas de bloques existentes.
+
 ## Criterios de aceptación
 
 - Crear un año completo (dos turnos, grados y secciones) en menos de 60 minutos (SC-001).

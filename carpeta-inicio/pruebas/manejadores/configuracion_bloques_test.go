@@ -43,7 +43,7 @@ func TestConfiguracionBloques_MuestraLosBloquesVigentes(t *testing.T) {
 	manejador, sesiones := nuevoManejadorConfiguracionConFalso(t, configuracionFalsa{
 		resumen: academico.ResumenConfiguracion{Anio: anioActivoDePrueba()},
 		bloques: map[string][]academico.BloqueClase{
-			academico.TurnoManana: []academico.BloqueClase{bloqueDePrueba(t)},
+			academico.TurnoManana: {bloqueDePrueba(t)},
 		},
 	})
 	peticion := peticionConSesion(t, sesiones, http.MethodGet,
@@ -66,7 +66,7 @@ func TestConfiguracionBloques_AdministradorCrea(t *testing.T) {
 			return 8, nil
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/bloques", valoresBloque(), "administrador")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)
@@ -81,7 +81,7 @@ func TestConfiguracionBloques_DirectorNoPuedeCrear(t *testing.T) {
 	manejador, sesiones := nuevoManejadorConfiguracionConFalso(t, configuracionFalsa{
 		resumen: academico.ResumenConfiguracion{Anio: anioActivoDePrueba()},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/bloques", valoresBloque(), "director")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)
@@ -100,7 +100,7 @@ func TestConfiguracionBloques_DirectorPuedeAjustarHoras(t *testing.T) {
 			return nil
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/bloques/4/horas", url.Values{
 			"turno":         {"manana"},
 			"hora_inicio":   {"07:50"},
@@ -123,7 +123,7 @@ func TestConfiguracionBloques_RechazaSolapamiento(t *testing.T) {
 			return 0, academico.ErrBloqueSolapado
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/bloques", valoresBloque(), "administrador")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)

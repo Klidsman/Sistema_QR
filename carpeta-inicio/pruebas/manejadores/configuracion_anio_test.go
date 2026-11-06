@@ -27,10 +27,10 @@ func nuevoManejadorConfiguracionConFalso(t *testing.T, falso configuracionFalsa)
 	return manejador, sesiones
 }
 
-func peticionFormulario(t *testing.T, sesiones *scs.SessionManager, metodo, ruta string, valores url.Values, rol string) *http.Request {
+func peticionFormulario(t *testing.T, sesiones *scs.SessionManager, ruta string, valores url.Values, rol string) *http.Request {
 	t.Helper()
 	cuerpo := strings.NewReader(valores.Encode())
-	peticion := peticionConSesion(t, sesiones, metodo, ruta, cuerpo, "application/x-www-form-urlencoded", rol)
+	peticion := peticionConSesion(t, sesiones, http.MethodPost, ruta, cuerpo, "application/x-www-form-urlencoded", rol)
 	return peticion
 }
 
@@ -76,7 +76,7 @@ func TestConfiguracionAnio_CreaConDatosNormalizados(t *testing.T) {
 			return 9, nil
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/anio", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/anio", url.Values{
 		"nombre":       {"  2027  "},
 		"fecha_inicio": {"2027-03-01"},
 		"fecha_fin":    {"2027-12-15"},
@@ -97,7 +97,7 @@ func TestConfiguracionAnio_RechazaFechasInvalidas(t *testing.T) {
 			return 0, academico.ErrFechasAnioInvalidas
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/anio", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/anio", url.Values{
 		"nombre":       {"2027"},
 		"fecha_inicio": {"2027-12-15"},
 		"fecha_fin":    {"2027-03-01"},
@@ -115,7 +115,7 @@ func TestConfiguracionAnio_RechazaSegundoAnioActivo(t *testing.T) {
 			return 0, academico.ErrAnioActivoExistente
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/anio", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/anio", url.Values{
 		"nombre":       {"2027"},
 		"fecha_inicio": {"2027-03-01"},
 		"fecha_fin":    {"2027-12-15"},
@@ -149,7 +149,7 @@ func TestConfiguracionGrados_DirectorNoPuedeCrear(t *testing.T) {
 	manejador, sesiones := nuevoManejadorConfiguracionConFalso(t, configuracionFalsa{
 		resumen: academico.ResumenConfiguracion{Anio: anioActivoDePrueba()},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/grados", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/grados", url.Values{
 		"nombre": {"3.°"},
 	}, "director")
 
@@ -186,7 +186,7 @@ func TestConfiguracionSecciones_CreaYCambiaTurno(t *testing.T) {
 		},
 	})
 
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/secciones", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/secciones", url.Values{
 		"grado_id":      {"3"},
 		"nombre":        {"C"},
 		"turno":         {"tarde"},
@@ -200,7 +200,7 @@ func TestConfiguracionSecciones_CreaYCambiaTurno(t *testing.T) {
 	assert.Equal(t, "C", seccionRecibida.Nombre)
 	assert.Equal(t, academico.TurnoTarde, seccionRecibida.Turno)
 
-	peticion = peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/secciones/15/turno", url.Values{
+	peticion = peticionFormulario(t, sesiones, "/configuracion/secciones/15/turno", url.Values{
 		"turno":         {"manana"},
 		"vigente_desde": {"2026-11-06"},
 	}, "administrador")

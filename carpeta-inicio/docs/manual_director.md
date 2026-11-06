@@ -1,7 +1,9 @@
 # Manual del director
 
 El director usa el sistema en modo consulta. Puede revisar la información de alumnos, sus códigos
-QR, los carnés y el historial de importaciones, pero no puede modificar datos.
+QR, los carnés y el historial de importaciones, pero no puede modificar datos de alumnos. La única
+excepción son los ajustes de horarios de turno y de horas de bloques existentes, descritos en la
+sección de configuración académica.
 
 ## Ingreso
 
@@ -59,13 +61,29 @@ administrador:
 
 El director no puede iniciar una importación nueva.
 
+## Configuración académica
+
+En `/configuracion` el director consulta toda la configuración del año escolar: año, grados,
+secciones, turnos, calendario, umbrales, cursos, bloques, horario semanal y consulta histórica.
+
+Además de consultar, el director puede:
+
+- Ajustar la **hora de ingreso**, la **tolerancia**, la **hora límite de tardanza** y la **hora de
+  cierre** de cada turno en `/configuracion/turnos`.
+- Ajustar la **hora de inicio y de fin** de bloques de clase existentes en
+  `/configuracion/bloques`.
+
+El director no puede crear ni cerrar años, ni crear grados, secciones, feriados, umbrales, cursos
+o bloques. Tampoco puede armar horarios semanales ni desactivar cursos.
+
 ## Permisos
 
 El sistema aplica dos reglas:
 
-1. El director solo puede usar métodos de lectura (`GET`). Cualquier intento de escritura responde
-   `403`.
-2. El director no puede acceder a las pantallas exclusivas del administrador, como el alta o la
+1. El director puede usar métodos de lectura (`GET`) en todas las pantallas.
+2. Las únicas escrituras permitidas son los ajustes de horarios de turno y de horas de bloques
+   existentes. Cualquier otro intento de escritura responde `403`.
+3. El director no puede acceder a las pantallas exclusivas del administrador, como el alta o la
    importación.
 
 Si un enlace no aparece en la interfaz, tampoco se puede ejecutar escribiendo la dirección

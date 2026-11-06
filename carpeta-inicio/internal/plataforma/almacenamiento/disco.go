@@ -34,7 +34,7 @@ func (a *AlmacenDisco) Guardar(ctx context.Context, clave string, contenido io.R
 	if err != nil {
 		return fmt.Errorf("creando el objeto: %w", err)
 	}
-	defer archivo.Close()
+	defer func() { _ = archivo.Close() }()
 
 	if _, err := io.Copy(archivo, contenido); err != nil {
 		return fmt.Errorf("escribiendo el objeto: %w", err)

@@ -88,7 +88,7 @@ func TestConfiguracionCursos_AdministradorCreaYDesactiva(t *testing.T) {
 		},
 	})
 
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/cursos", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/cursos", url.Values{
 		"nombre": {"Matemática"},
 		"grados": {"3"},
 	}, "administrador")
@@ -99,7 +99,7 @@ func TestConfiguracionCursos_AdministradorCreaYDesactiva(t *testing.T) {
 	assert.Equal(t, "Matemática", creado.Nombre)
 	assert.Equal(t, []int64{3}, creado.Grados)
 
-	peticion = peticionFormulario(t, sesiones, http.MethodPost,
+	peticion = peticionFormulario(t, sesiones,
 		"/configuracion/cursos/9/desactivacion", url.Values{}, "administrador")
 	respuesta = ejecutarConfiguracion(manejador, peticion)
 
@@ -113,7 +113,7 @@ func TestConfiguracionCursos_DirectorNoPuedeEscribir(t *testing.T) {
 	})
 
 	for _, ruta := range []string{"/configuracion/cursos", "/configuracion/cursos/9/desactivacion"} {
-		peticion := peticionFormulario(t, sesiones, http.MethodPost, ruta,
+		peticion := peticionFormulario(t, sesiones, ruta,
 			url.Values{"nombre": {"Matemática"}, "grados": {"3"}}, "director")
 		respuesta := ejecutarConfiguracion(manejador, peticion)
 		assert.Equal(t, http.StatusForbidden, respuesta.Code, ruta)
@@ -155,7 +155,7 @@ func TestConfiguracionHorario_GuardaCeldasYConfirmaReemplazo(t *testing.T) {
 		},
 	})
 
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/horarios", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/horarios", url.Values{
 		"seccion_id": {"15"},
 		"fecha":      {"2026-11-06"},
 		"celda_1_1":  {"2"},
@@ -170,7 +170,7 @@ func TestConfiguracionHorario_GuardaCeldasYConfirmaReemplazo(t *testing.T) {
 	require.NotNil(t, recibidos[0].CursoID)
 	assert.Equal(t, int64(2), *recibidos[0].CursoID)
 
-	peticion = peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/horarios", url.Values{
+	peticion = peticionFormulario(t, sesiones, "/configuracion/horarios", url.Values{
 		"seccion_id": {"15"},
 		"fecha":      {"2026-11-06"},
 		"celda_1_1":  {"2"},
@@ -186,7 +186,7 @@ func TestConfiguracionHorario_DirectorNoPuedeGuardar(t *testing.T) {
 	manejador, sesiones := nuevoManejadorConfiguracionConFalso(t, configuracionFalsa{
 		resumen: academico.ResumenConfiguracion{Anio: anioActivoDePrueba()},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/horarios", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/horarios", url.Values{
 		"seccion_id": {"15"},
 		"fecha":      {"2026-11-06"},
 		"celda_1_1":  {"2"},

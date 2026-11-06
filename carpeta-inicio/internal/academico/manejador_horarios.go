@@ -1,6 +1,7 @@
 package academico
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -51,7 +52,7 @@ func (m *Manejador) guardarHorario(respuesta http.ResponseWriter, peticion *http
 
 	if err := m.configuracion.GuardarCeldas(ctx, m.usuarioID(ctx), seccionID, fecha, cambios, confirmar); err != nil {
 		estado := http.StatusUnprocessableEntity
-		if err == ErrRequiereConfirmacion {
+		if errors.Is(err, ErrRequiereConfirmacion) {
 			estado = http.StatusOK
 			confirmar = true
 		}
@@ -90,7 +91,7 @@ func (m *Manejador) renderizarHorario(respuesta http.ResponseWriter, peticion *h
 					seleccion = seleccionDeGrilla(grilla)
 				}
 				grillaVista = aGrillaVista(grilla, seleccion)
-			} else if err != ErrSeccionSinTurno && err != ErrSeccionNoEncontrada {
+			} else if !errors.Is(err, ErrSeccionSinTurno) && !errors.Is(err, ErrSeccionNoEncontrada) {
 				m.registro.Error("no se pudo cargar el horario de la sección", "error", err)
 				http.Error(respuesta, "No se pudo cargar la configuración", http.StatusInternalServerError)
 				return

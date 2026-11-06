@@ -385,7 +385,7 @@ func (m *Manejador) subirFoto(respuesta http.ResponseWriter, peticion *http.Requ
 		http.Redirect(respuesta, peticion, fmt.Sprintf("/alumnos/%d?error=foto_invalida", id), http.StatusSeeOther)
 		return
 	}
-	defer archivo.Close()
+	defer func() { _ = archivo.Close() }()
 
 	foto, err := LeerFoto(archivo, m.fotoMaximaMB)
 	if err != nil {
@@ -487,7 +487,7 @@ func (m *Manejador) foto(respuesta http.ResponseWriter, peticion *http.Request) 
 		m.errorInterno(respuesta, "obteniendo la foto", err)
 		return
 	}
-	defer lectura.Close()
+	defer func() { _ = lectura.Close() }()
 
 	tipo := "image/jpeg"
 	if ExtensionDesdeClave(alumno.FotoClave) == ".png" {
@@ -602,7 +602,7 @@ func (m *Manejador) leerFormulario(respuesta http.ResponseWriter, peticion *http
 		}
 		return datos, nil, err
 	}
-	defer archivo.Close()
+	defer func() { _ = archivo.Close() }()
 
 	leida, err := LeerFoto(archivo, m.fotoMaximaMB)
 	if err != nil {

@@ -51,7 +51,7 @@ func TestConfiguracionUmbrales_AdministradorConfigura(t *testing.T) {
 			return nil
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/umbrales", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/umbrales", url.Values{
 		"tipo":          {"tardanzas"},
 		"valor":         {"4"},
 		"vigente_desde": {"2026-11-06"},
@@ -69,7 +69,7 @@ func TestConfiguracionUmbrales_DirectorNoPuedeConfigurar(t *testing.T) {
 	manejador, sesiones := nuevoManejadorConfiguracionConFalso(t, configuracionFalsa{
 		resumen: academico.ResumenConfiguracion{Anio: anioActivoDePrueba()},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/umbrales", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/umbrales", url.Values{
 		"tipo":          {"tardanzas"},
 		"valor":         {"4"},
 		"vigente_desde": {"2026-11-06"},
@@ -87,7 +87,7 @@ func TestConfiguracionUmbrales_RechazaValorInvalido(t *testing.T) {
 			return academico.ErrValorUmbralInvalido
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost, "/configuracion/umbrales", url.Values{
+	peticion := peticionFormulario(t, sesiones, "/configuracion/umbrales", url.Values{
 		"tipo":          {"tardanzas"},
 		"valor":         {"0"},
 		"vigente_desde": {"2026-11-06"},

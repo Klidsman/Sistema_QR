@@ -264,17 +264,17 @@
 
 **Propósito**: permisos, seguridad, documentación y validación final.
 
-- [ ] T095 [P] Completar la prueba de permisos del director en `pruebas/manejadores/configuracion_permisos_test.go`: 403 en todos los POST salvo turnos y horas de bloques
-- [ ] T096 [P] Escribir la prueba de CSRF y validación de formularios de configuración en `pruebas/manejadores/configuracion_seguridad_test.go`
-- [ ] T097 Escribir la prueba de auditoría de todas las acciones de configuración en `pruebas/integracion/academico_auditoria_test.go`
-- [ ] T098 Verificar la compatibilidad con la feature 001: `go test ./...` y las pruebas E2E existentes de alumnos y carnés en `pruebas/e2e/`
-- [ ] T099 Revisar el rendimiento con `EXPLAIN ANALYZE` de la consulta histórica y los listados en `internal/academico/consultas/academico.sql`
-- [ ] T100 Regenerar plantillas y estilos: `templ generate`, `npm run css`, `gofmt -w`, `go vet ./...` y `golangci-lint run ./...`
-- [ ] T101 Actualizar `docs/manual_administrador.md` y `docs/manual_director.md` con las nuevas pantallas y permisos
-- [ ] T102 Actualizar `docs/despliegue.md` con el objetivo `templ` y confirmar que no hay variables de entorno nuevas
-- [ ] T103 Validar los escenarios de `specs/002-configuracion-academica/quickstart.md` y registrar los resultados en el mismo archivo
-- [ ] T104 Comprobar que ninguna sección quedó sin turno tras la migración 0010 y que un año cerrado no admite escrituras en `pruebas/integracion/migraciones_test.go`
-- [ ] T105 Actualizar `specs/001-gestion-alumnos-qr/quickstart.md` si la migración cambia algún dato de demostración
+- [X] T095 [P] Completar la prueba de permisos del director en `pruebas/manejadores/configuracion_permisos_test.go`: 403 en todos los POST salvo turnos y horas de bloques
+- [X] T096 [P] Escribir la prueba de CSRF y validación de formularios de configuración en `pruebas/manejadores/configuracion_seguridad_test.go`
+- [X] T097 Escribir la prueba de auditoría de todas las acciones de configuración en `pruebas/integracion/academico_auditoria_test.go`
+- [X] T098 Verificar la compatibilidad con la feature 001: `go test ./...` y las pruebas E2E existentes de alumnos y carnés en `pruebas/e2e/`
+- [X] T099 Revisar el rendimiento con `EXPLAIN ANALYZE` de la consulta histórica y los listados en `internal/academico/consultas/academico.sql`
+- [X] T100 Regenerar plantillas y estilos: `templ generate`, `npm run css`, `gofmt -w`, `go vet ./...` y `golangci-lint run ./...`
+- [X] T101 Actualizar `docs/manual_administrador.md` y `docs/manual_director.md` con las nuevas pantallas y permisos
+- [X] T102 Actualizar `docs/despliegue.md` con el objetivo `templ` y confirmar que no hay variables de entorno nuevas
+- [X] T103 Validar los escenarios de `specs/002-configuracion-academica/quickstart.md` y registrar los resultados en el mismo archivo
+- [X] T104 Comprobar que ninguna sección quedó sin turno tras la migración 0010 y que un año cerrado no admite escrituras en `pruebas/integracion/migraciones_test.go`
+- [X] T105 Actualizar `specs/001-gestion-alumnos-qr/quickstart.md` si la migración cambia algún dato de demostración
 
 ---
 

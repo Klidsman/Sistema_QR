@@ -53,9 +53,9 @@ type UmbralVista struct {
 
 // FormularioUmbral conserva los datos del formulario de umbrales.
 type FormularioUmbral struct {
-	Tipo   string
-	Valor  string
-	Fecha  string
+	Tipo  string
+	Valor string
+	Fecha string
 }
 
 // CursoVista es un curso preparado para mostrarse en la interfaz.

@@ -20,7 +20,7 @@ func TestAlmacenDisco_GuardaYObtieneElObjeto(t *testing.T) {
 
 	lectura, err := almacen.Obtener(ctx, "alumnos/12/foto.jpg")
 	require.NoError(t, err)
-	defer lectura.Close()
+	defer func() { _ = lectura.Close() }()
 	contenido, err := io.ReadAll(lectura)
 	require.NoError(t, err)
 	assert.Equal(t, "imagen", string(contenido))

@@ -62,7 +62,7 @@ func TestConfiguracionCalendario_AdministradorRegistra(t *testing.T) {
 	})
 	valores := valoresExcepcion()
 	valores.Add("grados", "3")
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/calendario", valores, "administrador")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)
@@ -83,7 +83,7 @@ func TestConfiguracionCalendario_PideConfirmacionAnteSolapamiento(t *testing.T) 
 			return 0, academico.ErrExcepcionSolapada
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/calendario", valoresExcepcion(), "administrador")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)
@@ -97,7 +97,7 @@ func TestConfiguracionCalendario_DirectorNoPuedeRegistrar(t *testing.T) {
 	manejador, sesiones := nuevoManejadorConfiguracionConFalso(t, configuracionFalsa{
 		resumen: academico.ResumenConfiguracion{Anio: anioActivoDePrueba()},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/calendario", valoresExcepcion(), "director")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)

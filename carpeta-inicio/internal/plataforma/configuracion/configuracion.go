@@ -66,19 +66,19 @@ func Cargar(obtener func(string) string) (Configuracion, error) {
 	}
 
 	var err error
-	if cfg.Puerto, err = enteroEnRango(obtener, "PUERTO", 8080, 1, 65535); err != nil {
+	if cfg.Puerto, err = enteroEnRango(obtener, "PUERTO", 8080, 65535); err != nil {
 		errores = append(errores, err)
 	}
-	if cfg.CarnetAnchoMM, err = enteroEnRango(obtener, "CARNET_ANCHO_MM", 85, 1, 500); err != nil {
+	if cfg.CarnetAnchoMM, err = enteroEnRango(obtener, "CARNET_ANCHO_MM", 85, 500); err != nil {
 		errores = append(errores, err)
 	}
-	if cfg.CarnetAltoMM, err = enteroEnRango(obtener, "CARNET_ALTO_MM", 54, 1, 500); err != nil {
+	if cfg.CarnetAltoMM, err = enteroEnRango(obtener, "CARNET_ALTO_MM", 54, 500); err != nil {
 		errores = append(errores, err)
 	}
-	if cfg.FotoTamanioMaximoMB, err = enteroEnRango(obtener, "FOTO_TAMANIO_MAXIMO_MB", 2, 1, 10); err != nil {
+	if cfg.FotoTamanioMaximoMB, err = enteroEnRango(obtener, "FOTO_TAMANIO_MAXIMO_MB", 2, 10); err != nil {
 		errores = append(errores, err)
 	}
-	if cfg.ImportacionMaxFilas, err = enteroEnRango(obtener, "IMPORTACION_MAX_FILAS", 5000, 1, 20000); err != nil {
+	if cfg.ImportacionMaxFilas, err = enteroEnRango(obtener, "IMPORTACION_MAX_FILAS", 5000, 20000); err != nil {
 		errores = append(errores, err)
 	}
 
@@ -114,7 +114,7 @@ func valorOTexto(valor, porDefecto string) string {
 	return valor
 }
 
-func enteroEnRango(obtener func(string) string, clave string, porDefecto, minimo, maximo int) (int, error) {
+func enteroEnRango(obtener func(string) string, clave string, porDefecto, maximo int) (int, error) {
 	texto := obtener(clave)
 	if texto == "" {
 		return porDefecto, nil
@@ -123,8 +123,8 @@ func enteroEnRango(obtener func(string) string, clave string, porDefecto, minimo
 	if err != nil {
 		return 0, fmt.Errorf("%s debe ser un número entero", clave)
 	}
-	if numero < minimo || numero > maximo {
-		return 0, fmt.Errorf("%s debe estar entre %d y %d", clave, minimo, maximo)
+	if numero < 1 || numero > maximo {
+		return 0, fmt.Errorf("%s debe estar entre 1 y %d", clave, maximo)
 	}
 	return numero, nil
 }

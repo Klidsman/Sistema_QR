@@ -158,6 +158,37 @@ Todas las acciones de escritura quedan registradas con usuario, fecha, entidad, 
 anterior y nuevo. La tabla `auditoria` es de solo escritura: no admite `UPDATE` ni `DELETE`, ni
 siquiera desde la base de datos.
 
+## Configuración académica
+
+El módulo de configuración vive en `/configuracion`. Desde ahí el administrador gestiona el año
+escolar y todo lo que necesita el registro de asistencia.
+
+- **Año escolar** (`/configuracion/anio`): crea el año con fecha de inicio y fin, muestra el
+  historial y permite cerrarlo. Solo puede existir un año activo; al cerrarlo queda de solo
+  lectura.
+- **Grados** (`/configuracion/grados`): niveles del año activo.
+- **Secciones** (`/configuracion/secciones`): alta de secciones por grado, turno inicial y cambio
+  de turno con fecha de vigencia.
+- **Turnos** (`/configuracion/turnos`): hora de ingreso, tolerancia, límite de tardanza y cierre.
+  Cada cambio indica desde qué fecha aplica y conserva el historial.
+- **Calendario** (`/configuracion/calendario`): feriados, días no laborables y suspensiones, con
+  alcance a todo el colegio o a grados específicos. Si se superpone con otra excepción del mismo
+  alcance, el sistema pide confirmación.
+- **Umbrales** (`/configuracion/umbrales`): cantidad mensual de tardanzas o faltas que activa una
+  alerta. Los valores deben estar entre 1 y 100.
+- **Cursos** (`/configuracion/cursos`): asignaturas vinculadas a uno o más grados. No se eliminan:
+  se desactivan y conservan su historial.
+- **Bloques de clase** (`/configuracion/bloques`): horas de clase por turno. No pueden salirse del
+  horario del turno ni superponerse.
+- **Horario semanal** (`/configuracion/horarios`): curso por sección, día y bloque. Solo se puede
+  asignar un curso vinculado al grado de la sección. Si la celda ya tiene curso, se pide
+  confirmación antes de reemplazarlo.
+- **Consulta histórica** (`/configuracion/consulta`): muestra la configuración vigente en una
+  fecha: horarios, excepciones, umbrales, turno de cada sección y bloques.
+
+Las fechas de vigencia deben ser hoy o posteriores. Los cambios futuros no alteran la
+configuración anterior ni las asistencias ya registradas.
+
 ## Recomendaciones
 
 - Verificar el año escolar activo antes de importar.

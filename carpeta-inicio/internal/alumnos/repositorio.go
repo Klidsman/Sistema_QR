@@ -130,10 +130,6 @@ func (r *Repositorio) buscar(ctx context.Context, id int64) (Alumno, error) {
 	}, nil
 }
 
-func (r *Repositorio) buscarIdentificador(ctx context.Context, consultas *generado.Queries, identificador string) (generado.BuscarAlumnoPorIdentificadorRow, error) {
-	return consultas.BuscarAlumnoPorIdentificador(ctx, identificador)
-}
-
 func (r *Repositorio) listarImportaciones(ctx context.Context) ([]Importacion, error) {
 	filas, err := r.consultas.ListarImportaciones(ctx)
 	if err != nil {

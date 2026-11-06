@@ -9,22 +9,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func filaImportada(numero int, identificador, nombres, apellidos, grado, seccion string) alumnos.FilaImportada {
+func filaImportada(numero int, identificador, nombres, apellidos, grado string) alumnos.FilaImportada {
 	return alumnos.FilaImportada{
 		Numero:        numero,
 		Identificador: identificador,
 		Nombres:       nombres,
 		Apellidos:     apellidos,
 		Grado:         grado,
-		Seccion:       seccion,
+		Seccion:       "A",
 	}
 }
 
 func TestClasificarFilas_RechazaTodasLasOcurrenciasDuplicadas(t *testing.T) {
 	validas, rechazadas := alumnos.ClasificarFilas([]alumnos.FilaImportada{
-		filaImportada(2, "70000001", "Ana", "Ríos", "3.°", "A"),
-		filaImportada(3, "70000002", "Luis", "Pérez", "3.°", "A"),
-		filaImportada(4, "70000001", "Ana María", "Ríos", "3.°", "A"),
+		filaImportada(2, "70000001", "Ana", "Ríos", "3.°"),
+		filaImportada(3, "70000002", "Luis", "Pérez", "3.°"),
+		filaImportada(4, "70000001", "Ana María", "Ríos", "3.°"),
 	})
 
 	require.Len(t, validas, 1)
@@ -39,9 +39,9 @@ func TestClasificarFilas_RechazaTodasLasOcurrenciasDuplicadas(t *testing.T) {
 
 func TestClasificarFilas_RechazaCamposObligatoriosVacios(t *testing.T) {
 	validas, rechazadas := alumnos.ClasificarFilas([]alumnos.FilaImportada{
-		filaImportada(2, "70000001", "", "Ríos", "3.°", "A"),
-		filaImportada(3, "70000002", "Luis", "Pérez", "", "A"),
-		filaImportada(4, "70000003", "Elena", "Ñuño", "3.°", "A"),
+		filaImportada(2, "70000001", "", "Ríos", "3.°"),
+		filaImportada(3, "70000002", "Luis", "Pérez", ""),
+		filaImportada(4, "70000003", "Elena", "Ñuño", "3.°"),
 	})
 
 	require.Len(t, validas, 1)
@@ -53,7 +53,7 @@ func TestClasificarFilas_RechazaCamposObligatoriosVacios(t *testing.T) {
 
 func TestClasificarFilas_RechazaIdentificadorConEspacios(t *testing.T) {
 	validas, rechazadas := alumnos.ClasificarFilas([]alumnos.FilaImportada{
-		filaImportada(2, "7000 0001", "Ana", "Ríos", "3.°", "A"),
+		filaImportada(2, "7000 0001", "Ana", "Ríos", "3.°"),
 	})
 
 	assert.Empty(t, validas)

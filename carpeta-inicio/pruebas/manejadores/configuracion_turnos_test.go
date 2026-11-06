@@ -68,7 +68,7 @@ func TestConfiguracionTurnos_DirectorPuedeGuardar(t *testing.T) {
 			return nil
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/turnos/manana", valoresHorario(), "director")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)
@@ -87,7 +87,7 @@ func TestConfiguracionTurnos_RechazaHorarioInvalido(t *testing.T) {
 			return academico.ErrCierreNoPosterior
 		},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/turnos/manana", valoresHorario(), "administrador")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)
@@ -100,7 +100,7 @@ func TestConfiguracionTurnos_OtrosRolesNoPuedenGuardar(t *testing.T) {
 	manejador, sesiones := nuevoManejadorConfiguracionConFalso(t, configuracionFalsa{
 		resumen: academico.ResumenConfiguracion{Anio: anioActivoDePrueba()},
 	})
-	peticion := peticionFormulario(t, sesiones, http.MethodPost,
+	peticion := peticionFormulario(t, sesiones,
 		"/configuracion/turnos/manana", valoresHorario(), "docente")
 
 	respuesta := ejecutarConfiguracion(manejador, peticion)

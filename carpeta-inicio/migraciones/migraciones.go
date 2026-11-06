@@ -20,7 +20,7 @@ func Subir(urlBaseDatos string) error {
 	if err != nil {
 		return fmt.Errorf("abriendo la base de datos para migrar: %w", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	goose.SetBaseFS(archivos)
 	if err := goose.SetDialect("postgres"); err != nil {
@@ -38,7 +38,7 @@ func Bajar(urlBaseDatos string) error {
 	if err != nil {
 		return fmt.Errorf("abriendo la base de datos para revertir: %w", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	goose.SetBaseFS(archivos)
 	if err := goose.SetDialect("postgres"); err != nil {

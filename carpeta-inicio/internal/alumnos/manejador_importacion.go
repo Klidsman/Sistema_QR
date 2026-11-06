@@ -32,7 +32,7 @@ func (m *Manejador) procesarImportacion(respuesta http.ResponseWriter, peticion 
 			"Seleccione un archivo CSV o XLSX.", nil)
 		return
 	}
-	defer archivo.Close()
+	defer func() { _ = archivo.Close() }()
 
 	if cabecera.Size > maximoArchivoImportacion {
 		m.renderizarCarga(respuesta, peticion, http.StatusUnprocessableEntity,

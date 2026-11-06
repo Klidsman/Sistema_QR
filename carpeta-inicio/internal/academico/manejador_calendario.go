@@ -1,6 +1,7 @@
 package academico
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -36,7 +37,7 @@ func (m *Manejador) registrarExcepcion(respuesta http.ResponseWriter, peticion *
 	if _, err := m.configuracion.RegistrarExcepcion(ctx, m.usuarioID(ctx), datos, confirmar); err != nil {
 		estado := http.StatusUnprocessableEntity
 		nuevoConfirmar := false
-		if err == ErrExcepcionSolapada {
+		if errors.Is(err, ErrExcepcionSolapada) {
 			estado = http.StatusOK
 			nuevoConfirmar = true
 		}
