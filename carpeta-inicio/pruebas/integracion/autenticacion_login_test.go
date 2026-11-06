@@ -40,7 +40,7 @@ func TestLogin_RedirigeAlInicioDeCadaRol(t *testing.T) {
 
 	for _, caso := range casos {
 		cliente := nuevoClienteLogin(t, enrutador)
-		respuesta := cliente.ingresar(t, caso.correo, claveLoginPrueba)
+		respuesta := cliente.ingresar(t, caso.correo)
 		assert.Equal(t, http.StatusSeeOther, respuesta.StatusCode, caso.correo)
 		assert.Equal(t, caso.destino, respuesta.Header.Get("Location"), caso.correo)
 	}
@@ -51,13 +51,13 @@ func TestLogin_AdminSalirDocenteLlegaAlInicioDocente(t *testing.T) {
 	crearCuentasDeLogin(t, pool)
 	cliente := nuevoClienteLogin(t, nuevoEnrutadorLogin(pool))
 
-	respuesta := cliente.ingresar(t, "admin@login.pe", claveLoginPrueba)
+	respuesta := cliente.ingresar(t, "admin@login.pe")
 	require.Equal(t, "/alumnos", respuesta.Header.Get("Location"))
 
 	respuesta = cliente.solicitar(t, http.MethodPost, "/salir", nil)
 	require.Equal(t, "/ingreso", respuesta.Header.Get("Location"))
 
-	respuesta = cliente.ingresar(t, "docente@login.pe", claveLoginPrueba)
+	respuesta = cliente.ingresar(t, "docente@login.pe")
 	assert.Equal(t, "/asistencia", respuesta.Header.Get("Location"))
 }
 
@@ -71,14 +71,14 @@ func TestLogin_IgnoraUrlDeRetornoDeOtroRol(t *testing.T) {
 	require.Equal(t, http.StatusSeeOther, respuesta.StatusCode)
 	require.Equal(t, "/ingreso", respuesta.Header.Get("Location"))
 
-	respuesta = cliente.ingresar(t, "docente@login.pe", claveLoginPrueba)
+	respuesta = cliente.ingresar(t, "docente@login.pe")
 	assert.Equal(t, "/asistencia", respuesta.Header.Get("Location"),
 		"la URL de administrador no debe usarse para una docente")
 
 	cliente = nuevoClienteLogin(t, enrutador)
 	respuesta = cliente.solicitar(t, http.MethodGet, "/alumnos", nil)
 	require.Equal(t, "/ingreso", respuesta.Header.Get("Location"))
-	respuesta = cliente.ingresar(t, "admin@login.pe", claveLoginPrueba)
+	respuesta = cliente.ingresar(t, "admin@login.pe")
 	assert.Equal(t, "/alumnos", respuesta.Header.Get("Location"))
 }
 
@@ -87,7 +87,7 @@ func TestLogin_RolSinPermisoVePaginaConSuInicio(t *testing.T) {
 	crearCuentasDeLogin(t, pool)
 	cliente := nuevoClienteLogin(t, nuevoEnrutadorLogin(pool))
 
-	require.Equal(t, "/asistencia", cliente.ingresar(t, "docente@login.pe", claveLoginPrueba).Header.Get("Location"))
+	require.Equal(t, "/asistencia", cliente.ingresar(t, "docente@login.pe").Header.Get("Location"))
 	respuesta := cliente.solicitar(t, http.MethodGet, "/alumnos", nil)
 
 	assert.Equal(t, http.StatusForbidden, respuesta.StatusCode)
@@ -107,7 +107,7 @@ func TestLogin_RegeneraLaSesion(t *testing.T) {
 	antes := cliente.cookieSesion()
 	require.NotEmpty(t, antes)
 
-	respuesta = cliente.ingresar(t, "docente@login.pe", claveLoginPrueba)
+	respuesta = cliente.ingresar(t, "docente@login.pe")
 	require.Equal(t, http.StatusSeeOther, respuesta.StatusCode)
 	despues := cliente.cookieSesion()
 	assert.NotEqual(t, antes, despues, "el token de sesión debe regenerarse al ingresar")
@@ -128,9 +128,9 @@ func nuevoClienteLogin(t *testing.T, enrutador http.Handler) *clienteLogin {
 	return &clienteLogin{t: t, servidor: servidor, cliente: &http.Client{Jar: jar}}
 }
 
-func (c *clienteLogin) ingresar(t *testing.T, correo, clave string) *http.Response {
+func (c *clienteLogin) ingresar(t *testing.T, correo string) *http.Response {
 	t.Helper()
-	formulario := url.Values{"correo": {correo}, "contrasenia": {clave}}
+	formulario := url.Values{"correo": {correo}, "contrasenia": {claveLoginPrueba}}
 	return c.solicitar(t, http.MethodPost, "/ingreso", strings.NewReader(formulario.Encode()))
 }
 
