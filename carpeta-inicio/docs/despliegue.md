@@ -152,6 +152,10 @@ el bucket como público.
 - **Asistencia del docente**: se usa desde `/asistencia`. El plazo de edición se guarda en la
   tabla `parametros_asistencia` y se ajusta desde `/configuracion/asistencia`; no requiere
   variables de entorno nuevas.
+- **Alertas internas**: el servidor ejecuta dos tareas internas con `robfig/cron`: cada minuto
+  convierte las tardanzas en alertas y, a las 13:00 y 19:00, evalúa el cierre de los turnos de
+  mañana y tarde. Los horarios de cierre se configuran al construir el programador. No requiere
+  variables de entorno nuevas ni servicios externos.
 - **Salud**: `GET /salud` responde `200` cuando la base de datos está disponible y `503` si no.
 - **Migraciones**: se ejecutan antes de iniciar cada versión con `./servidor migrar`.
 - **Registros**: el proceso escribe logs JSON en la salida estándar. Render los captura.

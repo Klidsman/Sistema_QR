@@ -8,6 +8,26 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Alerta struct {
+	ID                int64
+	Tipo              string
+	AlumnoID          int64
+	SeccionID         int64
+	CursoID           pgtype.Int8
+	BloqueNumero      pgtype.Int4
+	FechaEvento       pgtype.Date
+	Mes               pgtype.Date
+	MarcacionID       pgtype.Int8
+	DestinatarioID    int64
+	Estado            string
+	LeidaEn           pgtype.Timestamptz
+	LeidaPor          pgtype.Int8
+	SinResponsable    bool
+	SituacionCambiada bool
+	MotivoCambio      pgtype.Text
+	CreadaEn          pgtype.Timestamptz
+}
+
 type Alumno struct {
 	ID                int64
 	Identificador     string
@@ -66,6 +86,13 @@ type BloquesClase struct {
 	HoraFin      pgtype.Time
 	VigenteDesde pgtype.Date
 	CreadoEn     pgtype.Timestamptz
+}
+
+type CierresAlertum struct {
+	ID          int64
+	Fecha       pgtype.Date
+	Turno       string
+	EjecutadoEn pgtype.Timestamptz
 }
 
 type CredencialesQr struct {
@@ -161,12 +188,13 @@ type Importacione struct {
 }
 
 type Marcacione struct {
-	ID       int64
-	AlumnoID int64
-	Fecha    pgtype.Date
-	Hora     pgtype.Timestamptz
-	Estado   string
-	CreadaEn pgtype.Timestamptz
+	ID            int64
+	AlumnoID      int64
+	Fecha         pgtype.Date
+	Hora          pgtype.Timestamptz
+	Estado        string
+	CreadaEn      pgtype.Timestamptz
+	RegistradaPor pgtype.Int8
 }
 
 type ParametrosAsistencium struct {

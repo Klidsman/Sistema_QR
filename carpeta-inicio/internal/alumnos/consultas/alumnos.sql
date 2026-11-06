@@ -8,6 +8,17 @@ WHERE al.estado = 'activo'
   AND (h.fecha_fin IS NULL OR h.fecha_fin > $2)
 ORDER BY al.apellidos, al.nombres;
 
+-- name: SeccionDeAlumnoEnFecha :one
+SELECT h.seccion_id
+FROM historial_secciones h
+JOIN alumnos a ON a.id = h.alumno_id
+WHERE h.alumno_id = $1
+  AND a.estado = 'activo'
+  AND h.fecha_inicio <= $2
+  AND (h.fecha_fin IS NULL OR h.fecha_fin > $2)
+ORDER BY h.fecha_inicio DESC
+LIMIT 1;
+
 -- name: ListarAlumnosPorIDs :many
 SELECT id, identificador, nombres, apellidos
 FROM alumnos

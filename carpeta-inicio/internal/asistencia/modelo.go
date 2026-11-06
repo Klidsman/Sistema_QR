@@ -32,12 +32,13 @@ type RegistroDocente struct {
 
 // Marcacion es el ingreso oficial por QR. Esta feature solo la lee.
 type Marcacion struct {
-	ID       int64
-	AlumnoID int64
-	Fecha    time.Time
-	Hora     time.Time
-	Estado   string
-	CreadaEn time.Time
+	ID            int64
+	AlumnoID      int64
+	Fecha         time.Time
+	Hora          time.Time
+	Estado        string
+	CreadaEn      time.Time
+	RegistradaPor *int64
 }
 
 // ParametrosAsistencia contiene el plazo de edición del docente.

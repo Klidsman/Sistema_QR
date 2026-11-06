@@ -12,11 +12,11 @@
 
 ## Fase 1: Preparación
 
-- [ ] T001 [P] Crear `internal/alertas/{consultas,generado}` y `web/plantillas/alertas/`
-- [ ] T002 [P] Agregar el paquete de alertas a `sqlc.yaml` con salida en `internal/alertas/generado`
-- [ ] T003 [P] Crear los tipos, estados y constantes de alerta en `internal/alertas/modelo.go`
-- [ ] T004 [P] Ampliar `docs/glosario.md` con `alerta`, `reiteracion_tardanzas`, `faltas_seguidas` y `situacion_cambiada`
-- [ ] T005 Agregar `github.com/robfig/cron/v3` a `go.mod` y justificarlo en `docs/despliegue.md`
+- [x] T001 [P] Crear `internal/alertas/{consultas,generado}` y `web/plantillas/alertas/`
+- [x] T002 [P] Agregar el paquete de alertas a `sqlc.yaml` con salida en `internal/alertas/generado`
+- [x] T003 [P] Crear los tipos, estados y constantes de alerta en `internal/alertas/modelo.go`
+- [x] T004 [P] Ampliar `docs/glosario.md` con `alerta`, `reiteracion_tardanzas`, `faltas_seguidas` y `situacion_cambiada`
+- [x] T005 Agregar `github.com/robfig/cron/v3` a `go.mod` y justificarlo en `docs/despliegue.md`
 
 ---
 
@@ -24,43 +24,43 @@
 
 ### Migraciones
 
-- [ ] T006 [P] Crear `migraciones/0023_agregar_portero_a_marcaciones.sql` con `registrada_por` e índice por fecha
-- [ ] T007 [P] Crear `migraciones/0024_crear_tabla_alertas.sql` con tipos, estados, lectura, situación cambiada e índices únicos parciales
-- [ ] T008 [P] Crear `migraciones/0025_crear_tabla_cierres_alerta.sql` con `UNIQUE (fecha, turno)`
-- [ ] T009 [P] Crear `migraciones/0026_ampliar_umbrales_faltas_seguidas.sql` con el nuevo tipo
-- [ ] T010 [P] Crear `migraciones/0027_ampliar_auditoria_alertas.sql` con `alerta` y `cierre_alerta`
-- [ ] T011 Actualizar la prueba de migraciones hasta la versión 27 en `pruebas/integracion/migraciones_test.go`
+- [x] T006 [P] Crear `migraciones/0023_agregar_portero_a_marcaciones.sql` con `registrada_por` e índice por fecha
+- [x] T007 [P] Crear `migraciones/0024_crear_tabla_alertas.sql` con tipos, estados, lectura, situación cambiada e índices únicos parciales
+- [x] T008 [P] Crear `migraciones/0025_crear_tabla_cierres_alerta.sql` con `UNIQUE (fecha, turno)`
+- [x] T009 [P] Crear `migraciones/0026_ampliar_umbrales_faltas_seguidas.sql` con el nuevo tipo
+- [x] T010 [P] Crear `migraciones/0027_ampliar_auditoria_alertas.sql` con `alerta` y `cierre_alerta`
+- [x] T011 Actualizar la prueba de migraciones hasta la versión 27 en `pruebas/integracion/migraciones_test.go`
 
 ### Modelos, consultas y repositorios
 
-- [ ] T012 [P] Implementar los modelos `Alerta`, `FiltrosAlerta`, `EventoMarcacion` y `EstadoAlerta` en `internal/alertas/modelo.go`
-- [ ] T013 [P] Escribir las consultas sqlc de alertas, conteos y cierres en `internal/alertas/consultas/alertas.sql`
-- [ ] T014 Regenerar sqlc y compilar `internal/alertas/generado/`
-- [ ] T015 [P] Implementar `internal/alertas/repositorio.go` con pool, consultas y transacciones
-- [ ] T016 [P] Implementar el repositorio de alertas, filtros y lectura en `internal/alertas/repositorio_alertas.go`
-- [ ] T017 [P] Implementar el repositorio de cierres en `internal/alertas/repositorio_cierres.go`
+- [x] T012 [P] Implementar los modelos `Alerta`, `FiltrosAlerta`, `EventoMarcacion` y `EstadoAlerta` en `internal/alertas/modelo.go`
+- [x] T013 [P] Escribir las consultas sqlc de alertas, conteos y cierres en `internal/alertas/consultas/alertas.sql`
+- [x] T014 Regenerar sqlc y compilar `internal/alertas/generado/`
+- [x] T015 [P] Implementar `internal/alertas/repositorio.go` con pool, consultas y transacciones
+- [x] T016 [P] Implementar el repositorio de alertas, filtros y lectura en `internal/alertas/repositorio_alertas.go`
+- [x] T017 [P] Implementar el repositorio de cierres en `internal/alertas/repositorio_cierres.go`
 
 ### Interfaces entre módulos
 
-- [ ] T018 [P] Implementar en `internal/asistencia/servicio_fuente_alertas.go`: marcaciones sin alerta y docentes de una sección en una fecha
-- [ ] T019 [P] Implementar en `internal/alumnos/servicio_alertas.go`: alumnos activos de una sección y sección del alumno en una fecha
-- [ ] T020 [P] Implementar en `internal/academico/consulta_alertas.go`: secciones activas, día laborable y umbral vigente
-- [ ] T021 [P] Crear las interfaces de fuente en `internal/alertas/dependencias.go`
-- [ ] T022 Implementar la auditoría de alertas y cierres en `internal/alertas/servicio_auditoria.go`
+- [x] T018 [P] Implementar en `internal/asistencia/servicio_fuente_alertas.go`: marcaciones sin alerta y docentes de una sección en una fecha
+- [x] T019 [P] Implementar en `internal/alumnos/servicio_alertas.go`: alumnos activos de una sección y sección del alumno en una fecha
+- [x] T020 [P] Implementar en `internal/academico/consulta_alertas.go`: secciones activas, día laborable y umbral vigente
+- [x] T021 [P] Crear las interfaces de fuente en `internal/alertas/dependencias.go`
+- [x] T022 Implementar la auditoría de alertas y cierres en `internal/alertas/servicio_auditoria.go`
 
 ### Reglas puras
 
 - [ ] T023 [P] Escribir pruebas unitarias de conteo mensual y racha de faltas en `pruebas/unidad/alertas_reglas_test.go`
-- [ ] T024 [P] Escribir pruebas unitarias de deduplicación y destinatarios en `pruebas/unidad/alertas_destinatarios_test.go`
-- [ ] T025 Implementar las reglas puras en `internal/alertas/validaciones.go`
+- [x] T024 [P] Escribir pruebas unitarias de deduplicación y destinatarios en `pruebas/unidad/alertas_destinatarios_test.go`
+- [x] T025 Implementar las reglas puras en `internal/alertas/validaciones.go`
 - [ ] T026 Escribir la prueba de migraciones y parámetros en `pruebas/integracion/alertas_migraciones_test.go`
-- [ ] T027 Escribir la prueba base de permisos por rol en `pruebas/manejadores/alertas_permisos_test.go`
+- [x] T027 Escribir la prueba base de permisos por rol en `pruebas/manejadores/alertas_permisos_test.go`
 
 ### Integración y rutas
 
-- [ ] T028 Registrar el módulo, dependencias y rutas base en `internal/plataforma/rutas/rutas.go` y `cmd/servidor/main.go`
-- [ ] T029 Implementar el programador cron con advisory lock en `internal/alertas/programador.go`
-- [ ] T030 Escribir la prueba del programador idempotente en `pruebas/integracion/alertas_programador_test.go`
+- [x] T028 Registrar el módulo, dependencias y rutas base en `internal/plataforma/rutas/rutas.go` y `cmd/servidor/main.go`
+- [x] T029 Implementar el programador cron con advisory lock en `internal/alertas/programador.go`
+- [x] T030 Escribir la prueba del programador idempotente en `pruebas/integracion/alertas_programador_test.go`
 
 ---
 
@@ -72,11 +72,11 @@
 
 - [ ] T031 [P] [US1] Escribir pruebas unitarias de destinatario y deduplicación de tardanza en `pruebas/unidad/alertas_tardanza_test.go`
 - [ ] T032 [P] [US1] Escribir pruebas de integración de generación de alerta de tardanza en `pruebas/integracion/alertas_tardanza_test.go`
-- [ ] T033 [US1] Implementar `ProcesarTardanzas` en `internal/alertas/servicio_procesos.go`
-- [ ] T034 [US1] Asignar la alerta al portero de `registrada_por`, o al administrador si falta
-- [ ] T035 [US1] Insertar con `ON CONFLICT DO NOTHING` para no duplicar
-- [ ] T036 [US1] Auditar `crear_alerta` de tardanza
-- [ ] T037 [US1] Implementar el indicador de alertas nuevas en `internal/alertas/manejador_indicador.go`
+- [x] T033 [US1] Implementar `ProcesarTardanzas` en `internal/alertas/servicio_procesos.go`
+- [x] T034 [US1] Asignar la alerta al portero de `registrada_por`, o al administrador si falta
+- [x] T035 [US1] Insertar con `ON CONFLICT DO NOTHING` para no duplicar
+- [x] T036 [US1] Auditar `crear_alerta` de tardanza
+- [x] T037 [US1] Implementar el indicador de alertas nuevas en `internal/alertas/manejador_indicador.go`
 - [ ] T038 [US1] Mostrar el indicador en las plantillas base de los roles autorizados en `web/plantillas/paginas/base.templ`
 - [ ] T039 [US1] Escribir pruebas de manejadores del indicador en `pruebas/manejadores/alertas_indicador_test.go`
 - [ ] T040 [US1] Escribir la prueba E2E de alerta de tardanza para portero en `pruebas/e2e/alertas_tardanza_test.spec.ts`
@@ -91,17 +91,17 @@
 
 - [ ] T041 [P] [US2] Escribir pruebas unitarias del umbral mensual en `pruebas/unidad/alertas_reiteracion_tardanzas_test.go`
 - [ ] T042 [P] [US2] Escribir pruebas de integración de reiteración por tardanzas en `pruebas/integracion/alertas_reiteracion_tardanzas_test.go`
-- [ ] T043 [US2] Implementar el conteo mensual de tardanzas y la selección del umbral vigente en `internal/alertas/servicio_alertas.go`
-- [ ] T044 [US2] Crear la alerta de reiteración por tardanzas para cada docente asignado a la sección en `internal/alertas/servicio_alertas.go`
-- [ ] T045 [US2] Auditar `crear_alerta` de reiteración por tardanzas
+- [x] T043 [US2] Implementar el conteo mensual de tardanzas y la selección del umbral vigente en `internal/alertas/servicio_alertas.go`
+- [x] T044 [US2] Crear la alerta de reiteración por tardanzas para cada docente asignado a la sección en `internal/alertas/servicio_alertas.go`
+- [x] T045 [US2] Auditar `crear_alerta` de reiteración por tardanzas
 - [ ] T046 [P] [US2] Escribir pruebas unitarias de faltas seguidas en `pruebas/unidad/alertas_faltas_seguidas_test.go`
 - [ ] T047 [P] [US2] Escribir pruebas de integración de faltas seguidas en `pruebas/integracion/alertas_faltas_seguidas_test.go`
-- [ ] T048 [US2] Implementar el cálculo de la racha de días laborables sin marcación en `internal/alertas/servicio_alertas.go`
-- [ ] T049 [US2] Excluir fines de semana, feriados y suspensiones del cálculo en `internal/alertas/servicio_alertas.go`
-- [ ] T050 [US2] Implementar la interfaz `EsFaltaJustificada` con implementación inicial falsa y punto de extensión para la 005
-- [ ] T051 [US2] Implementar `ProcesarCierre(fecha, turno)` con `cierres_alerta` en `internal/alertas/servicio_procesos.go`
-- [ ] T052 [US2] Enviar al administrador las alertas sin docente asignado con `sin_responsable`
-- [ ] T053 [US2] Auditar `ejecutar_cierre` y las alertas de faltas
+- [x] T048 [US2] Implementar el cálculo de la racha de días laborables sin marcación en `internal/alertas/servicio_alertas.go`
+- [x] T049 [US2] Excluir fines de semana, feriados y suspensiones del cálculo en `internal/alertas/servicio_alertas.go`
+- [x] T050 [US2] Implementar la interfaz `EsFaltaJustificada` con implementación inicial falsa y punto de extensión para la 005
+- [x] T051 [US2] Implementar `ProcesarCierre(fecha, turno)` con `cierres_alerta` en `internal/alertas/servicio_procesos.go`
+- [x] T052 [US2] Enviar al administrador las alertas sin docente asignado con `sin_responsable`
+- [x] T053 [US2] Auditar `ejecutar_cierre` y las alertas de faltas
 - [ ] T054 [US2] Escribir pruebas de manejadores de cierre y umbrales en `pruebas/manejadores/alertas_cierre_test.go`
 - [ ] T055 [US2] Escribir la prueba E2E de reiteración en `pruebas/e2e/alertas_reiteracion_test.spec.ts`
 
@@ -115,13 +115,13 @@
 
 - [ ] T056 [P] [US3] Escribir pruebas unitarias de filtros y permisos en `pruebas/unidad/alertas_filtros_test.go`
 - [ ] T057 [P] [US3] Escribir pruebas de integración del panel y marcado masivo en `pruebas/integracion/alertas_panel_test.go`
-- [ ] T058 [US3] Implementar `ListarAlertas` con filtros y alcance por rol en `internal/alertas/servicio_alertas.go`
-- [ ] T059 [US3] Implementar `MarcarVista` y `MarcarVistas` en `internal/alertas/servicio_alertas.go`
-- [ ] T060 [US3] Implementar las rutas del panel y marcado en `internal/alertas/manejador_alertas.go`
-- [ ] T061 [US3] Crear la plantilla `panel.templ` con filtros y acciones masivas
-- [ ] T062 [US3] Crear la plantilla `indicador.templ` y su actualización HTMX
-- [ ] T063 [US3] Implementar el contador de nuevas por destinatario en `internal/alertas/repositorio_alertas.go`
-- [ ] T064 [US3] Auditar `marcar_vista` y `marcar_vistas`
+- [x] T058 [US3] Implementar `ListarAlertas` con filtros y alcance por rol en `internal/alertas/servicio_alertas.go`
+- [x] T059 [US3] Implementar `MarcarVista` y `MarcarVistas` en `internal/alertas/servicio_alertas.go`
+- [x] T060 [US3] Implementar las rutas del panel y marcado en `internal/alertas/manejador_alertas.go`
+- [x] T061 [US3] Crear la plantilla `panel.templ` con filtros y acciones masivas
+- [x] T062 [US3] Crear la plantilla `indicador.templ` y su actualización HTMX
+- [x] T063 [US3] Implementar el contador de nuevas por destinatario en `internal/alertas/repositorio_alertas.go`
+- [x] T064 [US3] Auditar `marcar_vista` y `marcar_vistas`
 - [ ] T065 [US3] Escribir pruebas de manejadores del panel en `pruebas/manejadores/alertas_panel_test.go`
 - [ ] T066 [US3] Escribir la prueba E2E de panel, filtros y lectura en `pruebas/e2e/alertas_panel_test.spec.ts`
 

@@ -398,3 +398,27 @@ func (q *Queries) ListarAlumnosPorIDs(ctx context.Context, dollar_1 []int64) ([]
 	}
 	return items, nil
 }
+
+const seccionDeAlumnoEnFecha = `-- name: SeccionDeAlumnoEnFecha :one
+SELECT h.seccion_id
+FROM historial_secciones h
+JOIN alumnos a ON a.id = h.alumno_id
+WHERE h.alumno_id = $1
+  AND a.estado = 'activo'
+  AND h.fecha_inicio <= $2
+  AND (h.fecha_fin IS NULL OR h.fecha_fin > $2)
+ORDER BY h.fecha_inicio DESC
+LIMIT 1
+`
+
+type SeccionDeAlumnoEnFechaParams struct {
+	AlumnoID    int64
+	FechaInicio pgtype.Date
+}
+
+func (q *Queries) SeccionDeAlumnoEnFecha(ctx context.Context, arg SeccionDeAlumnoEnFechaParams) (int64, error) {
+	row := q.db.QueryRow(ctx, seccionDeAlumnoEnFecha, arg.AlumnoID, arg.FechaInicio)
+	var seccion_id int64
+	err := row.Scan(&seccion_id)
+	return seccion_id, err
+}

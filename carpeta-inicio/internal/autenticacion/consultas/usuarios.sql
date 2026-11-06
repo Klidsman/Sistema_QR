@@ -8,6 +8,14 @@ SELECT id, correo, nombre_completo, rol, activo
 FROM usuarios
 WHERE id = $1;
 
+-- name: BuscarAdministradorActivo :one
+SELECT id
+FROM usuarios
+WHERE rol = 'administrador'
+  AND activo
+ORDER BY id
+LIMIT 1;
+
 -- name: ListarDocentes :many
 SELECT id, correo, nombre_completo, rol, activo
 FROM usuarios

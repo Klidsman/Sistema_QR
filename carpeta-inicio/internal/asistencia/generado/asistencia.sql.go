@@ -107,6 +107,27 @@ func (q *Queries) CerrarAsignacion(ctx context.Context, arg CerrarAsignacionPara
 	return result.RowsAffected(), nil
 }
 
+const contarTardanzasAlumnoRango = `-- name: ContarTardanzasAlumnoRango :one
+SELECT count(*)
+FROM marcaciones
+WHERE alumno_id = $1
+  AND fecha BETWEEN $2 AND $3
+  AND estado IN ('tardanza', 'tardanza_grave')
+`
+
+type ContarTardanzasAlumnoRangoParams struct {
+	AlumnoID int64
+	Fecha    pgtype.Date
+	Fecha_2  pgtype.Date
+}
+
+func (q *Queries) ContarTardanzasAlumnoRango(ctx context.Context, arg ContarTardanzasAlumnoRangoParams) (int64, error) {
+	row := q.db.QueryRow(ctx, contarTardanzasAlumnoRango, arg.AlumnoID, arg.Fecha, arg.Fecha_2)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const corregirRegistro = `-- name: CorregirRegistro :one
 UPDATE registros_docente
 SET estado = $2,
@@ -195,6 +216,24 @@ func (q *Queries) DocenteAsignadoAClase(ctx context.Context, arg DocenteAsignado
 		arg.SeccionID,
 		arg.FechaInicio,
 	)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const existeMarcacion = `-- name: ExisteMarcacion :one
+SELECT EXISTS (
+    SELECT 1 FROM marcaciones WHERE alumno_id = $1 AND fecha = $2
+)
+`
+
+type ExisteMarcacionParams struct {
+	AlumnoID int64
+	Fecha    pgtype.Date
+}
+
+func (q *Queries) ExisteMarcacion(ctx context.Context, arg ExisteMarcacionParams) (bool, error) {
+	row := q.db.QueryRow(ctx, existeMarcacion, arg.AlumnoID, arg.Fecha)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
@@ -353,6 +392,79 @@ func (q *Queries) ListarAsignacionesPorDocenteFecha(ctx context.Context, arg Lis
 	return items, nil
 }
 
+const listarDocentesDeSeccionFecha = `-- name: ListarDocentesDeSeccionFecha :many
+SELECT DISTINCT docente_id
+FROM asignaciones_docente
+WHERE seccion_id = $1
+  AND fecha_inicio <= $2
+  AND (fecha_fin IS NULL OR fecha_fin >= $2)
+`
+
+type ListarDocentesDeSeccionFechaParams struct {
+	SeccionID   int64
+	FechaInicio pgtype.Date
+}
+
+func (q *Queries) ListarDocentesDeSeccionFecha(ctx context.Context, arg ListarDocentesDeSeccionFechaParams) ([]int64, error) {
+	rows, err := q.db.Query(ctx, listarDocentesDeSeccionFecha, arg.SeccionID, arg.FechaInicio)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int64
+	for rows.Next() {
+		var docente_id int64
+		if err := rows.Scan(&docente_id); err != nil {
+			return nil, err
+		}
+		items = append(items, docente_id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarMarcacionesDelRango = `-- name: ListarMarcacionesDelRango :many
+SELECT id, alumno_id, fecha, hora, estado, creada_en, registrada_por
+FROM marcaciones
+WHERE fecha BETWEEN $1 AND $2
+ORDER BY fecha, hora
+`
+
+type ListarMarcacionesDelRangoParams struct {
+	Fecha   pgtype.Date
+	Fecha_2 pgtype.Date
+}
+
+func (q *Queries) ListarMarcacionesDelRango(ctx context.Context, arg ListarMarcacionesDelRangoParams) ([]Marcacione, error) {
+	rows, err := q.db.Query(ctx, listarMarcacionesDelRango, arg.Fecha, arg.Fecha_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Marcacione
+	for rows.Next() {
+		var i Marcacione
+		if err := rows.Scan(
+			&i.ID,
+			&i.AlumnoID,
+			&i.Fecha,
+			&i.Hora,
+			&i.Estado,
+			&i.CreadaEn,
+			&i.RegistradaPor,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listarMarcacionesPorFechaYAlumnos = `-- name: ListarMarcacionesPorFechaYAlumnos :many
 SELECT id, alumno_id, fecha, hora, estado, creada_en
 FROM marcaciones
@@ -365,15 +477,24 @@ type ListarMarcacionesPorFechaYAlumnosParams struct {
 	Column2 []int64
 }
 
-func (q *Queries) ListarMarcacionesPorFechaYAlumnos(ctx context.Context, arg ListarMarcacionesPorFechaYAlumnosParams) ([]Marcacione, error) {
+type ListarMarcacionesPorFechaYAlumnosRow struct {
+	ID       int64
+	AlumnoID int64
+	Fecha    pgtype.Date
+	Hora     pgtype.Timestamptz
+	Estado   string
+	CreadaEn pgtype.Timestamptz
+}
+
+func (q *Queries) ListarMarcacionesPorFechaYAlumnos(ctx context.Context, arg ListarMarcacionesPorFechaYAlumnosParams) ([]ListarMarcacionesPorFechaYAlumnosRow, error) {
 	rows, err := q.db.Query(ctx, listarMarcacionesPorFechaYAlumnos, arg.Fecha, arg.Column2)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Marcacione
+	var items []ListarMarcacionesPorFechaYAlumnosRow
 	for rows.Next() {
-		var i Marcacione
+		var i ListarMarcacionesPorFechaYAlumnosRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.AlumnoID,
@@ -405,15 +526,24 @@ type ListarMarcacionesPorRangoYAlumnosParams struct {
 	Column3 []int64
 }
 
-func (q *Queries) ListarMarcacionesPorRangoYAlumnos(ctx context.Context, arg ListarMarcacionesPorRangoYAlumnosParams) ([]Marcacione, error) {
+type ListarMarcacionesPorRangoYAlumnosRow struct {
+	ID       int64
+	AlumnoID int64
+	Fecha    pgtype.Date
+	Hora     pgtype.Timestamptz
+	Estado   string
+	CreadaEn pgtype.Timestamptz
+}
+
+func (q *Queries) ListarMarcacionesPorRangoYAlumnos(ctx context.Context, arg ListarMarcacionesPorRangoYAlumnosParams) ([]ListarMarcacionesPorRangoYAlumnosRow, error) {
 	rows, err := q.db.Query(ctx, listarMarcacionesPorRangoYAlumnos, arg.Fecha, arg.Fecha_2, arg.Column3)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Marcacione
+	var items []ListarMarcacionesPorRangoYAlumnosRow
 	for rows.Next() {
-		var i Marcacione
+		var i ListarMarcacionesPorRangoYAlumnosRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.AlumnoID,

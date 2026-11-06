@@ -17,6 +17,11 @@ documentación deben usar estos términos (constitución, principio IX).
 | teacher-course-section assignment | asignacion_docente | Vínculo con vigencia entre docente, curso y sección |
 | edition window | plazo_edicion | Horas durante las que el docente puede corregir su registro |
 | attendance difference | diferencia | Discrepancia informativa entre la marcación QR y el registro del docente |
+| alert | alerta | Aviso interno generado por una situación de asistencia |
+| tardiness recurrence | reiteracion_tardanzas | Alerta al alcanzar el umbral mensual de tardanzas |
+| consecutive absences | faltas_seguidas | Días laborables consecutivos sin marcación oficial |
+| changed situation | situacion_cambiada | Marca de una alerta cuya causa fue corregida o justificada |
+| alert close | cierre_alerta | Registro de la evaluación diaria de ausencias por turno |
 | on time | puntual | Ingreso dentro de la tolerancia |
 | late | tardanza | Ingreso después de la tolerancia y antes del límite |
 | late, severe | tardanza_grave | Ingreso después del límite de tardanza |

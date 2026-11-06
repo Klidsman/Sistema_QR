@@ -17,8 +17,8 @@ func TestMigraciones_SubenYBajanTodasLasVersiones(t *testing.T) {
 
 	assert.True(t, existeTabla(t, pool, "alumnos"), "las migraciones deben crear la tabla alumnos")
 
-	for i := 0; i < 22; i++ {
-		require.NoError(t, migraciones.Bajar(url), "revirtiendo la migración %d", 22-i)
+	for i := 0; i < 27; i++ {
+		require.NoError(t, migraciones.Bajar(url), "revirtiendo la migración %d", 27-i)
 	}
 	assert.False(t, existeTabla(t, pool, "alumnos"), "al revertir todo no debe quedar la tabla alumnos")
 	assert.False(t, existeTabla(t, pool, "anios_escolares"), "al revertir todo no debe quedar la tabla de años")
@@ -30,11 +30,13 @@ func TestMigraciones_SubenYBajanTodasLasVersiones(t *testing.T) {
 	assert.True(t, existeTabla(t, pool, "umbrales_alerta"))
 	assert.True(t, existeTabla(t, pool, "parametros_asistencia"))
 	assert.True(t, existeTabla(t, pool, "registros_docente"))
+	assert.True(t, existeTabla(t, pool, "alertas"))
+	assert.True(t, existeTabla(t, pool, "cierres_alerta"))
 
 	var version int64
 	require.NoError(t, pool.QueryRow(ctx,
 		`SELECT max(version_id) FROM goose_db_version`).Scan(&version))
-	assert.Equal(t, int64(22), version)
+	assert.Equal(t, int64(27), version)
 }
 
 func existeTabla(t *testing.T, pool *pgxpool.Pool, nombre string) bool {

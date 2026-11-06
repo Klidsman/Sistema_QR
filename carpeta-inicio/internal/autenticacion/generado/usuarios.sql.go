@@ -29,6 +29,22 @@ func (q *Queries) ActualizarClaveDocente(ctx context.Context, arg ActualizarClav
 	return result.RowsAffected(), nil
 }
 
+const buscarAdministradorActivo = `-- name: BuscarAdministradorActivo :one
+SELECT id
+FROM usuarios
+WHERE rol = 'administrador'
+  AND activo
+ORDER BY id
+LIMIT 1
+`
+
+func (q *Queries) BuscarAdministradorActivo(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, buscarAdministradorActivo)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const buscarUsuarioPorCorreo = `-- name: BuscarUsuarioPorCorreo :one
 SELECT id, correo, contrasenia_hash, nombre_completo, rol, activo
 FROM usuarios

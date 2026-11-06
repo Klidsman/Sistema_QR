@@ -33,6 +33,14 @@ sql:
         out: "internal/plataforma/intermediarios/generado"
         sql_package: "pgx/v5"
   - engine: "postgresql"
+    queries: "internal/alertas/consultas"
+    schema: "migraciones"
+    gen:
+      go:
+        package: "generado"
+        out: "internal/alertas/generado"
+        sql_package: "pgx/v5"
+  - engine: "postgresql"
     queries: "internal/asistencia/consultas"
     schema: "migraciones"
     gen:

@@ -122,6 +122,31 @@ FROM marcaciones
 WHERE fecha BETWEEN $1 AND $2
   AND alumno_id = ANY($3::bigint[]);
 
+-- name: ListarMarcacionesDelRango :many
+SELECT id, alumno_id, fecha, hora, estado, creada_en, registrada_por
+FROM marcaciones
+WHERE fecha BETWEEN $1 AND $2
+ORDER BY fecha, hora;
+
+-- name: ContarTardanzasAlumnoRango :one
+SELECT count(*)
+FROM marcaciones
+WHERE alumno_id = $1
+  AND fecha BETWEEN $2 AND $3
+  AND estado IN ('tardanza', 'tardanza_grave');
+
+-- name: ExisteMarcacion :one
+SELECT EXISTS (
+    SELECT 1 FROM marcaciones WHERE alumno_id = $1 AND fecha = $2
+);
+
+-- name: ListarDocentesDeSeccionFecha :many
+SELECT DISTINCT docente_id
+FROM asignaciones_docente
+WHERE seccion_id = $1
+  AND fecha_inicio <= $2
+  AND (fecha_fin IS NULL OR fecha_fin >= $2);
+
 -- name: ObtenerParametrosAsistencia :one
 SELECT plazo_edicion_horas, actualizado_por, actualizado_en
 FROM parametros_asistencia

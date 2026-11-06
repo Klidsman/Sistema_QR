@@ -26,6 +26,11 @@ func (r *Repositorio) BuscarPorID(ctx context.Context, id int64) (generado.Busca
 	return r.consultas.BuscarUsuarioPorID(ctx, id)
 }
 
+// BuscarAdministradorActivo devuelve el primer administrador activo.
+func (r *Repositorio) BuscarAdministradorActivo(ctx context.Context) (int64, error) {
+	return r.consultas.BuscarAdministradorActivo(ctx)
+}
+
 // ListarDocentes devuelve las cuentas con rol docente.
 func (r *Repositorio) ListarDocentes(ctx context.Context) ([]generado.ListarDocentesRow, error) {
 	return r.consultas.ListarDocentes(ctx)

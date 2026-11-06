@@ -64,6 +64,14 @@ func (r *Repositorio) ListarAsignaciones(ctx context.Context) ([]AsignacionDocen
 	return aAsignaciones(filas), nil
 }
 
+// ListarDocentesDeSeccionFecha devuelve los docentes asignados a la sección en la fecha.
+func (r *Repositorio) ListarDocentesDeSeccionFecha(ctx context.Context, seccionID int64, fecha time.Time) ([]int64, error) {
+	return r.consultas.ListarDocentesDeSeccionFecha(ctx, generado.ListarDocentesDeSeccionFechaParams{
+		SeccionID:   seccionID,
+		FechaInicio: pgtype.Date{Time: fecha, Valid: true},
+	})
+}
+
 // DocenteAsignadoAClase indica si el docente puede registrar esa clase en la fecha.
 func (r *Repositorio) DocenteAsignadoAClase(ctx context.Context, docenteID, cursoID, seccionID int64, fecha time.Time) (bool, error) {
 	return r.consultas.DocenteAsignadoAClase(ctx, generado.DocenteAsignadoAClaseParams{

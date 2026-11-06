@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"asistencia/internal/academico"
+	"asistencia/internal/alertas"
 	"asistencia/internal/alumnos"
 	"asistencia/internal/asistencia"
 	"asistencia/internal/autenticacion"
@@ -204,6 +205,23 @@ func servir(cfg configuracion.Configuracion) error {
 		ImportacionMaxFilas: cfg.ImportacionMaxFilas,
 	})
 
+	servicioAlertas := alertas.NuevoServicio(alertas.Dependencias{
+		Asistencia:  servicioAsistencia,
+		Alumnos:     servicioAlumnos,
+		Academico:   servicioConfiguracion,
+		Usuarios:    servicioAuth,
+		Repositorio: alertas.NuevoRepositorio(pool),
+	})
+	manejadorAlertas := alertas.NuevoManejador(alertas.DependenciasManejador{
+		Servicio: servicioAlertas,
+		Sesiones: sesiones,
+		Registro: registrador,
+	})
+	programadorAlertas := alertas.NuevoProgramador(servicioAlertas, registrador, alertas.OpcionesProgramador{})
+	if err := programadorAlertas.Iniciar(ctx); err != nil {
+		return err
+	}
+
 	servidor := &http.Server{
 		Addr: fmt.Sprintf(":%d", cfg.Puerto),
 		Handler: rutas.NuevoEnrutador(rutas.Dependencias{
@@ -213,6 +231,7 @@ func servir(cfg configuracion.Configuracion) error {
 			Alumnos:       manejadorAlumnos,
 			Academico:     manejadorConfiguracion,
 			Asistencia:    manejadorAsistencia,
+			Alertas:       manejadorAlertas,
 		}),
 		ReadHeaderTimeout: tiempoLecturaEncabezados,
 	}

@@ -25,6 +25,11 @@ func (s *Servicio) DocenteActivo(ctx context.Context, docenteID int64) (bool, st
 	return fila.Activo, fila.Rol, nil
 }
 
+// AdministradorActivo devuelve el identificador del administrador de respaldo.
+func (s *Servicio) AdministradorActivo(ctx context.Context) (int64, error) {
+	return s.repositorio.BuscarAdministradorActivo(ctx)
+}
+
 // NombreDocente devuelve el nombre completo de un docente.
 func (s *Servicio) NombreDocente(ctx context.Context, docenteID int64) (string, error) {
 	fila, err := s.repositorio.BuscarPorID(ctx, docenteID)
