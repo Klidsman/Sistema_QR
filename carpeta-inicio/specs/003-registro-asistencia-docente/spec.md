@@ -82,7 +82,7 @@ El docente registra la asistencia por hora de clase. Cada hora de su curso tiene
 - ¿Qué ocurre si el alumno ingresó por QR pero el docente lo marca falta, o al revés? Ambos registros se conservan sin modificarse; el alumno aparece destacado como diferencia en la lista del docente, mostrando el estado del QR y el del docente.
 - ¿Qué ocurre si el docente tiene varios cursos o secciones? Ve cada combinación de curso y sección por separado y registra cada una sin mezclar alumnos ni estados.
 - ¿Qué ocurre si el docente de la sección se reemplaza por un día? El reemplazante registra con su propio usuario; el registro queda asociado al curso, la sección y la fecha, y el reemplazante no conserva acceso después del rango asignado.
-- ¿Qué ocurre si la conexión se corta mientras el docente registra? El registro se guarda en el dispositivo, se muestra como "pendiente de confirmar" y se envía al reconectar. Ningún registro se pierde, y reenviar el mismo registro no crea duplicados.
+- ¿Qué ocurre si la conexión se corta mientras el docente registra? Queda fuera del alcance de esta versión (diferido por decisión). El docente reintenta el envío al recuperar la conexión; la restricción única evita duplicados.
 - ¿Qué ocurre si el docente intenta marcar a todos presentes después de haber corregido alumnos? Solo se marcan los alumnos que aún no tienen registro del docente para ese día, curso y hora de clase; los ya registrados no cambian.
 - ¿Qué ocurre si un alumno fue cambiado de sección durante el año? Los registros de fechas anteriores al cambio permanecen en la sección original. A partir de la fecha del cambio, el alumno aparece en la nueva sección y sus registros se generan allí.
 - ¿Qué ocurre si el alumno se retira o se traslada durante el día? No aparece en la lista para registrar en días posteriores al cambio, pero sus registros anteriores se conservan.
@@ -98,7 +98,7 @@ El docente registra la asistencia por hora de clase. Cada hora de su curso tiene
 - **FR-002**: El sistema MUST permitir registrar para cada alumno uno de cuatro estados: presente, tardanza, falta o falta justificada.
 - **FR-003**: El sistema MUST mostrar, junto a cada alumno de la lista, si ingresó por QR en portería ese día y a qué hora, o indicar que no tiene ingreso por QR.
 - **FR-004**: El registro del docente MUST guardarse por separado del registro de ingreso por QR. Ninguno de los dos MUST sobrescribir al otro.
-- **FR-005**: El sistema MUST NOT destacar diferencias entre el registro del docente y el ingreso por QR en la lista del docente.
+- **FR-005**: El sistema MUST destacar como información las diferencias entre el registro del docente y el ingreso por QR en la lista del docente, sin modificar el registro oficial del QR.
 - **FR-006**: El docente MUST poder agregar una observación de texto por alumno y por registro. La observación MUST tener una longitud máxima de 300 caracteres.
 - **FR-007**: El sistema MUST ofrecer la acción "Marcar a todos presentes", que aplica solo a los alumnos que aún no tienen registro del docente para esa fecha, curso y hora de clase.
 - **FR-008**: Un alumno MUST tener como máximo un registro del docente por fecha, curso y hora de clase.
@@ -110,8 +110,8 @@ El docente registra la asistencia por hora de clase. Cada hora de su curso tiene
 - **FR-014**: Un docente asignado a varios cursos o secciones MUST poder ver y registrar en todos ellos, cada uno por separado.
 - **FR-015**: Una asignación de reemplazo MUST dar acceso al curso y la sección solo durante su rango de fechas. Terminado el rango, el acceso MUST cesar automáticamente.
 - **FR-016**: Cada registro del docente MUST guardar el usuario que lo creó, aun cuando fue un reemplazante, de forma que la responsabilidad del registro sea trazable.
-- **FR-017**: El registro MUST guardarse en el dispositivo cuando la conexión falla, mostrar su estado como "pendiente de confirmar" y enviarse al servidor al recuperar la conexión, sin pérdida de datos.
-- **FR-018**: El envío de un registro pendiente MUST ser idempotente: reenviar el mismo registro MUST NOT crear duplicados.
+- **FR-017**: Diferido. El registro sin conexión (PWA con IndexedDB y sincronización) se tratará en una feature posterior, conforme al principio III de la constitución. En esta versión el registro requiere conexión.
+- **FR-018**: Diferido junto con FR-017. El guardado en el servidor seguirá siendo idempotente por la restricción única de la base de datos.
 - **FR-019**: Cuando un alumno cambia de sección, los registros de fechas anteriores al cambio MUST permanecer asociados a la sección original, y los registros desde la fecha del cambio MUST asociarse a la nueva.
 - **FR-020**: Un alumno retirado o trasladado MUST NOT aparecer en la lista para registrar en fechas posteriores a su salida, sin perder los registros anteriores.
 - **FR-021**: En días marcados como no laborables o feriados para la sección, el sistema MUST NOT solicitar registro ni generar faltas, según la configuración académica.
@@ -119,7 +119,10 @@ El docente registra la asistencia por hora de clase. Cada hora de su curso tiene
 - **FR-023**: El registro oficial de asistencia es el ingreso por QR en la puerta principal. El registro del docente no es asistencia oficial ni se usa para calcular estados oficiales. Sirve solo para facilitar su registro manual y exportar un reporte.
 - **FR-024**: El docente MUST registrar únicamente la asistencia de alumnos. El sistema MUST NOT ofrecer registro de asistencia de docentes ni de auxiliares.
 - **FR-025**: El rol Director MUST poder consultar los registros del docente, sin poder modificarlos.
-- **FR-026**: El docente MUST poder exportar el registro de sus cursos y secciones, por fecha o rango de fechas, a un archivo descargable.
+- **FR-026**: El docente MUST poder exportar el registro de sus cursos y secciones, por fecha o rango de fechas, a un archivo descargable en formato CSV.
+- **FR-027**: El administrador MUST poder crear cuentas de docente con nombre, correo y contraseña, listarlas y restablecer su contraseña. Los docentes no se eliminan: se desactivan.
+- **FR-028**: El administrador MUST poder configurar el plazo de edición del docente en horas, como parámetro de la configuración académica. El valor inicial es 24 horas y el rango permitido es de 1 a 168 horas.
+- **FR-029**: La feature MUST crear y leer la tabla de marcaciones de ingreso por QR. La pantalla de portería y el escaneo quedan para una feature posterior; esta feature solo consulta las marcaciones existentes.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -128,6 +131,8 @@ El docente registra la asistencia por hora de clase. Cada hora de su curso tiene
 - **Registro de ingreso por QR**: Ingreso registrado en portería. Es independiente del registro del docente; esta feature solo lo consulta y lo contrasta.
 - **Corrección de registro**: Cambio posterior a la creación de un registro del docente. Atributos: usuario, fecha y hora, valor anterior, valor nuevo y motivo cuando corresponde.
 - **Diferencia de asistencia**: Situación en la que el estado del docente y el estado del QR no coinciden para un alumno en una fecha. Se deriva de los dos registros y no se almacena como dato independiente.
+- **Docente**: cuenta de usuario con rol `docente`, con nombre, correo, contraseña y estado activo.
+- **Marcación QR**: ingreso oficial registrado en portería para un alumno en una fecha, con hora y estado de puntualidad. Esta feature solo la consulta.
 
 ## Success Criteria *(mandatory)*
 
@@ -135,14 +140,16 @@ El docente registra la asistencia por hora de clase. Cada hora de su curso tiene
 
 - **SC-001**: Un docente registra la asistencia de un salón de 40 alumnos en menos de 2 minutos, usando "Marcar a todos presentes" y corrigiendo solo las excepciones.
 - **SC-002**: El 100% de las diferencias entre el registro del docente y el del QR se muestra destacada en la lista, verificado en pruebas de aceptación.
-- **SC-003**: El 100% de los registros hechos con la conexión interrumpida se conserva y se confirma al recuperarla, sin duplicados, verificado en pruebas de desconexión.
+- **SC-003**: El 100% de los envíos repetidos del mismo registro no crea duplicados, verificado en pruebas de idempotencia.
 - **SC-004**: El 100% de las modificaciones posteriores al plazo de edición requiere intervención del administrador y un motivo registrado.
 - **SC-005**: Un docente nunca ve ni registra alumnos de cursos y secciones a los que no está asignado en la fecha consultada, verificado en pruebas de acceso.
 - **SC-006**: El acceso de un reemplazante cesa automáticamente al terminar su rango de fechas, sin intervención manual.
 
 ## Assumptions
 
-- El plazo de edición del docente es un parámetro de la configuración académica (feature 002), con valor inicial de 24 horas. Esta feature asume que el administrador puede ajustarlo; la pantalla de configuración de 002 deberá incluirlo.
+- El plazo de edición del docente es un parámetro que esta feature agrega a la configuración académica, con valor inicial de 24 horas y rango de 1 a 168. El administrador lo ajusta desde `/configuracion/asistencia`.
+- Las cuentas de docente se crean y administran en esta feature, porque las asignaciones necesitan usuarios con rol `docente`. La gestión de datos laborales o contractuales queda fuera de alcance.
+- El modo sin conexión (FR-017 y FR-018) queda diferido a una feature posterior por decisión de alcance y por el principio III de la constitución.
 - El docente solo registra asistencia de alumnos de cursos y secciones asignados; no existe registro de asistencia de docentes en el sistema.
 - El Director puede consultar los registros del docente y las diferencias con el QR, pero no modificarlos. Esta regla se toma del rol descrito en la funcionalidad de alumnos.
 - La "falta justificada" es un estado más, sin adjuntar documentos de justificación en esta versión.
