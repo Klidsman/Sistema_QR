@@ -10,9 +10,9 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Recibir alerta diaria por tardanza (Priority: P1)
+### User Story 1 - Recibir alerta de tardanza en portería (Priority: P1)
 
-El portero recibe, dentro del sistema, una alerta cuando un ingreso por QR que él registra corresponde a una tardanza. Ningún docente recibe alerta diaria por inasistencia: las faltas del día quedan en los reportes y cuentan para las reiteraciones. Las alertas aparecen en un indicador visible con la cantidad de alertas nuevas y en el panel de alertas.
+El portero recibe, dentro del sistema, una alerta cuando un ingreso por QR que él registra corresponde a una tardanza. Ningún docente recibe alerta diaria por tardanza ni por inasistencia: las faltas del día quedan en los reportes y cuentan para las reiteraciones. Las alertas aparecen en un indicador visible con la cantidad de alertas nuevas y en el panel de alertas del portero.
 
 **Why this priority**: Es la necesidad principal: que el docente se entere del hecho del día sin tener que revisar la lista alumno por alumno.
 
@@ -100,7 +100,7 @@ El administrador define los umbrales de reiteración: número de tardanzas por m
 - **FR-005**: El sistema MUST generar una alerta de tipo "reiteración por faltas seguidas" cuando un alumno acumula el número configurado de faltas injustificadas consecutivas. Las faltas justificadas no cuentan para este umbral ni cortan la racha.
 - **FR-006**: El sistema MUST NOT generar alertas por diferencias entre el registro del docente y el ingreso por QR. El registro del docente es personal y no es asistencia oficial.
 - **FR-007**: El sistema MUST NOT generar más de una alerta por la misma situación. Una situación se identifica por el tipo, el alumno, la fecha y la sesión (o, para reiteraciones, el mes y el umbral).
-- **FR-008**: Cada alerta de reiteración MUST llegar solo a la cuenta del docente asignado al alumno en la fecha del evento, según la asignación de curso y sección vigente. Cada docente recibe sus alertas en su propia cuenta; no existen buzones compartidos por sección. Las alertas de tardanza por QR se rigen por FR-001.
+- **FR-008**: Cada alerta de reiteración MUST llegar a la cuenta de cada docente con una asignación vigente a la sección del alumno en la fecha del evento. Cada docente recibe sus alertas en su propia cuenta; no existen buzones compartidos por sección. Si hay varios docentes asignados a la sección, todos reciben su propia alerta. Las alertas de tardanza por QR se rigen por FR-001.
 - **FR-009**: Si la sección no tiene docente o tutor asignado en la fecha del evento, la alerta MUST dirigirse al administrador, marcada como "sin responsable asignado".
 - **FR-010**: El sistema MUST marcar cada alerta como "nueva" al generarse y como "vista" cuando el destinatario la marca como vista. Registrar el momento y el usuario de la lectura.
 - **FR-011**: El docente o tutor MUST poder marcar una o varias alertas como vistas, incluidas todas las del listado filtrado.
@@ -129,7 +129,7 @@ El administrador define los umbrales de reiteración: número de tardanzas por m
 ### Measurable Outcomes
 
 - **SC-001**: El 100% de las tardanzas oficiales por QR genera una alerta al portero que registró el ingreso, y ninguna falta injustificada oficial genera alerta diaria a un docente, verificado en pruebas de aceptación.
-- **SC-002**: Las alertas de tardanza aparecen para el docente en menos de 1 minuto desde el registro, y las de inasistencia en menos de 1 minuto después del cierre de la sesión.
+- **SC-002**: Las alertas de tardanza aparecen para el portero en menos de 1 minuto desde el registro. No existen alertas diarias de inasistencia.
 - **SC-003**: En el conjunto de pruebas, ninguna situación genera más de una alerta.
 - **SC-004**: El 100% de los casos en que un alumno cruza un umbral genera la alerta de reiteración correspondiente, incluidos los que ocurren el último día del mes.
 - **SC-005**: Un docente nunca ve alertas de secciones a las que no estuvo asignado en la fecha del evento, verificado en pruebas de acceso.
@@ -142,7 +142,8 @@ El administrador define los umbrales de reiteración: número de tardanzas por m
 - El portero que recibe la alerta de tardanza es el que registró el ingreso por QR. Si el colegio quiere que todos los porteros de turno la vean, debe confirmarse.
 - Las inasistencias diarias no generan alerta a ningún docente. Quedan en los reportes de la feature 006 y cuentan para la reiteración por faltas seguidas.
 - "Tutor" es un docente asignado a una sección con ese rol; no existe un perfil separado. Si el colegio tiene un tutor distinto al docente de sección, deberá registrarse como asignación con ese rol (ver 003).
-- Los umbrales de reiteración iniciales son definidos por el administrador en la configuración académica (feature 002). La feature 002 contempla umbrales mensuales de tardanzas y faltas; el umbral de faltas seguidas debe agregarse allí, lo cual queda como pendiente de esa feature.
+- Los umbrales de reiteración iniciales los define el administrador. La feature 002 ya aporta el umbral mensual de tardanzas; esta feature agrega el tipo `faltas_seguidas` a la misma tabla y pantalla de umbrales.
+- La justificación de faltas pertenece a la feature 005. Mientras no exista, el cálculo de faltas seguidas considera injustificadas todas las ausencias oficiales; la interfaz de integración queda preparada para excluir justificadas cuando la 005 esté disponible.
 - El Director no recibe alertas en esta versión. Solo consulta según su rol general; si se requiere que el director vea alertas, deberá agregarse en una enmienda.
 - Las alertas son internas al sistema, sin notificaciones push ni correo; el docente las ve al ingresar al panel o en el indicador.
 - La retención de alertas dura el año escolar activo y se conserva en el historial del año cerrado.
