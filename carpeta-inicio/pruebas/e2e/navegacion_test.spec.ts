@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { ingresarComoAdministrador } from './ayudas';
+import { identificadorUnico, ingresarComoAdministrador } from './ayudas';
 
 test.describe('Navegación principal', () => {
   test('el menú lleva a las pantallas sin editar la URL', async ({ page }) => {
@@ -28,5 +28,31 @@ test.describe('Navegación principal', () => {
 
     await navegacion.getByRole('link', { name: 'Alumnos', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Alumnos' })).toBeVisible();
+  });
+
+  test('al cambiar de administrador a docente llega al inicio docente', async ({ page }) => {
+    const sufijo = identificadorUnico();
+    const correo = `docente${sufijo}@colegio.pe`;
+    const clave = 'clave-docente-2026';
+
+    await ingresarComoAdministrador(page);
+    await page.goto('/docentes');
+    await page.getByLabel('Nombre completo *').fill(`Docente ${sufijo}`);
+    await page.getByLabel('Correo *').fill(correo);
+    await page.getByLabel('Contraseña *').fill(clave);
+    await page.getByRole('button', { name: 'Crear docente' }).click();
+    await expect(page.getByText('La cuenta de docente se creó correctamente.')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Salir' }).click();
+    await expect(page).toHaveURL(/\/ingreso$/);
+
+    await page.getByLabel('Correo').fill(correo);
+    await page.getByLabel('Contraseña').fill(clave);
+    await page.getByRole('button', { name: 'Ingresar' }).click();
+    await expect(page).toHaveURL(/\/asistencia$/);
+
+    await page.goto('/alumnos');
+    await expect(page.getByRole('heading', { name: 'Acceso no permitido' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Volver a mi inicio' })).toHaveAttribute('href', '/asistencia');
   });
 });

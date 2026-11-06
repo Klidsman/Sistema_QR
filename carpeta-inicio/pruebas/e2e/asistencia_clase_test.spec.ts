@@ -91,7 +91,7 @@ test.describe('Registro de asistencia del docente', () => {
     await page.getByLabel('Correo').fill(correoDocente);
     await page.getByLabel('Contraseña').fill(claveDocente);
     await page.getByRole('button', { name: 'Ingresar' }).click();
-    await expect(page).toHaveURL(/\/alumnos$/);
+    await expect(page).toHaveURL(/\/asistencia$/);
 
     await page.goto('/asistencia');
     await page.locator('a', { hasText: 'bloque 1' }).first().click();

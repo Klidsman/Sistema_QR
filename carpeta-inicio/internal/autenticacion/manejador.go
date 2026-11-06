@@ -98,7 +98,12 @@ func (m *Manejador) procesarIngreso(respuesta http.ResponseWriter, peticion *htt
 		return
 	}
 	m.registro.Info("ingreso correcto", "usuario_id", usuario.ID, "rol", usuario.Rol)
-	http.Redirect(respuesta, peticion, "/alumnos", http.StatusSeeOther)
+	destino := intermediarios.RutaInicioPorRol(usuario.Rol)
+	if retorno := intermediarios.UrlRetorno(peticion.Context(), m.sesiones); retorno != "" &&
+		intermediarios.RutaPermitidaParaRol(usuario.Rol, retorno) {
+		destino = retorno
+	}
+	http.Redirect(respuesta, peticion, destino, http.StatusSeeOther)
 }
 
 func (m *Manejador) salir(respuesta http.ResponseWriter, peticion *http.Request) {
