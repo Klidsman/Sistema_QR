@@ -32,6 +32,7 @@ import (
 	"asistencia/internal/plataforma/registro"
 	"asistencia/internal/plataforma/rutas"
 	"asistencia/internal/plataforma/semilla"
+	"asistencia/internal/porteria"
 	"asistencia/migraciones"
 )
 
@@ -222,6 +223,18 @@ func servir(cfg configuracion.Configuracion) error {
 		return err
 	}
 
+	servicioPorteria := porteria.NuevoServicio(porteria.Dependencias{
+		Alumnos:     servicioAlumnos,
+		Academico:   servicioConfiguracion,
+		Marcaciones: servicioAsistencia,
+		Alertas:     servicioAlertas,
+	})
+	manejadorPorteria := porteria.NuevoManejador(porteria.DependenciasManejador{
+		Servicio: servicioPorteria,
+		Sesiones: sesiones,
+		Registro: registrador,
+	})
+
 	servidor := &http.Server{
 		Addr: fmt.Sprintf(":%d", cfg.Puerto),
 		Handler: rutas.NuevoEnrutador(rutas.Dependencias{
@@ -232,6 +245,7 @@ func servir(cfg configuracion.Configuracion) error {
 			Academico:     manejadorConfiguracion,
 			Asistencia:    manejadorAsistencia,
 			Alertas:       manejadorAlertas,
+			Porteria:      manejadorPorteria,
 		}),
 		ReadHeaderTimeout: tiempoLecturaEncabezados,
 	}

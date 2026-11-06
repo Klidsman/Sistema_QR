@@ -8,7 +8,7 @@ test.describe('Historia 3: panel de alertas', () => {
     await page.goto('/alertas');
 
     await expect(page.getByRole('heading', { name: 'Alertas', exact: true })).toBeVisible();
-    await expect(page.getByText('Alertas nuevas')).toBeVisible();
+    await expect(page.getByRole('main').getByText('Alertas nuevas')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Filtrar' })).toBeVisible();
 
     await page.getByLabel('Tipo').selectOption({ label: 'Faltas seguidas' });

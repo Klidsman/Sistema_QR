@@ -122,6 +122,12 @@ FROM marcaciones
 WHERE fecha BETWEEN $1 AND $2
   AND alumno_id = ANY($3::bigint[]);
 
+-- name: CrearMarcacionPorteria :one
+INSERT INTO marcaciones (alumno_id, fecha, hora, estado, registrada_por)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (alumno_id, fecha) DO NOTHING
+RETURNING id;
+
 -- name: ListarMarcacionesDelRango :many
 SELECT id, alumno_id, fecha, hora, estado, creada_en, registrada_por
 FROM marcaciones

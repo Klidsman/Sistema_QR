@@ -8,6 +8,19 @@ WHERE al.estado = 'activo'
   AND (h.fecha_fin IS NULL OR h.fecha_fin > $2)
 ORDER BY al.apellidos, al.nombres;
 
+-- name: AlumnoPorTokenQR :one
+SELECT a.id, a.identificador, a.nombres, a.apellidos, h.seccion_id
+FROM credenciales_qr c
+JOIN alumnos a ON a.id = c.alumno_id
+JOIN historial_secciones h ON h.alumno_id = a.id
+WHERE c.token = $1
+  AND c.estado = 'activa'
+  AND a.estado = 'activo'
+  AND h.fecha_inicio <= $2
+  AND (h.fecha_fin IS NULL OR h.fecha_fin > $2)
+ORDER BY h.fecha_inicio DESC
+LIMIT 1;
+
 -- name: SeccionDeAlumnoEnFecha :one
 SELECT h.seccion_id
 FROM historial_secciones h

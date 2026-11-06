@@ -32,6 +32,9 @@ templ BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) {
 					<a href="/alumnos" class="text-lg font-semibold text-blue-800">Asistencia</a>
 					<div class="flex items-center gap-4 text-sm">
 						<span class="text-slate-600">{ nombre } · { rol }</span>
+						if rol == "administrador" || rol == "porteria" {
+							<a href="/porteria" class="font-medium text-blue-700">Portería</a>
+						}
 						if rol == "administrador" || rol == "docente" || rol == "porteria" {
 							<a id="indicador-alertas"
 								href="/alertas"

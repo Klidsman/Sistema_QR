@@ -8,6 +8,11 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// TurnoDeSeccion devuelve el turno vigente de una sección en la fecha.
+func (s *ServicioConfiguracion) TurnoDeSeccion(ctx context.Context, seccionID int64, fecha time.Time) (string, error) {
+	return s.repositorio.TurnoVigenteSeccion(ctx, seccionID, fecha)
+}
+
 // SeccionesActivas expone las secciones activas para el módulo de alertas.
 func (s *ServicioConfiguracion) SeccionesActivas(ctx context.Context) ([]Seccion, error) {
 	return s.ListarSeccionesActivas(ctx)

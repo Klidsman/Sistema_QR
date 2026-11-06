@@ -44,6 +44,27 @@ func (s *Servicio) AlumnoPorID(ctx context.Context, alumnoID int64) (alertas.Alu
 	}, nil
 }
 
+// AlumnoPorToken devuelve el alumno activo con credencial QR vigente en la fecha.
+func (s *Servicio) AlumnoPorToken(ctx context.Context, token string, fecha time.Time) (Alumno, error) {
+	fila, err := s.repositorio.consultas.AlumnoPorTokenQR(ctx, generado.AlumnoPorTokenQRParams{
+		Token:       token,
+		FechaInicio: pgtype.Date{Time: fecha, Valid: true},
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Alumno{}, ErrAlumnoNoEncontrado
+	}
+	if err != nil {
+		return Alumno{}, err
+	}
+	return Alumno{
+		ID:            fila.ID,
+		Identificador: fila.Identificador,
+		Nombres:       fila.Nombres,
+		Apellidos:     fila.Apellidos,
+		SeccionID:     fila.SeccionID,
+	}, nil
+}
+
 // SeccionDeAlumnoEnFecha devuelve la sección del alumno activo en la fecha, o cero.
 func (s *Servicio) SeccionDeAlumnoEnFecha(ctx context.Context, alumnoID int64, fecha time.Time) (int64, error) {
 	seccionID, err := s.repositorio.consultas.SeccionDeAlumnoEnFecha(ctx, generado.SeccionDeAlumnoEnFechaParams{

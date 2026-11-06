@@ -738,6 +738,7 @@ func aCredencialVista(credencial *CredencialQR) *vista.Credencial {
 	return &vista.Credencial{
 		Estado:    credencial.Estado,
 		EmitidaEn: fechas.Formatear(credencial.EmitidaEn),
+		Token:     credencial.Token,
 	}
 }
 

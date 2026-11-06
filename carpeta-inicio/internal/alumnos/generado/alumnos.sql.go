@@ -66,6 +66,46 @@ func (q *Queries) ActualizarFotoAlumno(ctx context.Context, arg ActualizarFotoAl
 	return err
 }
 
+const alumnoPorTokenQR = `-- name: AlumnoPorTokenQR :one
+SELECT a.id, a.identificador, a.nombres, a.apellidos, h.seccion_id
+FROM credenciales_qr c
+JOIN alumnos a ON a.id = c.alumno_id
+JOIN historial_secciones h ON h.alumno_id = a.id
+WHERE c.token = $1
+  AND c.estado = 'activa'
+  AND a.estado = 'activo'
+  AND h.fecha_inicio <= $2
+  AND (h.fecha_fin IS NULL OR h.fecha_fin > $2)
+ORDER BY h.fecha_inicio DESC
+LIMIT 1
+`
+
+type AlumnoPorTokenQRParams struct {
+	Token       string
+	FechaInicio pgtype.Date
+}
+
+type AlumnoPorTokenQRRow struct {
+	ID            int64
+	Identificador string
+	Nombres       string
+	Apellidos     string
+	SeccionID     int64
+}
+
+func (q *Queries) AlumnoPorTokenQR(ctx context.Context, arg AlumnoPorTokenQRParams) (AlumnoPorTokenQRRow, error) {
+	row := q.db.QueryRow(ctx, alumnoPorTokenQR, arg.Token, arg.FechaInicio)
+	var i AlumnoPorTokenQRRow
+	err := row.Scan(
+		&i.ID,
+		&i.Identificador,
+		&i.Nombres,
+		&i.Apellidos,
+		&i.SeccionID,
+	)
+	return i, err
+}
+
 const buscarAlumnoPorID = `-- name: BuscarAlumnoPorID :one
 SELECT a.id,
        a.identificador,

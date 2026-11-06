@@ -6,6 +6,31 @@
 2. Ingresar con el correo y la contraseña asignados por el administrador.
 3. Si aparece un error de credenciales, verificar mayúsculas y consultar al administrador.
 
+## Registrar un ingreso
+
+1. Abrir `/porteria`.
+2. Escanear el QR del carné con la cámara o pegar su contenido en **Código QR**.
+3. Presionar **Registrar ingreso**.
+
+La pantalla muestra el nombre del alumno, su sección, la hora y el estado: **Puntual**,
+**Tardanza** o **Tardanza grave**. Si el escaneo se rechaza, se muestra el motivo y se puede
+reintentar.
+
+Rechazos frecuentes:
+
+| Mensaje | Causa |
+|---|---|
+| El código QR no es válido. | Token inexistente, revocado o alumno inactivo. |
+| El ingreso del día ya fue registrado. | El alumno ya tiene marcación de hoy. |
+| Hoy no es un día laborable para la sección del alumno. | Feriado o suspensión. |
+| Todavía no comienza el registro del turno. | Escaneo antes de la hora de ingreso. |
+| El registro del turno ya cerró. | Escaneo después de la hora de cierre. |
+| La sección no tiene un turno vigente. | Falta configurar el turno de la sección. |
+| El turno no tiene un horario configurado. | Falta el horario del turno para la fecha. |
+
+El administrador puede ver el **Código de respaldo** en la ficha del alumno para digitarlo
+manualmente si la cámara no está disponible.
+
 ## Alertas de tardanza
 
 Cada ingreso por QR que corresponde a una tardanza genera una alerta interna para el portero que

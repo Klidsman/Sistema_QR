@@ -190,6 +190,34 @@ func (q *Queries) CrearAsignacion(ctx context.Context, arg CrearAsignacionParams
 	return id, err
 }
 
+const crearMarcacionPorteria = `-- name: CrearMarcacionPorteria :one
+INSERT INTO marcaciones (alumno_id, fecha, hora, estado, registrada_por)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (alumno_id, fecha) DO NOTHING
+RETURNING id
+`
+
+type CrearMarcacionPorteriaParams struct {
+	AlumnoID      int64
+	Fecha         pgtype.Date
+	Hora          pgtype.Timestamptz
+	Estado        string
+	RegistradaPor pgtype.Int8
+}
+
+func (q *Queries) CrearMarcacionPorteria(ctx context.Context, arg CrearMarcacionPorteriaParams) (int64, error) {
+	row := q.db.QueryRow(ctx, crearMarcacionPorteria,
+		arg.AlumnoID,
+		arg.Fecha,
+		arg.Hora,
+		arg.Estado,
+		arg.RegistradaPor,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const docenteAsignadoAClase = `-- name: DocenteAsignadoAClase :one
 SELECT EXISTS (
     SELECT 1

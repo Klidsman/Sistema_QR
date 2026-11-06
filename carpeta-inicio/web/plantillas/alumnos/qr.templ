@@ -28,6 +28,12 @@ templ SeccionQR(alumno Alumno, credencial *Credencial, historial []Credencial, r
 						<p class="text-sm text-slate-500">Emitido</p>
 						<p class="font-medium">{ credencial.EmitidaEn }</p>
 					</div>
+					if rol == "administrador" && credencial.Token != "" {
+						<details class="text-sm">
+							<summary class="cursor-pointer font-medium text-blue-700">Código de respaldo</summary>
+							<code class="mt-1 block break-all rounded bg-slate-100 p-2 text-xs">{ credencial.Token }</code>
+						</details>
+					}
 					if rol == "administrador" {
 						<form method="post" action={ fmt.Sprintf("/alumnos/%d/qr/reemplazo", alumno.ID) } class="rounded border border-amber-200 bg-amber-50 p-3">
 							<input type="hidden" name="token_csrf" value={ tokenCSRF }/>

@@ -79,7 +79,7 @@
 - [x] T037 [US1] Implementar el indicador de alertas nuevas en `internal/alertas/manejador_indicador.go`
 - [x] T038 [US1] Mostrar el indicador en las plantillas base de los roles autorizados en `web/plantillas/paginas/base.templ`
 - [x] T039 [US1] Escribir pruebas de manejadores del indicador en `pruebas/manejadores/alertas_indicador_test.go`
-- [ ] T040 [US1] Escribir la prueba E2E de alerta de tardanza para portero en `pruebas/e2e/alertas_tardanza_test.spec.ts`
+- [x] T040 [US1] Escribir la prueba E2E de alerta de tardanza para portero en `pruebas/e2e/alertas_tardanza_test.spec.ts`
 
 ---
 
@@ -103,7 +103,7 @@
 - [x] T052 [US2] Enviar al administrador las alertas sin docente asignado con `sin_responsable`
 - [x] T053 [US2] Auditar `ejecutar_cierre` y las alertas de faltas
 - [x] T054 [US2] Escribir pruebas de manejadores de cierre y umbrales en `pruebas/manejadores/alertas_cierre_test.go`
-- [ ] T055 [US2] Escribir la prueba E2E de reiteración en `pruebas/e2e/alertas_reiteracion_test.spec.ts`
+- [x] T055 [US2] Escribir la prueba E2E de reiteración en `pruebas/e2e/alertas_reiteracion_test.spec.ts`
 
 ---
 
