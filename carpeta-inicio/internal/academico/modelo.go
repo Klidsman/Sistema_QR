@@ -112,6 +112,18 @@ type HorarioSeccion struct {
 	VigenteDesde time.Time
 }
 
+// ClaseProgramada es una hora de clase válida para una fecha, sección, curso y bloque.
+type ClaseProgramada struct {
+	SeccionID  int64
+	CursoID    int64
+	Bloque     int
+	Turno      string
+	HoraInicio time.Time
+	HoraFin    time.Time
+	Seccion    string
+	Curso      string
+}
+
 // ConfiguracionFecha reúne la configuración vigente en una fecha determinada.
 type ConfiguracionFecha struct {
 	Fecha       time.Time

@@ -21,6 +21,11 @@ func (r *Repositorio) BuscarPorCorreo(ctx context.Context, correo string) (gener
 	return r.consultas.BuscarUsuarioPorCorreo(ctx, correo)
 }
 
+// BuscarPorID devuelve el usuario con ese identificador.
+func (r *Repositorio) BuscarPorID(ctx context.Context, id int64) (generado.BuscarUsuarioPorIDRow, error) {
+	return r.consultas.BuscarUsuarioPorID(ctx, id)
+}
+
 // Crear inserta un usuario y devuelve su identificador.
 func (r *Repositorio) Crear(ctx context.Context, parametros generado.CrearUsuarioParams) (int64, error) {
 	return r.consultas.CrearUsuario(ctx, parametros)

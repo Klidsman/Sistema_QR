@@ -312,3 +312,89 @@ func (q *Queries) ListarAlumnos(ctx context.Context, arg ListarAlumnosParams) ([
 	}
 	return items, nil
 }
+
+const listarAlumnosDeSeccionEnFecha = `-- name: ListarAlumnosDeSeccionEnFecha :many
+SELECT al.id, al.identificador, al.nombres, al.apellidos
+FROM alumnos al
+JOIN historial_secciones h ON h.alumno_id = al.id
+WHERE al.estado = 'activo'
+  AND h.seccion_id = $1
+  AND h.fecha_inicio <= $2
+  AND (h.fecha_fin IS NULL OR h.fecha_fin > $2)
+ORDER BY al.apellidos, al.nombres
+`
+
+type ListarAlumnosDeSeccionEnFechaParams struct {
+	SeccionID   int64
+	FechaInicio pgtype.Date
+}
+
+type ListarAlumnosDeSeccionEnFechaRow struct {
+	ID            int64
+	Identificador string
+	Nombres       string
+	Apellidos     string
+}
+
+func (q *Queries) ListarAlumnosDeSeccionEnFecha(ctx context.Context, arg ListarAlumnosDeSeccionEnFechaParams) ([]ListarAlumnosDeSeccionEnFechaRow, error) {
+	rows, err := q.db.Query(ctx, listarAlumnosDeSeccionEnFecha, arg.SeccionID, arg.FechaInicio)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarAlumnosDeSeccionEnFechaRow
+	for rows.Next() {
+		var i ListarAlumnosDeSeccionEnFechaRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Identificador,
+			&i.Nombres,
+			&i.Apellidos,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarAlumnosPorIDs = `-- name: ListarAlumnosPorIDs :many
+SELECT id, identificador, nombres, apellidos
+FROM alumnos
+WHERE id = ANY($1::bigint[])
+`
+
+type ListarAlumnosPorIDsRow struct {
+	ID            int64
+	Identificador string
+	Nombres       string
+	Apellidos     string
+}
+
+func (q *Queries) ListarAlumnosPorIDs(ctx context.Context, dollar_1 []int64) ([]ListarAlumnosPorIDsRow, error) {
+	rows, err := q.db.Query(ctx, listarAlumnosPorIDs, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarAlumnosPorIDsRow
+	for rows.Next() {
+		var i ListarAlumnosPorIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Identificador,
+			&i.Nombres,
+			&i.Apellidos,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

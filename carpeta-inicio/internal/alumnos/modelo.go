@@ -8,6 +8,19 @@ import (
 	"unicode"
 )
 
+// AlumnoEnClase son los datos mínimos de un alumno para la lista del docente.
+type AlumnoEnClase struct {
+	ID            int64
+	Identificador string
+	Nombres       string
+	Apellidos     string
+}
+
+// NombreCompleto devuelve apellidos y nombres en el orden visible.
+func (a AlumnoEnClase) NombreCompleto() string {
+	return a.Apellidos + ", " + a.Nombres
+}
+
 // Estados de un alumno.
 const (
 	EstadoActivo      = "activo"

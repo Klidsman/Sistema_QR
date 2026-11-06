@@ -34,6 +34,18 @@ type AniosEscolare struct {
 	CerradoEn   pgtype.Timestamptz
 }
 
+type AsignacionesDocente struct {
+	ID          int64
+	DocenteID   int64
+	CursoID     int64
+	SeccionID   int64
+	FechaInicio pgtype.Date
+	FechaFin    pgtype.Date
+	Titular     bool
+	CreadoPor   int64
+	CreadoEn    pgtype.Timestamptz
+}
+
 type Auditorium struct {
 	ID            int64
 	UsuarioID     int64
@@ -146,6 +158,36 @@ type Importacione struct {
 	FilasCreadas    int32
 	FilasRechazadas int32
 	CreadaEn        pgtype.Timestamptz
+}
+
+type Marcacione struct {
+	ID       int64
+	AlumnoID int64
+	Fecha    pgtype.Date
+	Hora     pgtype.Timestamptz
+	Estado   string
+	CreadaEn pgtype.Timestamptz
+}
+
+type ParametrosAsistencium struct {
+	ID                int16
+	PlazoEdicionHoras int32
+	ActualizadoPor    pgtype.Int8
+	ActualizadoEn     pgtype.Timestamptz
+}
+
+type RegistrosDocente struct {
+	ID            int64
+	AlumnoID      int64
+	Fecha         pgtype.Date
+	CursoID       int64
+	SeccionID     int64
+	BloqueNumero  int32
+	Estado        string
+	Observacion   pgtype.Text
+	DocenteID     int64
+	CreadoEn      pgtype.Timestamptz
+	ActualizadoEn pgtype.Timestamptz
 }
 
 type Seccione struct {

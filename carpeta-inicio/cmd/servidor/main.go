@@ -22,6 +22,7 @@ import (
 
 	"asistencia/internal/academico"
 	"asistencia/internal/alumnos"
+	"asistencia/internal/asistencia"
 	"asistencia/internal/autenticacion"
 	"asistencia/internal/plataforma/almacenamiento"
 	"asistencia/internal/plataforma/basedatos"
@@ -175,6 +176,10 @@ func servir(cfg configuracion.Configuracion) error {
 		Sesiones:      sesiones,
 		Registro:      registrador,
 	})
+	manejadorAsistencia := asistencia.NuevoManejador(asistencia.Dependencias{
+		Sesiones: sesiones,
+		Registro: registrador,
+	})
 	servicioAlumnos := alumnos.NuevoServicio(pool)
 	servicioImportacion := alumnos.NuevoServicioImportacion(pool, servicioAcademico, cfg.ImportacionMaxFilas)
 	manejadorAlumnos := alumnos.NuevoManejador(alumnos.Dependencias{
@@ -199,6 +204,7 @@ func servir(cfg configuracion.Configuracion) error {
 			Autenticacion: ingreso,
 			Alumnos:       manejadorAlumnos,
 			Academico:     manejadorConfiguracion,
+			Asistencia:    manejadorAsistencia,
 		}),
 		ReadHeaderTimeout: tiempoLecturaEncabezados,
 	}

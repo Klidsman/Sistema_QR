@@ -12,7 +12,11 @@ documentación deben usar estos términos (constitución, principio IX).
 | student | alumno | Persona registrada en el colegio |
 | section | seccion | División de un grado (A, B, C) |
 | grade | grado | Nivel dentro del año escolar (1.°, 2.°, 3.°) |
-| attendance record | marcacion | Registro de ingreso de un alumno |
+| attendance record | marcacion | Registro de ingreso oficial de un alumno por QR |
+| teacher attendance record | registro_docente | Registro personal de asistencia que toma el docente |
+| teacher-course-section assignment | asignacion_docente | Vínculo con vigencia entre docente, curso y sección |
+| edition window | plazo_edicion | Horas durante las que el docente puede corregir su registro |
+| attendance difference | diferencia | Discrepancia informativa entre la marcación QR y el registro del docente |
 | on time | puntual | Ingreso dentro de la tolerancia |
 | late | tardanza | Ingreso después de la tolerancia y antes del límite |
 | late, severe | tardanza_grave | Ingreso después del límite de tardanza |

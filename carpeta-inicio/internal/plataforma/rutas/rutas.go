@@ -6,6 +6,7 @@ import (
 
 	"asistencia/internal/academico"
 	"asistencia/internal/alumnos"
+	"asistencia/internal/asistencia"
 	"asistencia/internal/autenticacion"
 	"asistencia/internal/plataforma/intermediarios"
 	"asistencia/internal/plataforma/salud"
@@ -21,6 +22,7 @@ type Dependencias struct {
 	Autenticacion *autenticacion.Manejador
 	Alumnos       *alumnos.Manejador
 	Academico     *academico.Manejador
+	Asistencia    *asistencia.Manejador
 }
 
 // NuevoEnrutador crea el enrutador con sesiones, protección CSRF y las rutas de cada módulo.
@@ -37,6 +39,7 @@ func NuevoEnrutador(dependencias Dependencias) http.Handler {
 	dependencias.Autenticacion.Montar(enrutador)
 	dependencias.Alumnos.Montar(enrutador)
 	dependencias.Academico.Montar(enrutador)
+	dependencias.Asistencia.Montar(enrutador)
 
 	return enrutador
 }

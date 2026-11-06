@@ -1,3 +1,18 @@
+-- name: ListarAlumnosDeSeccionEnFecha :many
+SELECT al.id, al.identificador, al.nombres, al.apellidos
+FROM alumnos al
+JOIN historial_secciones h ON h.alumno_id = al.id
+WHERE al.estado = 'activo'
+  AND h.seccion_id = $1
+  AND h.fecha_inicio <= $2
+  AND (h.fecha_fin IS NULL OR h.fecha_fin > $2)
+ORDER BY al.apellidos, al.nombres;
+
+-- name: ListarAlumnosPorIDs :many
+SELECT id, identificador, nombres, apellidos
+FROM alumnos
+WHERE id = ANY($1::bigint[]);
+
 -- name: CrearAlumno :one
 INSERT INTO alumnos (
     identificador,

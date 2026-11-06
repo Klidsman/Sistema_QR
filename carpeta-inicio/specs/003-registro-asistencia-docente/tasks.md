@@ -18,12 +18,12 @@
 
 ## Fase 1: Preparación
 
-- [ ] T001 [P] Crear la estructura `internal/asistencia/{consultas,generado}`, `web/plantillas/asistencia/` y `web/plantillas/docentes/`
-- [ ] T002 [P] Agregar los estados, entidades y acciones de asistencia en `internal/asistencia/constantes.go`
-- [ ] T003 [P] Agregar el paquete de asistencia a `sqlc.yaml` con salida en `internal/asistencia/generado`
-- [ ] T004 [P] Ampliar `docs/glosario.md` con `registro_docente`, `asignacion_docente`, `marcacion`, `plazo_edicion` y `diferencia`
-- [ ] T005 [P] Crear los errores de negocio en `internal/asistencia/errores.go`
-- [ ] T006 [P] Crear los tipos `Reloj` y las interfaces de apoyo en `internal/asistencia/dependencias.go`
+- [X] T001 [P] Crear la estructura `internal/asistencia/{consultas,generado}`, `web/plantillas/asistencia/` y `web/plantillas/docentes/`
+- [X] T002 [P] Agregar los estados, entidades y acciones de asistencia en `internal/asistencia/constantes.go`
+- [X] T003 [P] Agregar el paquete de asistencia a `sqlc.yaml` con salida en `internal/asistencia/generado`
+- [X] T004 [P] Ampliar `docs/glosario.md` con `registro_docente`, `asignacion_docente`, `marcacion`, `plazo_edicion` y `diferencia`
+- [X] T005 [P] Crear los errores de negocio en `internal/asistencia/errores.go`
+- [X] T006 [P] Crear los tipos `Reloj` y las interfaces de apoyo en `internal/asistencia/dependencias.go`
 
 ---
 
@@ -31,39 +31,39 @@
 
 ### Migraciones
 
-- [ ] T007 [P] Crear `migraciones/0018_crear_parametros_asistencia.sql` con una fila inicial de 24 horas, rango 1 a 168 y auditoría de cambios
-- [ ] T008 [P] Crear `migraciones/0019_crear_tabla_marcaciones.sql` con `alumno_id`, `fecha`, `hora`, `estado` y `UNIQUE (alumno_id, fecha)`
-- [ ] T009 [P] Crear `migraciones/0020_crear_tabla_asignaciones_docente.sql` con `docente_id`, `curso_id`, `seccion_id`, `fecha_inicio`, `fecha_fin`, `titular`, `creado_por`; `UNIQUE (docente_id, curso_id, seccion_id, fecha_inicio)` y rango de fechas válido
-- [ ] T010 [P] Crear `migraciones/0021_crear_tabla_registros_docente.sql` con estado, observación de hasta 300 caracteres y `UNIQUE (alumno_id, fecha, curso_id, seccion_id, bloque_numero)`
-- [ ] T011 [P] Crear `migraciones/0022_ampliar_auditoria_asistencia.sql` con `docente`, `asignacion_docente`, `registro_docente`, `parametro_asistencia` y `marcacion`
-- [ ] T012 Actualizar la prueba de migraciones para subir y bajar hasta la versión 22 en `pruebas/integracion/migraciones_test.go`
+- [X] T007 [P] Crear `migraciones/0018_crear_parametros_asistencia.sql` con una fila inicial de 24 horas, rango 1 a 168 y auditoría de cambios
+- [X] T008 [P] Crear `migraciones/0019_crear_tabla_marcaciones.sql` con `alumno_id`, `fecha`, `hora`, `estado` y `UNIQUE (alumno_id, fecha)`
+- [X] T009 [P] Crear `migraciones/0020_crear_tabla_asignaciones_docente.sql` con `docente_id`, `curso_id`, `seccion_id`, `fecha_inicio`, `fecha_fin`, `titular`, `creado_por`; `UNIQUE (docente_id, curso_id, seccion_id, fecha_inicio)` y rango de fechas válido
+- [X] T010 [P] Crear `migraciones/0021_crear_tabla_registros_docente.sql` con estado, observación de hasta 300 caracteres y `UNIQUE (alumno_id, fecha, curso_id, seccion_id, bloque_numero)`
+- [X] T011 [P] Crear `migraciones/0022_ampliar_auditoria_asistencia.sql` con `docente`, `asignacion_docente`, `registro_docente`, `parametro_asistencia` y `marcacion`
+- [X] T012 Actualizar la prueba de migraciones para subir y bajar hasta la versión 22 en `pruebas/integracion/migraciones_test.go`
 
 ### Modelos, consultas y repositorios
 
-- [ ] T013 [P] Implementar los modelos `AsignacionDocente`, `RegistroDocente`, `Marcacion`, `ParametrosAsistencia`, `ClaseAsignada` y `AlumnoEnClase` en `internal/asistencia/modelo.go`
-- [ ] T014 [P] Escribir las consultas sqlc de asignaciones, registros, marcaciones y parámetros en `internal/asistencia/consultas/asistencia.sql`
-- [ ] T015 Regenerar sqlc con `sqlc generate` y compilar `internal/asistencia/generado/`
-- [ ] T016 [P] Implementar `internal/asistencia/repositorio.go` con pool, consultas y `EnTransaccion`
-- [ ] T017 [P] Implementar el repositorio de asignaciones en `internal/asistencia/repositorio_asignaciones.go`
-- [ ] T018 [P] Implementar el repositorio de registros y exportación en `internal/asistencia/repositorio_registros.go`
-- [ ] T019 [P] Implementar el repositorio de marcaciones en `internal/asistencia/repositorio_marcaciones.go`
-- [ ] T020 [P] Implementar el repositorio de parámetros en `internal/asistencia/repositorio_parametros.go`
+- [X] T013 [P] Implementar los modelos `AsignacionDocente`, `RegistroDocente`, `Marcacion`, `ParametrosAsistencia`, `ClaseAsignada` y `AlumnoEnClase` en `internal/asistencia/modelo.go`
+- [X] T014 [P] Escribir las consultas sqlc de asignaciones, registros, marcaciones y parámetros en `internal/asistencia/consultas/asistencia.sql`
+- [X] T015 Regenerar sqlc con `sqlc generate` y compilar `internal/asistencia/generado/`
+- [X] T016 [P] Implementar `internal/asistencia/repositorio.go` con pool, consultas y `EnTransaccion`
+- [X] T017 [P] Implementar el repositorio de asignaciones en `internal/asistencia/repositorio_asignaciones.go`
+- [X] T018 [P] Implementar el repositorio de registros y exportación en `internal/asistencia/repositorio_registros.go`
+- [X] T019 [P] Implementar el repositorio de marcaciones en `internal/asistencia/repositorio_marcaciones.go`
+- [X] T020 [P] Implementar el repositorio de parámetros en `internal/asistencia/repositorio_parametros.go`
 
 ### Interfaces entre módulos
 
-- [ ] T021 [P] Implementar `ResolutorClase` en `internal/academico/consulta_clase.go`: valida fecha, día laborable, turno, bloque y celda del horario, y expone el día no laborable
-- [ ] T022 [P] Implementar `ListadorAlumnosSeccion` en `internal/alumnos/servicio_consulta.go` y su consulta por historial de secciones en `internal/alumnos/consultas/alumnos.sql`
-- [ ] T023 [P] Implementar el buscador de docentes en `internal/autenticacion/servicio_docentes.go` (rol, estado y datos mínimos)
-- [ ] T024 Implementar la auditoría de las nuevas entidades en `internal/asistencia/servicio_auditoria.go`
-- [ ] T025 Registrar el módulo, dependencias y rutas base en `internal/plataforma/rutas/rutas.go` y `cmd/servidor/main.go`
+- [X] T021 [P] Implementar `ResolutorClase` en `internal/academico/consulta_clase.go`: valida fecha, día laborable, turno, bloque y celda del horario, y expone el día no laborable
+- [X] T022 [P] Implementar `ListadorAlumnosSeccion` en `internal/alumnos/servicio_consulta.go` y su consulta por historial de secciones en `internal/alumnos/consultas/alumnos.sql`
+- [X] T023 [P] Implementar el buscador de docentes en `internal/autenticacion/servicio_docentes.go` (rol, estado y datos mínimos)
+- [X] T024 Implementar la auditoría de las nuevas entidades en `internal/asistencia/servicio_auditoria.go`
+- [X] T025 Registrar el módulo, dependencias y rutas base en `internal/plataforma/rutas/rutas.go` y `cmd/servidor/main.go`
 
 ### Reglas puras
 
-- [ ] T026 [P] Escribir pruebas unitarias de estados, observación y diferencia QR/docente en `pruebas/unidad/asistencia_reglas_test.go`
-- [ ] T027 [P] Escribir pruebas unitarias del plazo de edición y fechas futuras en `pruebas/unidad/asistencia_plazo_test.go`
-- [ ] T028 Implementar las reglas puras en `internal/asistencia/validaciones.go`
-- [ ] T029 Escribir la prueba de migraciones y parámetro inicial en `pruebas/integracion/asistencia_migraciones_test.go`
-- [ ] T030 Escribir la prueba base de permisos (docente, director, portería) en `pruebas/manejadores/asistencia_permisos_test.go`
+- [X] T026 [P] Escribir pruebas unitarias de estados, observación y diferencia QR/docente en `pruebas/unidad/asistencia_reglas_test.go`
+- [X] T027 [P] Escribir pruebas unitarias del plazo de edición y fechas futuras en `pruebas/unidad/asistencia_plazo_test.go`
+- [X] T028 Implementar las reglas puras en `internal/asistencia/validaciones.go`
+- [X] T029 Escribir la prueba de migraciones y parámetro inicial en `pruebas/integracion/asistencia_migraciones_test.go`
+- [X] T030 Escribir la prueba base de permisos (docente, director, portería) en `pruebas/manejadores/asistencia_permisos_test.go`
 
 ---
 
