@@ -112,6 +112,14 @@ type HorarioSeccion struct {
 	VigenteDesde time.Time
 }
 
+// BloqueCurso es un bloque del día que tiene un curso asignado en el horario semanal.
+type BloqueCurso struct {
+	CursoID    int64
+	Bloque     int
+	HoraInicio time.Time
+	HoraFin    time.Time
+}
+
 // ClaseProgramada es una hora de clase válida para una fecha, sección, curso y bloque.
 type ClaseProgramada struct {
 	SeccionID  int64

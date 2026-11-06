@@ -73,23 +73,23 @@
 
 **Prueba independiente**: crear dos docentes, asignar uno como titular y otro como reemplazo por un día; verificar acceso por fecha.
 
-- [ ] T031 [P] [US3] Escribir pruebas unitarias de fechas de asignación y superposición permitida en `pruebas/unidad/asignaciones_test.go`
-- [ ] T032 [P] [US3] Escribir pruebas de integración de asignaciones y acceso por fecha en `pruebas/integracion/asignaciones_test.go`
-- [ ] T033 [US3] Implementar `CrearDocente`, `ListarDocentes`, `DesactivarDocente` y `RestablecerClave` en `internal/autenticacion/servicio_docentes.go`
-- [ ] T034 [US3] Implementar las rutas `GET/POST /docentes`, `POST /docentes/{id}/clave` y `POST /docentes/{id}/desactivacion` en `internal/autenticacion/manejador_docentes.go`
-- [ ] T035 [US3] Crear las plantillas `listado.templ` y `formulario.templ` en `web/plantillas/docentes/`
-- [ ] T036 [US3] Auditar `crear_docente`, `desactivar_docente` y `restablecer_clave`
-- [ ] T037 [US3] Escribir las pruebas de manejadores de docentes en `pruebas/manejadores/docentes_test.go`
-- [ ] T038 [US3] Escribir la prueba E2E de alta de docente en `pruebas/e2e/docentes_test.spec.ts`
-- [ ] T039 [US3] Implementar `CrearAsignacion`, `CerrarAsignacion` y `ListarAsignaciones` en `internal/asistencia/servicio_asignaciones.go`
-- [ ] T040 [US3] Validar rol docente, curso vinculado al grado y fechas en `internal/asistencia/servicio_asignaciones.go`
-- [ ] T041 [US3] Implementar `GET /asistencia/asignaciones`, `POST /asistencia/asignaciones` y `POST /asistencia/asignaciones/{id}/cierre` en `internal/asistencia/manejador_asignaciones.go`
-- [ ] T042 [US3] Crear la plantilla `web/plantillas/asistencia/asignaciones.templ`
-- [ ] T043 [US3] Auditar `crear_asignacion` y `cerrar_asignacion`
-- [ ] T044 [US3] Escribir las pruebas de manejadores de asignaciones en `pruebas/manejadores/asignaciones_test.go`
-- [ ] T045 [US3] Implementar `ClasesAsignadas` para resolver las clases de un docente en una fecha en `internal/asistencia/servicio_asignaciones.go`
-- [ ] T046 [US3] Escribir la prueba E2E de asignación y acceso del reemplazante en `pruebas/e2e/asignaciones_test.spec.ts`
-- [ ] T047 [US3] Escribir la prueba de acceso denegado para docente no asignado en `pruebas/manejadores/asistencia_acceso_test.go`
+- [X] T031 [P] [US3] Escribir pruebas unitarias de fechas de asignación y superposición permitida en `pruebas/unidad/asignaciones_test.go`
+- [X] T032 [P] [US3] Escribir pruebas de integración de asignaciones y acceso por fecha en `pruebas/integracion/asignaciones_test.go`
+- [X] T033 [US3] Implementar `CrearDocente`, `ListarDocentes`, `DesactivarDocente` y `RestablecerClave` en `internal/autenticacion/servicio_docentes.go`
+- [X] T034 [US3] Implementar las rutas `GET/POST /docentes`, `POST /docentes/{id}/clave` y `POST /docentes/{id}/desactivacion` en `internal/autenticacion/manejador_docentes.go`
+- [X] T035 [US3] Crear las plantillas `listado.templ` y `formulario.templ` en `web/plantillas/docentes/`
+- [X] T036 [US3] Auditar `crear_docente`, `desactivar_docente` y `restablecer_clave`
+- [X] T037 [US3] Escribir las pruebas de manejadores de docentes en `pruebas/manejadores/docentes_test.go`
+- [X] T038 [US3] Escribir la prueba E2E de alta de docente en `pruebas/e2e/docentes_test.spec.ts`
+- [X] T039 [US3] Implementar `CrearAsignacion`, `CerrarAsignacion` y `ListarAsignaciones` en `internal/asistencia/servicio_asignaciones.go`
+- [X] T040 [US3] Validar rol docente, curso vinculado al grado y fechas en `internal/asistencia/servicio_asignaciones.go`
+- [X] T041 [US3] Implementar `GET /asistencia/asignaciones`, `POST /asistencia/asignaciones` y `POST /asistencia/asignaciones/{id}/cierre` en `internal/asistencia/manejador_asignaciones.go`
+- [X] T042 [US3] Crear la plantilla `web/plantillas/asistencia/asignaciones.templ`
+- [X] T043 [US3] Auditar `crear_asignacion` y `cerrar_asignacion`
+- [X] T044 [US3] Escribir las pruebas de manejadores de asignaciones en `pruebas/manejadores/asignaciones_test.go`
+- [X] T045 [US3] Implementar `ClasesAsignadas` para resolver las clases de un docente en una fecha en `internal/asistencia/servicio_asignaciones.go`
+- [X] T046 [US3] Escribir la prueba E2E de asignación y acceso del reemplazante en `pruebas/e2e/asignaciones_test.spec.ts`
+- [X] T047 [US3] Escribir la prueba de acceso denegado para docente no asignado en `pruebas/manejadores/asistencia_acceso_test.go`
 
 **Punto de control**: cuentas y asignaciones funcionando; US1 puede comenzar.
 

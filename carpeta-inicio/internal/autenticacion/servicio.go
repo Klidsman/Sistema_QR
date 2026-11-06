@@ -28,11 +28,12 @@ const (
 // Servicio contiene las reglas de autenticación y de gestión de usuarios.
 type Servicio struct {
 	repositorio *Repositorio
+	db          generado.DBTX
 }
 
 // NuevoServicio crea el servicio de autenticación sobre la conexión indicada.
 func NuevoServicio(db generado.DBTX) *Servicio {
-	return &Servicio{repositorio: NuevoRepositorio(db)}
+	return &Servicio{repositorio: NuevoRepositorio(db), db: db}
 }
 
 // Autenticar valida el correo y la contraseña y devuelve el usuario si son correctos.

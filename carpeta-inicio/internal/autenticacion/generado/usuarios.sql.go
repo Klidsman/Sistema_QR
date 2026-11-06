@@ -9,6 +9,26 @@ import (
 	"context"
 )
 
+const actualizarClaveDocente = `-- name: ActualizarClaveDocente :execrows
+UPDATE usuarios
+SET contrasenia_hash = $2
+WHERE id = $1
+  AND rol = 'docente'
+`
+
+type ActualizarClaveDocenteParams struct {
+	ID              int64
+	ContraseniaHash string
+}
+
+func (q *Queries) ActualizarClaveDocente(ctx context.Context, arg ActualizarClaveDocenteParams) (int64, error) {
+	result, err := q.db.Exec(ctx, actualizarClaveDocente, arg.ID, arg.ContraseniaHash)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const buscarUsuarioPorCorreo = `-- name: BuscarUsuarioPorCorreo :one
 SELECT id, correo, contrasenia_hash, nombre_completo, rol, activo
 FROM usuarios
@@ -88,4 +108,61 @@ func (q *Queries) CrearUsuario(ctx context.Context, arg CrearUsuarioParams) (int
 	var id int64
 	err := row.Scan(&id)
 	return id, err
+}
+
+const desactivarDocente = `-- name: DesactivarDocente :execrows
+UPDATE usuarios
+SET activo = false
+WHERE id = $1
+  AND rol = 'docente'
+  AND activo
+`
+
+func (q *Queries) DesactivarDocente(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.Exec(ctx, desactivarDocente, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const listarDocentes = `-- name: ListarDocentes :many
+SELECT id, correo, nombre_completo, rol, activo
+FROM usuarios
+WHERE rol = 'docente'
+ORDER BY nombre_completo
+`
+
+type ListarDocentesRow struct {
+	ID             int64
+	Correo         string
+	NombreCompleto string
+	Rol            string
+	Activo         bool
+}
+
+func (q *Queries) ListarDocentes(ctx context.Context) ([]ListarDocentesRow, error) {
+	rows, err := q.db.Query(ctx, listarDocentes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarDocentesRow
+	for rows.Next() {
+		var i ListarDocentesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Correo,
+			&i.NombreCompleto,
+			&i.Rol,
+			&i.Activo,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

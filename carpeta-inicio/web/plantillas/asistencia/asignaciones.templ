@@ -1,0 +1,125 @@
+package vista
+
+import (
+	"fmt"
+
+	"asistencia/internal/plataforma/fechas"
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Asignaciones(usuario string, rol string, tokenCSRF string, docentes []DocenteOpcion, secciones []SeccionOpcion, cursos []CursoOpcion, asignaciones []AsignacionVista, mensaje string, mensajeError string) {
+	@paginas.BaseSesion("Asignaciones de docente", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/configuracion" class="text-sm font-medium text-blue-700">← Configuración</a>
+				<h1 class="mt-1 text-2xl font-semibold">Asignaciones de docente</h1>
+			</div>
+		</div>
+
+		if mensaje != "" {
+			<p role="status" class="mt-4 rounded bg-green-100 p-3 text-green-800">{ mensaje }</p>
+		}
+		if mensajeError != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensajeError }</p>
+		}
+
+		if rol == "administrador" {
+			<form method="post" action="/asistencia/asignaciones" class="mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-3">
+				<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+				<label class="block">
+					<span class="text-sm font-medium">Docente *</span>
+					<select name="docente_id" required class="mt-1 w-full rounded border border-slate-300 p-2">
+						<option value="">Seleccione un docente</option>
+						for _, docente := range docentes {
+							<option value={ fmt.Sprintf("%d", docente.ID) }>{ docente.Nombre }</option>
+						}
+					</select>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium">Curso *</span>
+					<select name="curso_id" required class="mt-1 w-full rounded border border-slate-300 p-2">
+						<option value="">Seleccione un curso</option>
+						for _, curso := range cursos {
+							<option value={ fmt.Sprintf("%d", curso.ID) }>{ curso.Nombre }</option>
+						}
+					</select>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium">Sección *</span>
+					<select name="seccion_id" required class="mt-1 w-full rounded border border-slate-300 p-2">
+						<option value="">Seleccione una sección</option>
+						for _, seccion := range secciones {
+							<option value={ fmt.Sprintf("%d", seccion.ID) }>{ seccion.Etiqueta }</option>
+						}
+					</select>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium">Desde *</span>
+					<input type="date" name="fecha_inicio" value={ fechas.FormatearISO(fechas.Hoy()) } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium">Hasta (opcional)</span>
+					<input type="date" name="fecha_fin" class="mt-1 w-full rounded border border-slate-300 p-2"/>
+				</label>
+				<label class="flex items-center gap-2">
+					<input type="checkbox" name="titular" value="si" checked class="h-4 w-4"/>
+					<span class="text-sm font-medium">Titular (desmarcar para reemplazo)</span>
+				</label>
+				<div class="lg:col-span-3">
+					<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Crear asignación</button>
+				</div>
+			</form>
+		}
+
+		<h2 class="mt-8 text-lg font-semibold">Asignaciones registradas</h2>
+		if len(asignaciones) == 0 {
+			<p class="mt-2 text-slate-600">Todavía no hay asignaciones.</p>
+		} else {
+			<div class="mt-3 overflow-x-auto rounded border border-slate-200 bg-white">
+				<table class="w-full text-left text-sm">
+					<thead class="bg-slate-100 text-slate-700">
+						<tr>
+							<th class="p-3">Docente</th>
+							<th class="p-3">Curso</th>
+							<th class="p-3">Sección</th>
+							<th class="p-3">Desde</th>
+							<th class="p-3">Hasta</th>
+							<th class="p-3">Tipo</th>
+							<th class="p-3">Estado</th>
+							if rol == "administrador" {
+								<th class="p-3">Cerrar</th>
+							}
+						</tr>
+					</thead>
+					<tbody>
+						for _, asignacion := range asignaciones {
+							<tr class="border-t border-slate-100 align-top">
+								<td class="p-3 font-medium">{ asignacion.Docente }</td>
+								<td class="p-3">{ asignacion.Curso }</td>
+								<td class="p-3">{ asignacion.Seccion }</td>
+								<td class="p-3">{ asignacion.Inicio }</td>
+								<td class="p-3">{ asignacion.Fin }</td>
+								<td class="p-3">{ asignacion.Tipo }</td>
+								<td class="p-3">{ asignacion.Estado }</td>
+								if rol == "administrador" {
+									<td class="p-3">
+										if asignacion.Estado == "Vigente" {
+											<form method="post" action={ fmt.Sprintf("/asistencia/asignaciones/%d/cierre", asignacion.ID) } class="flex flex-wrap items-end gap-2">
+												<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+												<label class="block">
+													<span class="text-xs text-slate-500">Cerrar el</span>
+													<input type="date" name="fecha_fin" value={ fechas.FormatearISO(fechas.Hoy()) } class="rounded border border-slate-300 p-1"/>
+												</label>
+												<button type="submit" class="rounded border border-amber-300 px-3 py-1 font-medium text-amber-800">Cerrar</button>
+											</form>
+										}
+									</td>
+								}
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	}
+}

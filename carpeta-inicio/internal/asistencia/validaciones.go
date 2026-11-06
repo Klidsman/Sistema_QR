@@ -54,6 +54,22 @@ func ValidarRangoExportacion(desde, hasta time.Time) error {
 	return nil
 }
 
+// ValidarFechasAsignacion exige que la fecha de fin no sea anterior a la de inicio.
+func ValidarFechasAsignacion(inicio time.Time, fin *time.Time) error {
+	if fin != nil && fechas.CompararDia(*fin, inicio) < 0 {
+		return ErrAsignacionFueraDeRango
+	}
+	return nil
+}
+
+// AsignacionVigenteEnFecha indica si la asignación cubre la fecha.
+func AsignacionVigenteEnFecha(asignacion AsignacionDocente, fecha time.Time) bool {
+	if fechas.CompararDia(asignacion.FechaInicio, fecha) > 0 {
+		return false
+	}
+	return asignacion.FechaFin == nil || fechas.CompararDia(fecha, *asignacion.FechaFin) <= 0
+}
+
 // ValidarPlazoHoras exige un plazo entre 1 y 168 horas.
 func ValidarPlazoHoras(horas int) error {
 	if horas < 1 || horas > 168 {

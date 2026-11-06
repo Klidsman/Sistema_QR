@@ -84,6 +84,100 @@ func (s *ServicioConfiguracion) ResolverClase(ctx context.Context, seccionID, cu
 	}, nil
 }
 
+// CursoVinculadoASeccion indica si el curso está activo y vinculado al grado de la sección.
+func (s *ServicioConfiguracion) CursoVinculadoASeccion(ctx context.Context, cursoID, seccionID int64) (bool, error) {
+	gradoID, err := s.repositorio.GradoDeSeccion(ctx, seccionID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return false, ErrSeccionNoEncontrada
+	}
+	if err != nil {
+		return false, fmt.Errorf("buscando el grado de la sección: %w", err)
+	}
+	return s.repositorio.CursoVinculadoAGrado(ctx, cursoID, gradoID)
+}
+
+// HorarioDelDia devuelve los bloques con curso del horario semanal de la sección.
+func (s *ServicioConfiguracion) HorarioDelDia(ctx context.Context, seccionID int64, fecha time.Time) ([]BloqueCurso, error) {
+	_, err := s.repositorio.BuscarSeccionPorID(ctx, seccionID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, ErrSeccionNoEncontrada
+	}
+	if err != nil {
+		return nil, fmt.Errorf("buscando la sección: %w", err)
+	}
+	turno, err := s.repositorio.TurnoVigenteSeccion(ctx, seccionID, fecha)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, ErrSeccionSinTurno
+	}
+	if err != nil {
+		return nil, fmt.Errorf("buscando el turno de la sección: %w", err)
+	}
+	bloques, err := s.repositorio.BloquesVigentesTurno(ctx, turno, fecha)
+	if err != nil {
+		return nil, fmt.Errorf("listando los bloques del turno: %w", err)
+	}
+	celdas, err := s.repositorio.HorarioSeccionVigente(ctx, seccionID, fecha)
+	if err != nil {
+		return nil, fmt.Errorf("listando el horario de la sección: %w", err)
+	}
+	horas := make(map[int]BloqueClase, len(bloques))
+	for _, bloque := range bloques {
+		horas[bloque.Numero] = bloque
+	}
+	dia := int(fecha.Weekday())
+	resultado := make([]BloqueCurso, 0)
+	for _, celda := range celdas {
+		if celda.DiaSemana != dia || celda.CursoID == nil {
+			continue
+		}
+		bloque, existe := horas[celda.BloqueNumero]
+		if !existe {
+			continue
+		}
+		resultado = append(resultado, BloqueCurso{
+			CursoID:    *celda.CursoID,
+			Bloque:     celda.BloqueNumero,
+			HoraInicio: bloque.HoraInicio,
+			HoraFin:    bloque.HoraFin,
+		})
+	}
+	return resultado, nil
+}
+
+// ListarSeccionesActivas devuelve las secciones del año activo.
+func (s *ServicioConfiguracion) ListarSeccionesActivas(ctx context.Context) ([]Seccion, error) {
+	anio, err := s.AnioActivo(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if anio == nil {
+		return nil, nil
+	}
+	return s.repositorio.ListarSeccionesPorAnio(ctx, anio.ID)
+}
+
+// ListarCursosActivos devuelve los cursos del año activo.
+func (s *ServicioConfiguracion) ListarCursosActivos(ctx context.Context) ([]Curso, error) {
+	anio, err := s.AnioActivo(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if anio == nil {
+		return nil, nil
+	}
+	cursos, err := s.ListarCursos(ctx, anio.ID)
+	if err != nil {
+		return nil, err
+	}
+	activos := make([]Curso, 0, len(cursos))
+	for _, curso := range cursos {
+		if curso.Activo {
+			activos = append(activos, curso)
+		}
+	}
+	return activos, nil
+}
+
 // EsDiaNoLaborable indica si una excepción de calendario alcanza a la sección en la fecha.
 func (s *ServicioConfiguracion) EsDiaNoLaborable(ctx context.Context, seccionID int64, fecha time.Time) (bool, error) {
 	excepciones, err := s.repositorio.ExcepcionesDeSeccion(ctx, seccionID, fecha)

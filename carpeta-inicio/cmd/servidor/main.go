@@ -167,7 +167,8 @@ func servir(cfg configuracion.Configuracion) error {
 
 	sesiones := intermediarios.NuevaSesion(intermediarios.NuevoAlmacenSesion(pool), duracionSesion)
 	limite := intermediarios.NuevoLimiteIntentos(maximoIntentos, ventanaIntentos, time.Now)
-	ingreso := autenticacion.NuevoManejador(autenticacion.NuevoServicio(pool), sesiones, limite, registrador)
+	servicioAuth := autenticacion.NuevoServicio(pool)
+	ingreso := autenticacion.NuevoManejador(servicioAuth, sesiones, limite, registrador)
 
 	servicioAcademico := academico.NuevoServicio(pool)
 	servicioConfiguracion := academico.NuevoServicioConfiguracion(pool)
@@ -176,11 +177,18 @@ func servir(cfg configuracion.Configuracion) error {
 		Sesiones:      sesiones,
 		Registro:      registrador,
 	})
+	servicioAlumnos := alumnos.NuevoServicio(pool)
+	servicioAsistencia := asistencia.NuevoServicio(asistencia.DependenciasServicio{
+		Repositorio: asistencia.NuevoRepositorio(pool),
+		Academico:   servicioConfiguracion,
+		Alumnos:     servicioAlumnos,
+		Docentes:    servicioAuth,
+	})
 	manejadorAsistencia := asistencia.NuevoManejador(asistencia.Dependencias{
+		Servicio: servicioAsistencia,
 		Sesiones: sesiones,
 		Registro: registrador,
 	})
-	servicioAlumnos := alumnos.NuevoServicio(pool)
 	servicioImportacion := alumnos.NuevoServicioImportacion(pool, servicioAcademico, cfg.ImportacionMaxFilas)
 	manejadorAlumnos := alumnos.NuevoManejador(alumnos.Dependencias{
 		Alumnos:             servicioAlumnos,

@@ -26,6 +26,21 @@ func (r *Repositorio) BuscarPorID(ctx context.Context, id int64) (generado.Busca
 	return r.consultas.BuscarUsuarioPorID(ctx, id)
 }
 
+// ListarDocentes devuelve las cuentas con rol docente.
+func (r *Repositorio) ListarDocentes(ctx context.Context) ([]generado.ListarDocentesRow, error) {
+	return r.consultas.ListarDocentes(ctx)
+}
+
+// DesactivarDocente desactiva una cuenta de docente y devuelve cuántas filas cambió.
+func (r *Repositorio) DesactivarDocente(ctx context.Context, id int64) (int64, error) {
+	return r.consultas.DesactivarDocente(ctx, id)
+}
+
+// ActualizarClaveDocente cambia el hash de contraseña de un docente.
+func (r *Repositorio) ActualizarClaveDocente(ctx context.Context, parametros generado.ActualizarClaveDocenteParams) (int64, error) {
+	return r.consultas.ActualizarClaveDocente(ctx, parametros)
+}
+
 // Crear inserta un usuario y devuelve su identificador.
 func (r *Repositorio) Crear(ctx context.Context, parametros generado.CrearUsuarioParams) (int64, error) {
 	return r.consultas.CrearUsuario(ctx, parametros)

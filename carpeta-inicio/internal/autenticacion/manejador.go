@@ -1,6 +1,7 @@
 package autenticacion
 
 import (
+	"context"
 	"log/slog"
 	"net"
 	"net/http"
@@ -16,9 +17,18 @@ import (
 const mensajeIngresoInvalido = "Correo o contraseña incorrectos."
 const mensajeDemasiadosIntentos = "Demasiados intentos fallidos. Espere 15 minutos e intente de nuevo."
 
-// Manejador atiende las pantallas y acciones de ingreso y salida.
+// ServicioDocentes son las operaciones de cuentas docentes que usa el manejador.
+type ServicioDocentes interface {
+	ListarDocentes(ctx context.Context) ([]Docente, error)
+	CrearDocente(ctx context.Context, usuarioID int64, datos DatosDocente) (int64, error)
+	DesactivarDocente(ctx context.Context, usuarioID, docenteID int64) error
+	RestablecerClave(ctx context.Context, usuarioID, docenteID int64, clave string) error
+}
+
+// Manejador atiende las pantallas y acciones de ingreso, salida y docentes.
 type Manejador struct {
 	servicio *Servicio
+	docentes ServicioDocentes
 	sesiones *scs.SessionManager
 	limite   *intermediarios.LimiteIntentos
 	registro *slog.Logger
@@ -26,7 +36,14 @@ type Manejador struct {
 
 // NuevoManejador crea el manejador de ingreso con sus dependencias.
 func NuevoManejador(servicio *Servicio, sesiones *scs.SessionManager, limite *intermediarios.LimiteIntentos, registro *slog.Logger) *Manejador {
-	return &Manejador{servicio: servicio, sesiones: sesiones, limite: limite, registro: registro}
+	return &Manejador{servicio: servicio, docentes: servicio, sesiones: sesiones, limite: limite, registro: registro}
+}
+
+// NuevoManejadorConDocentes permite inyectar el servicio de docentes en las pruebas.
+func NuevoManejadorConDocentes(servicio *Servicio, docentes ServicioDocentes, sesiones *scs.SessionManager, limite *intermediarios.LimiteIntentos, registro *slog.Logger) *Manejador {
+	manejador := NuevoManejador(servicio, sesiones, limite, registro)
+	manejador.docentes = docentes
+	return manejador
 }
 
 // Montar registra las rutas de ingreso y salida en el enrutador.
@@ -34,6 +51,19 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 	enrutador.Get("/ingreso", m.mostrarIngreso)
 	enrutador.Post("/ingreso", m.procesarIngreso)
 	enrutador.Post("/salir", m.salir)
+
+	enrutador.Group(func(lectura chi.Router) {
+		lectura.Use(intermediarios.RequerirRol(m.sesiones,
+			intermediarios.RolAdministrador, intermediarios.RolDirector))
+		lectura.Get("/docentes", m.listarDocentes)
+	})
+
+	enrutador.Group(func(escritura chi.Router) {
+		escritura.Use(intermediarios.RequerirRol(m.sesiones, intermediarios.RolAdministrador))
+		escritura.Post("/docentes", m.crearDocente)
+		escritura.Post("/docentes/{id}/clave", m.restablecerClaveDocente)
+		escritura.Post("/docentes/{id}/desactivacion", m.desactivarDocente)
+	})
 }
 
 func (m *Manejador) mostrarIngreso(respuesta http.ResponseWriter, peticion *http.Request) {

@@ -53,6 +53,21 @@ func SembrarSeccion(t *testing.T, pool *pgxpool.Pool, grado, seccion string) int
 	return seccionID
 }
 
+// CrearDocentePrueba inserta una cuenta con rol docente y devuelve su identificador.
+func CrearDocentePrueba(t *testing.T, pool *pgxpool.Pool, correo, nombre string) int64 {
+	t.Helper()
+
+	var id int64
+	err := pool.QueryRow(context.Background(),
+		`INSERT INTO usuarios (correo, contrasenia_hash, nombre_completo, rol)
+		 VALUES ($1, 'hash-de-prueba', $2, 'docente')
+		 RETURNING id`,
+		correo, nombre,
+	).Scan(&id)
+	require.NoError(t, err)
+	return id
+}
+
 // CrearUsuarioPrueba inserta un administrador y devuelve su identificador.
 func CrearUsuarioPrueba(t *testing.T, pool *pgxpool.Pool) int64 {
 	t.Helper()
