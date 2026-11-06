@@ -148,7 +148,7 @@
 - [x] T076 Verificar que las alertas no se eliminan y que “situación cambiada” conserva el registro en `pruebas/integracion/alertas_situacion_test.go`
 - [x] T077 Implementar `MarcarSituacionCambiada` y su integración con la corrección de asistencia en `internal/alertas/servicio_alertas.go`
 - [x] T078 Verificar la idempotencia de los dos procesos con ejecuciones repetidas y concurrentes en `pruebas/integracion/alertas_programador_test.go`
-- [ ] T079 Revisar `EXPLAIN ANALYZE` del panel y de los conteos con datos de 2,000 alumnos
+- [x] T079 Revisar `EXPLAIN ANALYZE` del panel y de los conteos con datos de 2,000 alumnos
 - [x] T080 Actualizar `docs/manual_administrador.md`, `docs/manual_director.md` y `docs/manual_docente.md`; crear `docs/manual_portero.md`
 - [x] T081 Actualizar `docs/despliegue.md` con el cron, el tipo de umbral y la ausencia de variables nuevas
 - [x] T082 Regenerar plantillas, CSS y formato; ejecutar `golangci-lint`, `go test` y Playwright

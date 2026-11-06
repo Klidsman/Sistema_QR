@@ -71,6 +71,17 @@ cd pruebas/e2e && npx playwright test
 Cobertura esperada: reglas puras, repositorios, procesos idempotentes, panel, permisos, CSRF,
 indicador y E2E.
 
+## Resultados de rendimiento
+
+Revisión ejecutada con `PRUEBA_RENDIMIENTO=1` y 2,000 alumnos en PostgreSQL 16:
+
+| Consulta | Plan | Tiempo |
+|---|---|---|
+| Panel de alertas con filtros | `Index Scan` sobre `alertas_panel_idx` | 0.104 ms |
+| Conteo mensual de tardanzas | `Index Scan` sobre `marcaciones_alumno_id_fecha_key` | 0.050 ms |
+
+Ambas consultas usan índices y no requieren cambios.
+
 ## Criterios de aceptación
 
 - 100% de tardanzas oficiales genera alerta al portero.
