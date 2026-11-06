@@ -87,68 +87,103 @@ func BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " · Asistencia</title><link rel=\"stylesheet\" href=\"/estaticos/css/app.css\"><script src=\"/estaticos/js/htmx.min.js\" defer></script></head><body class=\"min-h-screen bg-slate-50 text-slate-900 antialiased\"><header class=\"border-b border-slate-200 bg-white\"><div class=\"mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 p-4\"><a href=\"/alumnos\" class=\"text-lg font-semibold text-blue-800\">Asistencia</a><div class=\"flex flex-wrap items-center justify-end gap-3 text-sm\"><span class=\"text-slate-600\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " · Asistencia</title><link rel=\"stylesheet\" href=\"/estaticos/css/app.css\"><script src=\"/estaticos/js/htmx.min.js\" defer></script></head><body class=\"min-h-screen bg-slate-50 text-slate-900 antialiased\"><header class=\"border-b border-slate-200 bg-white\"><div class=\"mx-auto w-full max-w-6xl p-4\"><div class=\"flex flex-wrap items-center justify-between gap-3\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(nombre)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templruntime.NewAttributeExpression(EnlaceInicio(rol)).ResolveURL(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 34, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 33, Col: 33}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, " · ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"text-lg font-semibold text-blue-800\">Asistencia</a><div class=\"flex flex-wrap items-center justify-end gap-3 text-sm\"><span class=\"text-slate-600\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(rol)
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(nombre)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 34, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 35, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " · ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if rol == "administrador" || rol == "porteria" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<a href=\"/porteria\" class=\"font-medium text-blue-700\">Portería</a> ")
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(rol)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 35, Col: 55}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if rol == "administrador" || rol == "docente" || rol == "porteria" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a id=\"indicador-alertas\" href=\"/alertas\" hx-get=\"/alertas/indicador\" hx-trigger=\"load, every 60s\" hx-swap=\"outerHTML\" class=\"inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-800\">Alertas <span class=\"rounded-full bg-blue-700 px-2 py-0.5 text-xs font-semibold text-white\">0</span></a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<form method=\"post\" action=\"/salir\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 48, Col: 64}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"> <button type=\"submit\" class=\"rounded border border-slate-300 px-3 py-1 font-medium text-slate-700\">Salir</button></form></div></div><nav class=\"mt-3 flex flex-wrap gap-x-4 gap-y-2 border-t border-slate-100 pt-3 text-sm\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if rol == "administrador" || rol == "director" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<a href=\"/alumnos\" class=\"font-medium text-slate-700 hover:text-blue-700\">Alumnos</a> <a href=\"/configuracion\" class=\"font-medium text-slate-700 hover:text-blue-700\">Configuración</a> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if rol == "administrador" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<a href=\"/docentes\" class=\"font-medium text-slate-700 hover:text-blue-700\">Docentes</a> <a href=\"/carnets\" class=\"font-medium text-slate-700 hover:text-blue-700\">Carnés</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if rol == "administrador" || rol == "director" || rol == "docente" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a href=\"/reportes\" class=\"font-medium text-blue-700\">Reportes</a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<a href=\"/asistencia\" class=\"font-medium text-slate-700 hover:text-blue-700\">Asistencia</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		if rol == "administrador" || rol == "docente" || rol == "porteria" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<a id=\"indicador-alertas\" href=\"/alertas\" hx-get=\"/alertas/indicador\" hx-trigger=\"load, every 60s\" hx-swap=\"outerHTML\" class=\"inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-800\">Alertas <span class=\"rounded-full bg-blue-700 px-2 py-0.5 text-xs font-semibold text-white\">0</span></a>")
+		if rol == "administrador" || rol == "porteria" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<a href=\"/porteria\" class=\"font-medium text-slate-700 hover:text-blue-700\">Portería</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<form method=\"post\" action=\"/salir\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		if rol == "administrador" || rol == "director" || rol == "docente" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<a href=\"/justificaciones\" class=\"font-medium text-slate-700 hover:text-blue-700\">Justificaciones</a> <a href=\"/reportes/diario\" class=\"font-medium text-slate-700 hover:text-blue-700\">Reportes</a> <a href=\"/reportes/panel\" class=\"font-medium text-slate-700 hover:text-blue-700\">Panel del día</a> <a href=\"/reportes/resumen\" class=\"font-medium text-slate-700 hover:text-blue-700\">Resumen</a> <a href=\"/reportes/reiteracion\" class=\"font-medium text-slate-700 hover:text-blue-700\">Reiteración</a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 53, Col: 63}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"> <button type=\"submit\" class=\"rounded border border-slate-300 px-3 py-1 font-medium text-slate-700\">Salir</button></form></div></div></header><main class=\"mx-auto w-full max-w-6xl p-4 sm:p-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</nav></div></header><main class=\"mx-auto w-full max-w-6xl p-4 sm:p-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -156,7 +191,7 @@ func BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
