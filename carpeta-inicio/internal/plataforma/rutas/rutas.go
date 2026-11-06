@@ -13,6 +13,7 @@ import (
 	"asistencia/internal/plataforma/intermediarios"
 	"asistencia/internal/plataforma/salud"
 	"asistencia/internal/porteria"
+	"asistencia/internal/reportes"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
@@ -29,6 +30,7 @@ type Dependencias struct {
 	Alertas         *alertas.Manejador
 	Porteria        *porteria.Manejador
 	Justificaciones *justificaciones.Manejador
+	Reportes        *reportes.Manejador
 }
 
 // NuevoEnrutador crea el enrutador con sesiones, protección CSRF y las rutas de cada módulo.
@@ -49,6 +51,7 @@ func NuevoEnrutador(dependencias Dependencias) http.Handler {
 	dependencias.Alertas.Montar(enrutador)
 	dependencias.Porteria.Montar(enrutador)
 	dependencias.Justificaciones.Montar(enrutador)
+	dependencias.Reportes.Montar(enrutador)
 
 	return enrutador
 }

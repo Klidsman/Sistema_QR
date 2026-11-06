@@ -63,6 +63,12 @@ sea el mismo curso y la misma sección.
 El archivo incluye fecha, curso, sección, bloque, identificador, alumno, estado, observación, hora
 QR y docente. Como docente solo se exportan tus propios registros.
 
+## Reportes
+
+En **Reportes** puedes consultar el día, el panel de indicadores, el resumen por rango y los casos
+de reiteración. Solo se muestran las secciones donde tienes una asignación vigente. Cada reporte
+se puede descargar en Excel o PDF con los filtros aplicados.
+
 ## Justificaciones
 
 Desde la ficha del alumno puedes abrir **Justificar falta o tardanza**. Indica el motivo y una

@@ -98,6 +98,11 @@ El sistema aplica dos reglas:
 Si un enlace no aparece en la interfaz, tampoco se puede ejecutar escribiendo la dirección
 directamente.
 
+## Reportes
+
+El director accede a todos los reportes del colegio: diario, panel, resumen y reiteración, con
+exportación a Excel y PDF. Los reportes son de solo lectura; no modifican la asistencia.
+
 ## Justificaciones
 
 El director puede aprobar o rechazar justificaciones pendientes desde `/justificaciones`. El

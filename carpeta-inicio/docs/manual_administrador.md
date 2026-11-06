@@ -204,6 +204,19 @@ configuración anterior ni las asistencias ya registradas.
 El registro del docente es personal y no reemplaza la asistencia oficial del QR. Las correcciones
 del administrador y los cambios de plazo quedan auditados.
 
+## Reportes
+
+- **Diario** (`/reportes/diario`): estado y hora de cada alumno, con filtros por fecha, turno,
+  grado, sección, alumno y estado.
+- **Panel** (`/reportes/panel`): presentes, tardanzas, ausentes y pendientes; se actualiza cada
+  30 segundos.
+- **Resumen** (`/reportes/resumen`): asistencias, tardanzas, faltas, justificadas y porcentaje por
+  alumno y sección en un rango o mes.
+- **Reiteración** (`/reportes/reiteracion`): alumnos que superan los umbrales vigentes.
+- **Exportación**: cada reporte se descarga en Excel o PDF con los filtros aplicados.
+
+Los feriados y días no laborables se excluyen del porcentaje. Los docentes solo ven sus secciones.
+
 ## Justificaciones
 
 - **Registro**: el docente de la sección o el administrador registra una justificación con motivo,

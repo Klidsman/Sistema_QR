@@ -34,6 +34,7 @@ import (
 	"asistencia/internal/plataforma/rutas"
 	"asistencia/internal/plataforma/semilla"
 	"asistencia/internal/porteria"
+	"asistencia/internal/reportes"
 	"asistencia/migraciones"
 )
 
@@ -246,6 +247,16 @@ func servir(cfg configuracion.Configuracion) error {
 		Marcaciones: servicioAsistencia,
 		Alertas:     servicioAlertas,
 	})
+	servicioReportes := reportes.NuevoServicio(reportes.Dependencias{
+		Repo:      reportes.NuevoRepositorio(pool),
+		Academico: servicioConfiguracion,
+	})
+	manejadorReportes := reportes.NuevoManejador(reportes.DependenciasManejador{
+		Servicio: servicioReportes,
+		Sesiones: sesiones,
+		Registro: registrador,
+	})
+
 	manejadorPorteria := porteria.NuevoManejador(porteria.DependenciasManejador{
 		Servicio: servicioPorteria,
 		Sesiones: sesiones,
@@ -264,6 +275,7 @@ func servir(cfg configuracion.Configuracion) error {
 			Alertas:         manejadorAlertas,
 			Porteria:        manejadorPorteria,
 			Justificaciones: manejadorJustificaciones,
+			Reportes:        manejadorReportes,
 		}),
 		ReadHeaderTimeout: tiempoLecturaEncabezados,
 	}

@@ -1,0 +1,239 @@
+package reportes
+
+import "asistencia/web/plantillas/paginas"
+
+templ filtros(accion string, f Filtros, conEstado bool) {
+	<form method="get" action={ accion } class="grid gap-3 rounded border border-slate-200 bg-white p-4 sm:grid-cols-4 lg:grid-cols-7">
+		<label class="text-sm text-slate-700">
+			Desde
+			<input type="date" name="desde" value={ f.Desde } class="mt-1 w-full rounded border border-slate-300 p-2"/>
+		</label>
+		<label class="text-sm text-slate-700">
+			Hasta
+			<input type="date" name="hasta" value={ f.Hasta } class="mt-1 w-full rounded border border-slate-300 p-2"/>
+		</label>
+		<label class="text-sm text-slate-700">
+			Turno
+			<select name="turno" class="mt-1 w-full rounded border border-slate-300 p-2">
+				<option value="">Todos</option>
+				<option value="manana" selected?={ f.Turno == "manana" }>Mañana</option>
+				<option value="tarde" selected?={ f.Turno == "tarde" }>Tarde</option>
+			</select>
+		</label>
+		<label class="text-sm text-slate-700">
+			Grado
+			<input name="grado" value={ f.Grado } class="mt-1 w-full rounded border border-slate-300 p-2"/>
+		</label>
+		<label class="text-sm text-slate-700">
+			Sección
+			<input name="seccion" value={ f.Seccion } class="mt-1 w-full rounded border border-slate-300 p-2"/>
+		</label>
+		<label class="text-sm text-slate-700">
+			Alumno
+			<input name="alumno" value={ f.Alumno } class="mt-1 w-full rounded border border-slate-300 p-2"/>
+		</label>
+		if conEstado {
+			<label class="text-sm text-slate-700">
+				Estado
+				<select name="estado" class="mt-1 w-full rounded border border-slate-300 p-2">
+					<option value="">Todos</option>
+					<option value="presente" selected?={ f.Estado == "presente" }>Presente</option>
+					<option value="tardanza" selected?={ f.Estado == "tardanza" }>Tardanza</option>
+					<option value="falta" selected?={ f.Estado == "falta" }>Falta</option>
+					<option value="falta_justificada" selected?={ f.Estado == "falta_justificada" }>Falta justificada</option>
+					<option value="tardanza_justificada" selected?={ f.Estado == "tardanza_justificada" }>Tardanza justificada</option>
+					<option value="pendiente" selected?={ f.Estado == "pendiente" }>Pendiente</option>
+				</select>
+			</label>
+		}
+		<div class="flex items-end">
+			<button type="submit" class="w-full rounded bg-blue-700 px-3 py-2 font-medium text-white">Filtrar</button>
+		</div>
+	</form>
+}
+
+templ PanelIndicadores(panel Panel, fecha string) {
+	<div id="panel-dia" hx-get={ "/reportes/panel/indicadores?fecha=" + fecha } hx-trigger="every 30s" hx-swap="outerHTML" class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+		<div class="rounded border border-slate-200 bg-white p-3">
+			<p class="text-sm text-slate-500">Presentes</p>
+			<p class="text-2xl font-semibold text-emerald-700">{ numero(panel.Presentes) }</p>
+		</div>
+		<div class="rounded border border-slate-200 bg-white p-3">
+			<p class="text-sm text-slate-500">Tardanzas</p>
+			<p class="text-2xl font-semibold text-amber-700">{ numero(panel.Tardanzas) }</p>
+		</div>
+		<div class="rounded border border-slate-200 bg-white p-3">
+			<p class="text-sm text-slate-500">Ausentes</p>
+			<p class="text-2xl font-semibold text-red-700">{ numero(panel.Ausentes) }</p>
+		</div>
+		<div class="rounded border border-slate-200 bg-white p-3">
+			<p class="text-sm text-slate-500">Pendientes</p>
+			<p class="text-2xl font-semibold text-slate-700">{ numero(panel.Pendientes) }</p>
+		</div>
+		<div class="rounded border border-slate-200 bg-white p-3">
+			<p class="text-sm text-slate-500">Total</p>
+			<p class="text-2xl font-semibold text-slate-900">{ numero(panel.Total) }</p>
+		</div>
+	</div>
+}
+
+templ DiarioReporte(datos Diario) {
+	@paginas.BaseSesion("Reporte diario", datos.Nombre, datos.Rol, datos.TokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<h1 class="text-2xl font-semibold text-slate-900">Reporte diario</h1>
+			<div class="flex gap-3 text-sm">
+				<a href="/reportes/panel" class="font-medium text-blue-700">Panel</a>
+				<a href={ "/reportes/diario.xlsx?desde=" + datos.Filtros.Desde + "&hasta=" + datos.Filtros.Hasta + "&turno=" + datos.Filtros.Turno + "&grado=" + datos.Filtros.Grado + "&seccion=" + datos.Filtros.Seccion + "&alumno=" + datos.Filtros.Alumno + "&estado=" + datos.Filtros.Estado } class="font-medium text-blue-700">Excel</a>
+				<a href={ "/reportes/diario.pdf?desde=" + datos.Filtros.Desde + "&hasta=" + datos.Filtros.Hasta + "&turno=" + datos.Filtros.Turno + "&grado=" + datos.Filtros.Grado + "&seccion=" + datos.Filtros.Seccion + "&alumno=" + datos.Filtros.Alumno + "&estado=" + datos.Filtros.Estado } class="font-medium text-blue-700">PDF</a>
+			</div>
+		</div>
+
+		<div class="mt-4">
+			@PanelIndicadores(datos.Panel, datos.Filtros.Desde)
+		</div>
+
+		<div class="mt-4">
+			@filtros("/reportes/diario", datos.Filtros, true)
+		</div>
+
+		<div class="mt-4 overflow-x-auto rounded border border-slate-200 bg-white">
+			<table class="min-w-full divide-y divide-slate-200 text-sm">
+				<thead class="bg-slate-50 text-left text-slate-600">
+					<tr>
+						<th class="p-2">Turno</th>
+						<th class="p-2">Grado</th>
+						<th class="p-2">Sección</th>
+						<th class="p-2">Identificador</th>
+						<th class="p-2">Alumno</th>
+						<th class="p-2">Estado</th>
+						<th class="p-2">Hora</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-slate-100">
+					if len(datos.Filas) == 0 {
+						<tr><td colspan="7" class="p-6 text-center text-slate-500">No hay alumnos para los filtros elegidos.</td></tr>
+					}
+					for _, fila := range datos.Filas {
+						<tr>
+							<td class="p-2">{ fila.Turno }</td>
+							<td class="p-2">{ fila.Grado }</td>
+							<td class="p-2">{ fila.Seccion }</td>
+							<td class="p-2">{ fila.Identificador }</td>
+							<td class="p-2 font-medium">{ fila.Alumno }</td>
+							<td class="p-2">{ fila.Estado }</td>
+							<td class="p-2">{ fila.Hora }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+}
+
+templ PanelReporte(datos Diario) {
+	@paginas.BaseSesion("Panel del día", datos.Nombre, datos.Rol, datos.TokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<h1 class="text-2xl font-semibold text-slate-900">Panel del día</h1>
+			<a href={ "/reportes/diario?desde=" + datos.Filtros.Desde + "&hasta=" + datos.Filtros.Desde } class="text-sm font-medium text-blue-700">Ver reporte diario</a>
+		</div>
+		<form method="get" action="/reportes/panel" class="mt-4 flex flex-wrap items-end gap-3 rounded border border-slate-200 bg-white p-4">
+			<label class="text-sm text-slate-700">
+				Fecha
+				<input type="date" name="fecha" value={ datos.Filtros.Desde } class="mt-1 rounded border border-slate-300 p-2"/>
+			</label>
+			<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-medium text-white">Actualizar</button>
+		</form>
+		<div class="mt-4">
+			@PanelIndicadores(datos.Panel, datos.Filtros.Desde)
+		</div>
+	}
+}
+
+templ ResumenReporte(datos Resumen) {
+	@paginas.BaseSesion("Reporte acumulado", datos.Nombre, datos.Rol, datos.TokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<h1 class="text-2xl font-semibold text-slate-900">Reporte acumulado</h1>
+			<div class="flex gap-3 text-sm">
+				<a href={ "/reportes/resumen.xlsx?desde=" + datos.Filtros.Desde + "&hasta=" + datos.Filtros.Hasta + "&turno=" + datos.Filtros.Turno + "&grado=" + datos.Filtros.Grado + "&seccion=" + datos.Filtros.Seccion + "&alumno=" + datos.Filtros.Alumno } class="font-medium text-blue-700">Excel</a>
+				<a href={ "/reportes/resumen.pdf?desde=" + datos.Filtros.Desde + "&hasta=" + datos.Filtros.Hasta + "&turno=" + datos.Filtros.Turno + "&grado=" + datos.Filtros.Grado + "&seccion=" + datos.Filtros.Seccion + "&alumno=" + datos.Filtros.Alumno } class="font-medium text-blue-700">PDF</a>
+				<a href="/reportes/reiteracion" class="font-medium text-blue-700">Reiteración</a>
+			</div>
+		</div>
+
+		<div class="mt-4">
+			@filtros("/reportes/resumen", datos.Filtros, false)
+		</div>
+
+		<div class="mt-4 overflow-x-auto rounded border border-slate-200 bg-white">
+			<table class="min-w-full divide-y divide-slate-200 text-sm">
+				<thead class="bg-slate-50 text-left text-slate-600">
+					<tr>
+						<th class="p-2">Grado</th>
+						<th class="p-2">Sección</th>
+						<th class="p-2">Alumno</th>
+						<th class="p-2">Asist.</th>
+						<th class="p-2">Tard.</th>
+						<th class="p-2">Faltas</th>
+						<th class="p-2">Justif.</th>
+						<th class="p-2">%</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-slate-100">
+					if len(datos.Filas) == 0 {
+						<tr><td colspan="8" class="p-6 text-center text-slate-500">No hay datos para los filtros elegidos.</td></tr>
+					}
+					for _, fila := range datos.Filas {
+						<tr>
+							<td class="p-2">{ fila.Grado }</td>
+							<td class="p-2">{ fila.Seccion }</td>
+							<td class="p-2 font-medium">{ fila.Alumno }</td>
+							<td class="p-2">{ numero(fila.Asistencias) }</td>
+							<td class="p-2">{ numero(fila.Tardanzas) }</td>
+							<td class="p-2">{ numero(fila.Faltas) }</td>
+							<td class="p-2">{ numero(fila.FaltasJustificadas + fila.TardanzasJustificadas) }</td>
+							<td class="p-2">{ fila.Porcentaje }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+}
+
+templ ReiteracionReporte(datos Reiteracion) {
+	@paginas.BaseSesion("Reiteración", datos.Nombre, datos.Rol, datos.TokenCSRF) {
+		<h1 class="text-2xl font-semibold text-slate-900">Alumnos con reiteración</h1>
+		<div class="mt-4">
+			@filtros("/reportes/reiteracion", datos.Filtros, false)
+		</div>
+		<div class="mt-4 overflow-x-auto rounded border border-slate-200 bg-white">
+			<table class="min-w-full divide-y divide-slate-200 text-sm">
+				<thead class="bg-slate-50 text-left text-slate-600">
+					<tr>
+						<th class="p-2">Alumno</th>
+						<th class="p-2">Sección</th>
+						<th class="p-2">Tardanzas</th>
+						<th class="p-2">Umbral tardanzas</th>
+						<th class="p-2">Faltas seguidas</th>
+						<th class="p-2">Umbral faltas</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-slate-100">
+					if len(datos.Filas) == 0 {
+						<tr><td colspan="6" class="p-6 text-center text-slate-500">No hay alumnos que superen los umbrales.</td></tr>
+					}
+					for _, fila := range datos.Filas {
+						<tr>
+							<td class="p-2 font-medium">{ fila.Alumno }</td>
+							<td class="p-2">{ fila.Seccion }</td>
+							<td class="p-2">{ numero(fila.Tardanzas) }</td>
+							<td class="p-2">{ numero(fila.UmbralTardanzas) }</td>
+							<td class="p-2">{ numero(fila.FaltasSeguidas) }</td>
+							<td class="p-2">{ numero(fila.UmbralFaltas) }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+}

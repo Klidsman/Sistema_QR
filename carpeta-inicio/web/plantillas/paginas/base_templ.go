@@ -87,7 +87,7 @@ func BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " · Asistencia</title><link rel=\"stylesheet\" href=\"/estaticos/css/app.css\"><script src=\"/estaticos/js/htmx.min.js\" defer></script></head><body class=\"min-h-screen bg-slate-50 text-slate-900 antialiased\"><header class=\"border-b border-slate-200 bg-white\"><div class=\"mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 p-4\"><a href=\"/alumnos\" class=\"text-lg font-semibold text-blue-800\">Asistencia</a><div class=\"flex items-center gap-4 text-sm\"><span class=\"text-slate-600\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, " · Asistencia</title><link rel=\"stylesheet\" href=\"/estaticos/css/app.css\"><script src=\"/estaticos/js/htmx.min.js\" defer></script></head><body class=\"min-h-screen bg-slate-50 text-slate-900 antialiased\"><header class=\"border-b border-slate-200 bg-white\"><div class=\"mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 p-4\"><a href=\"/alumnos\" class=\"text-lg font-semibold text-blue-800\">Asistencia</a><div class=\"flex flex-wrap items-center justify-end gap-3 text-sm\"><span class=\"text-slate-600\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -123,26 +123,32 @@ func BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) temp
 				return templ_7745c5c3_Err
 			}
 		}
-		if rol == "administrador" || rol == "docente" || rol == "porteria" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a id=\"indicador-alertas\" href=\"/alertas\" hx-get=\"/alertas/indicador\" hx-trigger=\"load, every 60s\" hx-swap=\"outerHTML\" class=\"inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-800\">Alertas <span class=\"rounded-full bg-blue-700 px-2 py-0.5 text-xs font-semibold text-white\">0</span></a>")
+		if rol == "administrador" || rol == "director" || rol == "docente" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<a href=\"/reportes\" class=\"font-medium text-blue-700\">Reportes</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<form method=\"post\" action=\"/salir\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
+		if rol == "administrador" || rol == "docente" || rol == "porteria" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<a id=\"indicador-alertas\" href=\"/alertas\" hx-get=\"/alertas/indicador\" hx-trigger=\"load, every 60s\" hx-swap=\"outerHTML\" class=\"inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-800\">Alertas <span class=\"rounded-full bg-blue-700 px-2 py-0.5 text-xs font-semibold text-white\">0</span></a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<form method=\"post\" action=\"/salir\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 50, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/base.templ`, Line: 53, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"> <button type=\"submit\" class=\"rounded border border-slate-300 px-3 py-1 font-medium text-slate-700\">Salir</button></form></div></div></header><main class=\"mx-auto w-full max-w-6xl p-4 sm:p-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"> <button type=\"submit\" class=\"rounded border border-slate-300 px-3 py-1 font-medium text-slate-700\">Salir</button></form></div></div></header><main class=\"mx-auto w-full max-w-6xl p-4 sm:p-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -150,7 +156,7 @@ func BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
