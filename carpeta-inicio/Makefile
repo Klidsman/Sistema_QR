@@ -1,8 +1,11 @@
-.PHONY: ejecutar migrar probar lint e2e web sembrar crear-admin
+.PHONY: ejecutar migrar probar lint e2e web templ sembrar crear-admin
 
 web:
 	npm run css
 	npm run htmx
+
+templ:
+	templ generate ./web/plantillas
 
 crear-admin:
 	go run ./cmd/servidor crear-admin

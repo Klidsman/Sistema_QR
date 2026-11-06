@@ -1,0 +1,47 @@
+package vista
+
+import (
+	"asistencia/web/plantillas/paginas"
+)
+
+// Panel muestra el resumen de la configuración académica del año activo.
+templ Panel(usuario string, rol string, tokenCSRF string, anio string, estado string, grados int, secciones int) {
+	@paginas.BaseSesion("Configuración académica", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<h1 class="text-2xl font-semibold">Configuración académica</h1>
+				<p class="mt-1 text-sm text-slate-600">Año escolar, grados, secciones, horarios, calendario y cursos.</p>
+			</div>
+			<a href="/alumnos" class="rounded border border-slate-300 px-4 py-2 font-medium text-slate-700">Volver a alumnos</a>
+		</div>
+
+		<div class="mt-6 rounded border border-slate-200 bg-white p-4">
+			if anio == "" {
+				<p class="text-slate-600">Todavía no hay un año escolar activo. Cree el año para comenzar.</p>
+			} else {
+				<p class="font-medium">Año { anio } · <span class="text-slate-600">{ estado }</span></p>
+				<p class="mt-1 text-sm text-slate-600">{ grados } grado(s) y { secciones } sección(es) registrados.</p>
+			}
+		</div>
+
+		<nav class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Secciones de configuración">
+			@enlaceConfiguracion("/configuracion/anio", "Año escolar", "Fechas de inicio y fin, y cierre del año.")
+			@enlaceConfiguracion("/configuracion/grados", "Grados", "Niveles del año escolar.")
+			@enlaceConfiguracion("/configuracion/secciones", "Secciones", "División de cada grado y su turno.")
+			@enlaceConfiguracion("/configuracion/turnos", "Turnos", "Horarios, tolerancias y cierre por turno.")
+			@enlaceConfiguracion("/configuracion/calendario", "Calendario", "Feriados, no laborables y suspensiones.")
+			@enlaceConfiguracion("/configuracion/umbrales", "Umbrales de alerta", "Tardanzas y faltas por mes.")
+			@enlaceConfiguracion("/configuracion/cursos", "Cursos", "Asignaturas y grados vinculados.")
+			@enlaceConfiguracion("/configuracion/bloques", "Bloques de clase", "Horas de clase de cada turno.")
+			@enlaceConfiguracion("/configuracion/horarios", "Horario semanal", "Cursos por sección, día y bloque.")
+			@enlaceConfiguracion("/configuracion/consulta", "Consulta histórica", "Configuración vigente en una fecha.")
+		</nav>
+	}
+}
+
+templ enlaceConfiguracion(ruta string, titulo string, descripcion string) {
+	<a href={ ruta } class="block rounded border border-slate-200 bg-white p-4 hover:border-blue-300">
+		<span class="font-medium text-blue-800">{ titulo }</span>
+		<span class="mt-1 block text-sm text-slate-600">{ descripcion }</span>
+	</a>
+}

@@ -26,13 +26,13 @@
 
 **Propósito**: constantes, utilidades y estructura compartida.
 
-- [ ] T001 [P] Crear `internal/academico/constantes.go` con `TurnoManana = "manana"`, `TurnoTarde = "tarde"`, `TipoFeriado`, `TipoNoLaborable`, `TipoSuspension`, `TipoUmbralTardanzas` y `TipoUmbralFaltas`
-- [ ] T002 [P] Ampliar `docs/glosario.md` con los términos `vigencia`, `bloque_clase`, `horario_seccion`, `excepcion_calendario`, `umbral`, `curso` y `turno_seccion`
-- [ ] T003 [P] Agregar helpers de hora en `internal/plataforma/fechas/fechas.go`: `ParsearHora`, `FormatearHora`, `SumarMinutos` y una función que compare horas del mismo día
-- [ ] T004 [P] Escribir pruebas de los helpers de hora en `pruebas/unidad/fechas_hora_test.go`
-- [ ] T005 [P] Crear la carpeta `web/plantillas/configuracion/` con `panel.templ` y la navegación entre secciones de configuración
-- [ ] T006 [P] Agregar el objetivo `templ` al `Makefile` con `templ generate ./web/plantillas` y documentarlo en `docs/despliegue.md`
-- [ ] T007 [P] Definir el tipo `Reloj func() time.Time` y su dependencia en `internal/academico/servicio_configuracion.go`, con valor por defecto `fechas.Hoy`
+- [X] T001 [P] Crear `internal/academico/constantes.go` con `TurnoManana = "manana"`, `TurnoTarde = "tarde"`, `TipoFeriado`, `TipoNoLaborable`, `TipoSuspension`, `TipoUmbralTardanzas` y `TipoUmbralFaltas`
+- [X] T002 [P] Ampliar `docs/glosario.md` con los términos `vigencia`, `bloque_clase`, `horario_seccion`, `excepcion_calendario`, `umbral`, `curso` y `turno_seccion`
+- [X] T003 [P] Agregar helpers de hora en `internal/plataforma/fechas/fechas.go`: `ParsearHora`, `FormatearHora`, `SumarMinutos` y una función que compare horas del mismo día
+- [X] T004 [P] Escribir pruebas de los helpers de hora en `pruebas/unidad/fechas_hora_test.go`
+- [X] T005 [P] Crear la carpeta `web/plantillas/configuracion/` con `panel.templ` y la navegación entre secciones de configuración
+- [X] T006 [P] Agregar el objetivo `templ` al `Makefile` con `templ generate ./web/plantillas` y documentarlo en `docs/despliegue.md`
+- [X] T007 [P] Definir el tipo `Reloj func() time.Time` y su dependencia en `internal/academico/servicio_configuracion.go`, con valor por defecto `fechas.Hoy`
 
 ---
 

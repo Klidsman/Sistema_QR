@@ -19,10 +19,16 @@ documentación deben usar estos términos (constitución, principio IX).
 | absent | falta | Sin ingreso al cierre, sin justificación |
 | justified absence | falta_justificada | Falta con justificación aprobada |
 | shift | turno | Mañana o tarde (valores: manana, tarde) |
+| validity date | vigencia | Fecha desde la que aplica un cambio de configuración (`vigente_desde`) |
+| section shift | turno_seccion | Turno de una sección con fecha de vigencia |
+| class block | bloque_clase | Hora de clase de un turno con hora de inicio y de fin |
+| section schedule | horario_seccion | Curso asignado a una sección, día de la semana y bloque |
+| calendar exception | excepcion_calendario | Feriado, día no laborable o suspensión de clases |
+| threshold | umbral | Número de tardanzas o faltas por mes que activa una alerta |
+| course | curso | Asignatura del colegio vinculada a uno o más grados |
 | tolerance | tolerancia | Minutos de gracia después de la hora de ingreso |
 | cutoff | hora_cierre | Hora en que se cierra el registro del turno |
 | alert | alerta | Aviso interno a un usuario |
-| threshold | umbral | Número que activa una alerta de reiteración |
 | audit | auditoria | Registro inmutable de cambios |
 | role | rol | administrador, director, docente, porteria |
 | school year | anio_escolar | Periodo lectivo |

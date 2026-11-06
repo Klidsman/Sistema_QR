@@ -59,3 +59,44 @@ func ParsearDia(texto string) (time.Time, error) {
 	}
 	return fecha, nil
 }
+
+// horaBase es el día de referencia para comparar horas sin fecha.
+var horaBase = time.Date(2000, 1, 1, 0, 0, 0, 0, zonaLima)
+
+// ParsearHora convierte HH:MM a una hora del día en la zona del colegio.
+func ParsearHora(texto string) (time.Time, error) {
+	limpio := strings.TrimSpace(texto)
+	if len(limpio) != 5 || limpio[2] != ':' {
+		return time.Time{}, fmt.Errorf("la hora no tiene el formato HH:MM")
+	}
+	hora, err := time.ParseInLocation("15:04", limpio, zonaLima)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("la hora no tiene el formato HH:MM: %w", err)
+	}
+	return time.Date(horaBase.Year(), horaBase.Month(), horaBase.Day(),
+		hora.Hour(), hora.Minute(), 0, 0, zonaLima), nil
+}
+
+// FormatearHora devuelve la hora en formato HH:MM.
+func FormatearHora(hora time.Time) string {
+	return hora.Format("15:04")
+}
+
+// SumarMinutos devuelve la hora resultante de sumar minutos a una hora del día.
+func SumarMinutos(hora time.Time, minutos int) time.Time {
+	return hora.Add(time.Duration(minutos) * time.Minute)
+}
+
+// CompararHoras compara dos horas del mismo día: devuelve -1, 0 o 1.
+func CompararHoras(primera, segunda time.Time) int {
+	minutosPrimera := primera.Hour()*60 + primera.Minute()
+	minutosSegunda := segunda.Hour()*60 + segunda.Minute()
+	switch {
+	case minutosPrimera < minutosSegunda:
+		return -1
+	case minutosPrimera > minutosSegunda:
+		return 1
+	default:
+		return 0
+	}
+}

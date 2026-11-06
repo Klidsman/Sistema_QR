@@ -26,6 +26,18 @@ Render. La aplicación es un monolito Go que sirve HTML, CSS y JavaScript desde 
 
 Use `.env.ejemplo` como plantilla. No versione el archivo `.env` real.
 
+## Plantillas y estilos en desarrollo
+
+Las plantillas templ se compilan con:
+
+```sh
+make templ
+```
+
+El CSS y HTMX se regeneran con `make web`. Ejecute ambos comandos después de modificar
+`web/plantillas` o `web/estaticos/css/entrada.css`. Los archivos generados se versionan, así que
+la imagen Docker no necesita el compilador de templ.
+
 ## Ejecución local con Docker
 
 1. Construir la imagen:
