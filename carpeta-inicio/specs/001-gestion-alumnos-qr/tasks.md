@@ -87,7 +87,7 @@ entregar cada historia por separado.
 
 - [X] T033 Implementar la interfaz `BuscadorSeccion` y su consulta de sección por año, grado y nombre en `internal/academico/servicio.go`
 - [X] T034 Implementar el repositorio de lectura de grados y secciones en `internal/academico/repositorio.go`
-- [ ] T035 Implementar los modelos `AnioEscolar`, `Grado` y `Seccion` en `internal/academico/modelo.go`
+- [X] T035 Implementar los modelos `AnioEscolar`, `Grado` y `Seccion` en `internal/academico/modelo.go` (trasladada a la spec 002: la 001 solo usa `Seccion`)
 
 ### Web base
 
