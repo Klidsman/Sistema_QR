@@ -1,5 +1,19 @@
 package alertas
 
+import "time"
+
+// RangoDelMes devuelve el primer y el último día del mes de la fecha.
+func RangoDelMes(fecha time.Time) (time.Time, time.Time) {
+	inicio := time.Date(fecha.Year(), fecha.Month(), 1, 0, 0, 0, 0, fecha.Location())
+	return inicio, inicio.AddDate(0, 1, -1)
+}
+
+// DiaCuentaParaRacha indica si el día de la semana puede formar parte de una
+// racha de faltas. Sábados y domingos no cuentan.
+func DiaCuentaParaRacha(dia time.Weekday) bool {
+	return dia != time.Saturday && dia != time.Sunday
+}
+
 // TipoValido indica si el tipo de alerta es conocido.
 func TipoValido(tipo string) bool {
 	return tipo == TipoTardanza || tipo == TipoReiteracionTardanza || tipo == TipoReiteracionFalta

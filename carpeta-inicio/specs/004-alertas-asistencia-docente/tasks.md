@@ -50,10 +50,10 @@
 
 ### Reglas puras
 
-- [ ] T023 [P] Escribir pruebas unitarias de conteo mensual y racha de faltas en `pruebas/unidad/alertas_reglas_test.go`
+- [x] T023 [P] Escribir pruebas unitarias de conteo mensual y racha de faltas en `pruebas/unidad/alertas_reglas_test.go`
 - [x] T024 [P] Escribir pruebas unitarias de deduplicación y destinatarios en `pruebas/unidad/alertas_destinatarios_test.go`
 - [x] T025 Implementar las reglas puras en `internal/alertas/validaciones.go`
-- [ ] T026 Escribir la prueba de migraciones y parámetros en `pruebas/integracion/alertas_migraciones_test.go`
+- [x] T026 Escribir la prueba de migraciones y parámetros en `pruebas/integracion/alertas_migraciones_test.go`
 - [x] T027 Escribir la prueba base de permisos por rol en `pruebas/manejadores/alertas_permisos_test.go`
 
 ### Integración y rutas
@@ -78,7 +78,7 @@
 - [x] T036 [US1] Auditar `crear_alerta` de tardanza
 - [x] T037 [US1] Implementar el indicador de alertas nuevas en `internal/alertas/manejador_indicador.go`
 - [x] T038 [US1] Mostrar el indicador en las plantillas base de los roles autorizados en `web/plantillas/paginas/base.templ`
-- [ ] T039 [US1] Escribir pruebas de manejadores del indicador en `pruebas/manejadores/alertas_indicador_test.go`
+- [x] T039 [US1] Escribir pruebas de manejadores del indicador en `pruebas/manejadores/alertas_indicador_test.go`
 - [ ] T040 [US1] Escribir la prueba E2E de alerta de tardanza para portero en `pruebas/e2e/alertas_tardanza_test.spec.ts`
 
 ---
@@ -89,12 +89,12 @@
 
 **Prueba independiente**: 3 tardanzas generan una sola alerta; 2 faltas seguidas generan una sola alerta; una falta justificada no cuenta.
 
-- [ ] T041 [P] [US2] Escribir pruebas unitarias del umbral mensual en `pruebas/unidad/alertas_reiteracion_tardanzas_test.go`
-- [ ] T042 [P] [US2] Escribir pruebas de integración de reiteración por tardanzas en `pruebas/integracion/alertas_reiteracion_tardanzas_test.go`
+- [x] T041 [P] [US2] Escribir pruebas unitarias del umbral mensual en `pruebas/unidad/alertas_reiteracion_tardanzas_test.go`
+- [x] T042 [P] [US2] Escribir pruebas de integración de reiteración por tardanzas en `pruebas/integracion/alertas_reiteracion_tardanzas_test.go`
 - [x] T043 [US2] Implementar el conteo mensual de tardanzas y la selección del umbral vigente en `internal/alertas/servicio_alertas.go`
 - [x] T044 [US2] Crear la alerta de reiteración por tardanzas para cada docente asignado a la sección en `internal/alertas/servicio_alertas.go`
 - [x] T045 [US2] Auditar `crear_alerta` de reiteración por tardanzas
-- [ ] T046 [P] [US2] Escribir pruebas unitarias de faltas seguidas en `pruebas/unidad/alertas_faltas_seguidas_test.go`
+- [x] T046 [P] [US2] Escribir pruebas unitarias de faltas seguidas en `pruebas/unidad/alertas_faltas_seguidas_test.go`
 - [x] T047 [P] [US2] Escribir pruebas de integración de faltas seguidas en `pruebas/integracion/alertas_faltas_seguidas_test.go`
 - [x] T048 [US2] Implementar el cálculo de la racha de días laborables sin marcación en `internal/alertas/servicio_alertas.go`
 - [x] T049 [US2] Excluir fines de semana, feriados y suspensiones del cálculo en `internal/alertas/servicio_alertas.go`
@@ -102,7 +102,7 @@
 - [x] T051 [US2] Implementar `ProcesarCierre(fecha, turno)` con `cierres_alerta` en `internal/alertas/servicio_procesos.go`
 - [x] T052 [US2] Enviar al administrador las alertas sin docente asignado con `sin_responsable`
 - [x] T053 [US2] Auditar `ejecutar_cierre` y las alertas de faltas
-- [ ] T054 [US2] Escribir pruebas de manejadores de cierre y umbrales en `pruebas/manejadores/alertas_cierre_test.go`
+- [x] T054 [US2] Escribir pruebas de manejadores de cierre y umbrales en `pruebas/manejadores/alertas_cierre_test.go`
 - [ ] T055 [US2] Escribir la prueba E2E de reiteración en `pruebas/e2e/alertas_reiteracion_test.spec.ts`
 
 ---
@@ -113,8 +113,8 @@
 
 **Prueba independiente**: filtrar por sección y tipo, marcar una y luego todas las del filtro.
 
-- [ ] T056 [P] [US3] Escribir pruebas unitarias de filtros y permisos en `pruebas/unidad/alertas_filtros_test.go`
-- [ ] T057 [P] [US3] Escribir pruebas de integración del panel y marcado masivo en `pruebas/integracion/alertas_panel_test.go`
+- [x] T056 [P] [US3] Escribir pruebas unitarias de filtros y permisos en `pruebas/unidad/alertas_filtros_test.go`
+- [x] T057 [P] [US3] Escribir pruebas de integración del panel y marcado masivo en `pruebas/integracion/alertas_panel_test.go`
 - [x] T058 [US3] Implementar `ListarAlertas` con filtros y alcance por rol en `internal/alertas/servicio_alertas.go`
 - [x] T059 [US3] Implementar `MarcarVista` y `MarcarVistas` en `internal/alertas/servicio_alertas.go`
 - [x] T060 [US3] Implementar las rutas del panel y marcado en `internal/alertas/manejador_alertas.go`
@@ -122,8 +122,8 @@
 - [x] T062 [US3] Crear la plantilla `indicador.templ` y su actualización HTMX
 - [x] T063 [US3] Implementar el contador de nuevas por destinatario en `internal/alertas/repositorio_alertas.go`
 - [x] T064 [US3] Auditar `marcar_vista` y `marcar_vistas`
-- [ ] T065 [US3] Escribir pruebas de manejadores del panel en `pruebas/manejadores/alertas_panel_test.go`
-- [ ] T066 [US3] Escribir la prueba E2E de panel, filtros y lectura en `pruebas/e2e/alertas_panel_test.spec.ts`
+- [x] T065 [US3] Escribir pruebas de manejadores del panel en `pruebas/manejadores/alertas_panel_test.go`
+- [x] T066 [US3] Escribir la prueba E2E de panel, filtros y lectura en `pruebas/e2e/alertas_panel_test.spec.ts`
 
 ---
 
@@ -131,29 +131,29 @@
 
 **Objetivo**: configurar tardanzas mensuales y faltas seguidas con vigencia e historial.
 
-- [ ] T067 [P] [US4] Escribir pruebas unitarias de umbrales y vigencia en `pruebas/unidad/alertas_umbrales_test.go`
+- [x] T067 [P] [US4] Escribir pruebas unitarias de umbrales y vigencia en `pruebas/unidad/alertas_umbrales_test.go`
 - [x] T068 [P] [US4] Escribir pruebas de integración de umbrales con vigencia en `pruebas/integracion/alertas_umbrales_test.go`
 - [x] T069 [US4] Ampliar `ValidarUmbral` y el servicio académico para el tipo `faltas_seguidas`
 - [x] T070 [US4] Agregar la opción “Faltas seguidas” a la plantilla `web/plantillas/configuracion/umbrales.templ`
 - [x] T071 [US4] Verificar que un cambio de umbral no modifica alertas anteriores en `pruebas/integracion/alertas_umbrales_test.go`
-- [ ] T072 [US4] Escribir la prueba E2E de configuración de faltas seguidas en `pruebas/e2e/alertas_umbrales_test.spec.ts`
+- [x] T072 [US4] Escribir la prueba E2E de configuración de faltas seguidas en `pruebas/e2e/alertas_umbrales_test.spec.ts`
 
 ---
 
 ## Fase 7: Pulido y transversales
 
-- [ ] T073 [P] Completar la prueba de permisos: docente, portero, administrador y director en `pruebas/manejadores/alertas_permisos_test.go`
-- [ ] T074 [P] Escribir la prueba de CSRF de alertas en `pruebas/manejadores/alertas_seguridad_test.go`
-- [ ] T075 Escribir la prueba de auditoría de todas las acciones en `pruebas/integracion/alertas_auditoria_test.go`
-- [ ] T076 Verificar que las alertas no se eliminan y que “situación cambiada” conserva el registro en `pruebas/integracion/alertas_situacion_test.go`
-- [ ] T077 Implementar `MarcarSituacionCambiada` y su integración con la corrección de asistencia en `internal/alertas/servicio_alertas.go`
-- [ ] T078 Verificar la idempotencia de los dos procesos con ejecuciones repetidas y concurrentes en `pruebas/integracion/alertas_programador_test.go`
+- [x] T073 [P] Completar la prueba de permisos: docente, portero, administrador y director en `pruebas/manejadores/alertas_permisos_test.go`
+- [x] T074 [P] Escribir la prueba de CSRF de alertas en `pruebas/manejadores/alertas_seguridad_test.go`
+- [x] T075 Escribir la prueba de auditoría de todas las acciones en `pruebas/integracion/alertas_auditoria_test.go`
+- [x] T076 Verificar que las alertas no se eliminan y que “situación cambiada” conserva el registro en `pruebas/integracion/alertas_situacion_test.go`
+- [x] T077 Implementar `MarcarSituacionCambiada` y su integración con la corrección de asistencia en `internal/alertas/servicio_alertas.go`
+- [x] T078 Verificar la idempotencia de los dos procesos con ejecuciones repetidas y concurrentes en `pruebas/integracion/alertas_programador_test.go`
 - [ ] T079 Revisar `EXPLAIN ANALYZE` del panel y de los conteos con datos de 2,000 alumnos
-- [ ] T080 Actualizar `docs/manual_administrador.md`, `docs/manual_director.md` y `docs/manual_docente.md`; crear `docs/manual_portero.md`
-- [ ] T081 Actualizar `docs/despliegue.md` con el cron, el tipo de umbral y la ausencia de variables nuevas
-- [ ] T082 Regenerar plantillas, CSS y formato; ejecutar `golangci-lint`, `go test` y Playwright
-- [ ] T083 Validar los escenarios de `quickstart.md` y registrar resultados
-- [ ] T084 Verificar compatibilidad completa con las features 001, 002 y 003 en `pruebas/e2e/`
+- [x] T080 Actualizar `docs/manual_administrador.md`, `docs/manual_director.md` y `docs/manual_docente.md`; crear `docs/manual_portero.md`
+- [x] T081 Actualizar `docs/despliegue.md` con el cron, el tipo de umbral y la ausencia de variables nuevas
+- [x] T082 Regenerar plantillas, CSS y formato; ejecutar `golangci-lint`, `go test` y Playwright
+- [x] T083 Validar los escenarios de `quickstart.md` y registrar resultados
+- [x] T084 Verificar compatibilidad completa con las features 001, 002 y 003 en `pruebas/e2e/`
 
 ---
 

@@ -140,8 +140,7 @@ func (s *Servicio) evaluarReiteracionTardanzas(
 		return nil
 	}
 
-	inicioMes := time.Date(fecha.Year(), fecha.Month(), 1, 0, 0, 0, 0, fecha.Location())
-	finMes := inicioMes.AddDate(0, 1, -1)
+	inicioMes, finMes := RangoDelMes(fecha)
 	conteo, err := s.dependencias.Asistencia.ContarTardanzas(ctx, alumnoID, inicioMes, finMes)
 	if err != nil {
 		return err
@@ -317,7 +316,7 @@ func (s *Servicio) rachaFaltas(ctx context.Context, seccionID, alumnoID int64, f
 	cursor := fecha
 	racha := 0
 	for dias := 0; dias < 366; dias++ {
-		if cursor.Weekday() == time.Saturday || cursor.Weekday() == time.Sunday {
+		if !DiaCuentaParaRacha(cursor.Weekday()) {
 			cursor = cursor.AddDate(0, 0, -1)
 			continue
 		}

@@ -98,6 +98,12 @@ El sistema aplica dos reglas:
 Si un enlace no aparece en la interfaz, tampoco se puede ejecutar escribiendo la dirección
 directamente.
 
+## Alertas
+
+El director no recibe ni accede al panel de alertas en esta versión. Puede consultar las faltas y
+tardanzas en los reportes de asistencia; las alertas internas están reservadas al administrador,
+los docentes y portería.
+
 ## Recomendaciones
 
 - Usar la búsqueda para localizar alumnos por apellido o DNI.

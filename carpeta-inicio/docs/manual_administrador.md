@@ -204,6 +204,21 @@ configuración anterior ni las asistencias ya registradas.
 El registro del docente es personal y no reemplaza la asistencia oficial del QR. Las correcciones
 del administrador y los cambios de plazo quedan auditados.
 
+## Alertas internas
+
+- **Panel** (`/alertas`): muestra todas las alertas del colegio con filtros por fecha, sección,
+  tipo y estado. El administrador ve las alertas de todos los docentes y porteros.
+- **Umbrales** (`/configuracion/umbrales`): define las tardanzas por mes, las faltas por mes y las
+  faltas seguidas. Cada valor tiene fecha de vigencia y no modifica las alertas ya generadas.
+- **Sin responsable**: si una sección no tiene docente asignado, la alerta de reiteración llega
+  al administrador y se marca como “sin responsable”. Desde el panel se puede reasignar a un
+  docente activo.
+- **Lectura**: las alertas pasan de nuevas a vistas y guardan quién y cuándo las leyó. No se
+  eliminan.
+
+El sistema evalúa las tardanzas cada minuto y los cierres de turno a las 13:00 y 19:00. No se
+envían notificaciones externas.
+
 ## Recomendaciones
 
 - Verificar el año escolar activo antes de importar.

@@ -63,6 +63,23 @@ sea el mismo curso y la misma sección.
 El archivo incluye fecha, curso, sección, bloque, identificador, alumno, estado, observación, hora
 QR y docente. Como docente solo se exportan tus propios registros.
 
+## Alertas
+
+El indicador **Alertas** de la barra superior muestra cuántas alertas nuevas tienes y se actualiza
+cada minuto. Al abrirlo se ve el panel `/alertas`.
+
+- **Reiteración de tardanzas**: llega cuando un alumno de tus secciones alcanza el umbral mensual
+  configurado por el administrador.
+- **Faltas seguidas**: llega al cierre del turno cuando un alumno acumula el número configurado de
+  días laborables consecutivos sin marcación oficial.
+
+Puedes filtrar por fecha, tipo y estado, marcar una alerta como vista o marcar como vistas todas
+las que muestra el filtro. Las alertas no se eliminan: si la falta se corrige o se justifica, se
+anotan como **situación cambiada**.
+
+Solo ves las alertas de las secciones donde tienes una asignación vigente. No se envían correos,
+mensajes ni notificaciones a apoderados.
+
 ## Reglas importantes
 
 - No se puede registrar una fecha futura.
