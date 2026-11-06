@@ -107,7 +107,7 @@
 - [ ] T051 [US1] Implementar `MarcarTodosPresentes` solo para alumnos sin registro en `internal/asistencia/servicio_registros.go`
 - [ ] T052 [US1] Implementar las rutas `GET /asistencia`, `GET /asistencia/clase`, `POST /asistencia/clase` y `POST /asistencia/clase/todos` en `internal/asistencia/manejador_asistencia.go`
 - [ ] T053 [US1] Crear las plantillas `seleccion.templ` y `clase.templ` en `web/plantillas/asistencia/`
-- [ ] T054 [US1] Mostrar el estado y la hora del QR junto a cada alumno y destacar diferencias sin alterar el QR
+- [ ] T054 [US1] Mostrar el estado y la hora del QR junto a cada alumno y destacar diferencias sin alterar el QR en `web/plantillas/asistencia/clase.templ`
 - [ ] T055 [US1] Auditar `crear_registro` y `marcar_todos_presentes`
 - [ ] T056 [US1] Escribir las pruebas de manejadores de la clase en `pruebas/manejadores/asistencia_clase_test.go`
 - [ ] T057 [US1] Escribir la prueba E2E de marcar todos y corregir excepciones en `pruebas/e2e/asistencia_clase_test.spec.ts`
@@ -182,7 +182,7 @@
 - [ ] T090 Regenerar plantillas y estilos: `make templ`, `npm run css`, `gofmt -w`
 - [ ] T091 Ejecutar `golangci-lint`, `go build`, `go vet`, `go test ./...` y Playwright completo
 - [ ] T092 Validar los escenarios de `specs/003-registro-asistencia-docente/quickstart.md` y registrar resultados en el mismo archivo
-- [ ] T093 Verificar compatibilidad con las features 001 y 002 (suite y E2E existentes)
+- [ ] T093 Verificar compatibilidad con las features 001 y 002 (suite y E2E existentes) en `pruebas/e2e/`
 
 ---
 
