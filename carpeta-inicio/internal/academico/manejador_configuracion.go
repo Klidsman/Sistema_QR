@@ -42,6 +42,7 @@ type ServicioAcademico interface {
 	UmbralesVigentes(ctx context.Context, anioID int64, fecha time.Time) ([]UmbralAlerta, error)
 	ListarUmbrales(ctx context.Context, anioID int64) ([]UmbralAlerta, error)
 	ConfigurarUmbral(ctx context.Context, usuarioID int64, umbral UmbralAlerta) error
+	ConfiguracionEnFecha(ctx context.Context, fecha time.Time) (ConfiguracionFecha, error)
 	CrearAnio(ctx context.Context, usuarioID int64, datos DatosAnio) (int64, error)
 	CerrarAnio(ctx context.Context, usuarioID, anioID int64) error
 	CrearGrado(ctx context.Context, usuarioID int64, datos DatosGrado) (int64, error)
@@ -87,6 +88,7 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Get("/configuracion/horarios", m.horarios)
 		lectura.Get("/configuracion/calendario", m.calendario)
 		lectura.Get("/configuracion/umbrales", m.umbrales)
+		lectura.Get("/configuracion/consulta", m.consulta)
 	})
 
 	enrutador.Group(func(edicionCompartida chi.Router) {

@@ -245,16 +245,16 @@
 
 ### Pruebas
 
-- [ ] T088 [P] [US5] Escribir pruebas unitarias de selección de versión por fecha y del año que cubre la fecha en `pruebas/unidad/consulta_historica_test.go`
-- [ ] T089 [P] [US5] Escribir pruebas de integración de la consulta histórica completa en `pruebas/integracion/consulta_historica_test.go`
+- [X] T088 [P] [US5] Escribir pruebas unitarias de selección de versión por fecha y del año que cubre la fecha en `pruebas/unidad/consulta_historica_test.go`
+- [X] T089 [P] [US5] Escribir pruebas de integración de la consulta histórica completa en `pruebas/integracion/consulta_historica_test.go`
 
 ### Implementación
 
-- [ ] T090 [US5] Implementar `ConfiguracionEnFecha` en `internal/academico/consulta_historica.go`
-- [ ] T091 [US5] Implementar la ruta `GET /configuracion/consulta?fecha=` en `internal/academico/manejador_configuracion.go`
-- [ ] T092 [US5] Crear la plantilla `consulta.templ` en `web/plantillas/configuracion/` con el detalle por turno, sección, excepción y umbral
-- [ ] T093 [US5] Escribir las pruebas de manejadores de US5 en `pruebas/manejadores/configuracion_consulta_test.go`
-- [ ] T094 [US5] Escribir la prueba E2E de US5 en `pruebas/e2e/configuracion_consulta_test.spec.ts`
+- [X] T090 [US5] Implementar `ConfiguracionEnFecha` en `internal/academico/consulta_historica.go`
+- [X] T091 [US5] Implementar la ruta `GET /configuracion/consulta?fecha=` en `internal/academico/manejador_configuracion.go`
+- [X] T092 [US5] Crear la plantilla `consulta.templ` en `web/plantillas/configuracion/` con el detalle por turno, sección, excepción y umbral
+- [X] T093 [US5] Escribir las pruebas de manejadores de US5 en `pruebas/manejadores/configuracion_consulta_test.go`
+- [X] T094 [US5] Escribir la prueba E2E de US5 en `pruebas/e2e/configuracion_consulta_test.spec.ts`
 
 **Punto de control**: todas las historias funcionan y la consulta histórica responde con la versión correcta.
 

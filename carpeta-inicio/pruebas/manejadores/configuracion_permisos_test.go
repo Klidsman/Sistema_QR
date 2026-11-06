@@ -43,6 +43,7 @@ type configuracionFalsa struct {
 	umbralesVigentes   []academico.UmbralAlerta
 	historialUmbrales  []academico.UmbralAlerta
 	configurarUmbral   func(academico.UmbralAlerta) error
+	configuracionFecha academico.ConfiguracionFecha
 }
 
 func (c configuracionFalsa) Resumen(_ context.Context) (academico.ResumenConfiguracion, error) {
@@ -158,6 +159,10 @@ func (c configuracionFalsa) ConfigurarUmbral(_ context.Context, _ int64, umbral 
 		return c.configurarUmbral(umbral)
 	}
 	return c.err
+}
+
+func (c configuracionFalsa) ConfiguracionEnFecha(_ context.Context, _ time.Time) (academico.ConfiguracionFecha, error) {
+	return c.configuracionFecha, c.err
 }
 
 func (c configuracionFalsa) CrearAnio(_ context.Context, _ int64, datos academico.DatosAnio) (int64, error) {
