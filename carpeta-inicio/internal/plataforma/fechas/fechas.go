@@ -87,6 +87,13 @@ func SumarMinutos(hora time.Time, minutos int) time.Time {
 	return hora.Add(time.Duration(minutos) * time.Minute)
 }
 
+// CompararDia compara dos valores de fecha por su día civil, sin convertir de zona.
+// Devuelve -1, 0 o 1. Sirve para comparar fechas de base de datos con fechas de la zona
+// del colegio sin que la hora de medianoche altere el resultado.
+func CompararDia(primera, segunda time.Time) int {
+	return strings.Compare(FormatearISO(primera), FormatearISO(segunda))
+}
+
 // CompararHoras compara dos horas del mismo día: devuelve -1, 0 o 1.
 func CompararHoras(primera, segunda time.Time) int {
 	minutosPrimera := primera.Hour()*60 + primera.Minute()

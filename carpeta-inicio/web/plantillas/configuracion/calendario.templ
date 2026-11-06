@@ -1,0 +1,149 @@
+package vista
+
+import (
+	"fmt"
+
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Calendario(usuario string, rol string, tokenCSRF string, activo *AnioVista, grados []GradoOpcion, excepciones []ExcepcionVista, formulario FormularioExcepcion, confirmar bool, mensaje string, mensajeError string) {
+	@paginas.BaseSesion("Calendario", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/configuracion" class="text-sm font-medium text-blue-700">← Configuración</a>
+				<h1 class="mt-1 text-2xl font-semibold">Calendario</h1>
+				if activo != nil {
+					<p class="text-sm text-slate-600">Año { activo.Nombre }</p>
+				}
+			</div>
+		</div>
+
+		if mensaje != "" {
+			<p role="status" class="mt-4 rounded bg-green-100 p-3 text-green-800">{ mensaje }</p>
+		}
+		if mensajeError != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensajeError }</p>
+		}
+
+		if activo == nil {
+			<div class="mt-6 rounded border border-amber-200 bg-amber-50 p-4">
+				<p class="text-amber-900">No hay un año escolar activo. Cree el año antes de registrar excepciones.</p>
+				<a href="/configuracion/anio" class="mt-3 inline-block rounded bg-blue-700 px-4 py-2 font-semibold text-white">Ir al año escolar</a>
+			</div>
+		} else {
+			if confirmar {
+				<div class="mt-6 rounded border border-amber-300 bg-amber-50 p-4">
+					<p class="font-medium text-amber-900">Hay una excepción que se superpone con otra del mismo alcance.</p>
+					<form method="post" action="/configuracion/calendario" class="mt-3">
+						<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+						<input type="hidden" name="confirmar" value="si"/>
+						<input type="hidden" name="tipo" value={ formulario.Tipo }/>
+						<input type="hidden" name="fecha_inicio" value={ formulario.FechaInicio }/>
+						<input type="hidden" name="fecha_fin" value={ formulario.FechaFin }/>
+						<input type="hidden" name="motivo" value={ formulario.Motivo }/>
+						for _, gradoID := range formulario.Grados {
+							<input type="hidden" name="grados" value={ fmt.Sprintf("%d", gradoID) }/>
+						}
+						<button type="submit" class="rounded bg-amber-700 px-4 py-2 font-semibold text-white">Confirmar y guardar</button>
+					</form>
+				</div>
+			} else if rol == "administrador" {
+				<form method="post" action="/configuracion/calendario" class="mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-2">
+					<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+					<label class="block">
+						<span class="text-sm font-medium">Tipo *</span>
+						<select name="tipo" required class="mt-1 w-full rounded border border-slate-300 p-2">
+							<option value="feriado" selected?={ formulario.Tipo == "feriado" }>Feriado</option>
+							<option value="no_laborable" selected?={ formulario.Tipo == "no_laborable" }>No laborable</option>
+							<option value="suspension" selected?={ formulario.Tipo == "suspension" }>Suspensión</option>
+						</select>
+					</label>
+					<label class="block">
+						<span class="text-sm font-medium">Motivo *</span>
+						<input type="text" name="motivo" value={ formulario.Motivo } required minlength="3" maxlength="200" class="mt-1 w-full rounded border border-slate-300 p-2"/>
+					</label>
+					<label class="block">
+						<span class="text-sm font-medium">Fecha de inicio *</span>
+						<input type="date" name="fecha_inicio" value={ formulario.FechaInicio } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+					</label>
+					<label class="block">
+						<span class="text-sm font-medium">Fecha de fin *</span>
+						<input type="date" name="fecha_fin" value={ formulario.FechaFin } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+					</label>
+					<fieldset class="sm:col-span-2">
+						<legend class="text-sm font-medium">Alcance (sin marcar = todo el colegio)</legend>
+						<div class="mt-2 flex flex-wrap gap-4">
+							for _, grado := range grados {
+								<label class="flex items-center gap-2">
+									<input type="checkbox" name="grados" value={ fmt.Sprintf("%d", grado.ID) } checked?={ gradoSeleccionado(formulario.Grados, grado.ID) } class="h-4 w-4"/>
+									<span>{ grado.Nombre }</span>
+								</label>
+							}
+						</div>
+					</fieldset>
+					<div class="sm:col-span-2">
+						<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Registrar excepción</button>
+					</div>
+				</form>
+			}
+
+			<form method="get" action="/configuracion/calendario" class="mt-6 grid gap-3 rounded border border-slate-200 bg-white p-4 sm:grid-cols-3">
+				<label class="block">
+					<span class="text-sm font-medium">Mes</span>
+					<input type="month" name="mes" class="mt-1 w-full rounded border border-slate-300 p-2"/>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium">Grado</span>
+					<select name="grado_id" class="mt-1 w-full rounded border border-slate-300 p-2">
+						<option value="">Todos</option>
+						for _, grado := range grados {
+							<option value={ fmt.Sprintf("%d", grado.ID) }>{ grado.Nombre }</option>
+						}
+					</select>
+				</label>
+				<div class="flex items-end">
+					<button type="submit" class="rounded border border-slate-300 px-4 py-2 font-medium">Filtrar</button>
+				</div>
+			</form>
+
+			<h2 class="mt-8 text-lg font-semibold">Excepciones del año { activo.Nombre }</h2>
+			if len(excepciones) == 0 {
+				<p class="mt-2 text-slate-600">No hay excepciones registradas con estos filtros.</p>
+			} else {
+				<div class="mt-3 overflow-x-auto rounded border border-slate-200 bg-white">
+					<table class="w-full text-left text-sm">
+						<thead class="bg-slate-100 text-slate-700">
+							<tr>
+								<th class="p-3">Tipo</th>
+								<th class="p-3">Desde</th>
+								<th class="p-3">Hasta</th>
+								<th class="p-3">Motivo</th>
+								<th class="p-3">Alcance</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, excepcion := range excepciones {
+								<tr class="border-t border-slate-100">
+									<td class="p-3 font-medium">{ excepcion.Tipo }</td>
+									<td class="p-3">{ excepcion.Inicio }</td>
+									<td class="p-3">{ excepcion.Fin }</td>
+									<td class="p-3">{ excepcion.Motivo }</td>
+									<td class="p-3">{ excepcion.Grados }</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		}
+	}
+}
+
+func gradoSeleccionado(grados []int64, gradoID int64) bool {
+	for _, seleccionado := range grados {
+		if seleccionado == gradoID {
+			return true
+		}
+	}
+	return false
+}

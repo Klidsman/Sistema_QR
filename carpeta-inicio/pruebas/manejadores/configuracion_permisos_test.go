@@ -18,26 +18,28 @@ import (
 )
 
 type configuracionFalsa struct {
-	resumen           academico.ResumenConfiguracion
-	err               error
-	grados            []academico.Grado
-	secciones         []academico.Seccion
-	crearAnio         func(academico.DatosAnio) (int64, error)
-	crearGrado        func(academico.DatosGrado) (int64, error)
-	crearSeccion      func(academico.DatosSeccion) (int64, error)
-	cambiarTurno      func(int64, string, time.Time) error
-	cerrarAnio        func() error
-	horarios          map[string]academico.HorarioTurno
-	historial         map[string][]academico.HorarioTurno
-	configurarHorario func(academico.HorarioTurno) error
-	bloques           map[string][]academico.BloqueClase
-	crearBloque       func(academico.BloqueClase) (int64, error)
-	ajustarBloque     func(int64, time.Time, time.Time, time.Time) error
-	cursos            []academico.Curso
-	crearCurso        func(academico.DatosCurso) (int64, error)
-	desactivarCurso   func(int64) error
-	grilla            academico.GrillaHorario
-	guardarCeldas     func(int64, time.Time, []academico.CambioCelda, bool) error
+	resumen            academico.ResumenConfiguracion
+	err                error
+	grados             []academico.Grado
+	secciones          []academico.Seccion
+	crearAnio          func(academico.DatosAnio) (int64, error)
+	crearGrado         func(academico.DatosGrado) (int64, error)
+	crearSeccion       func(academico.DatosSeccion) (int64, error)
+	cambiarTurno       func(int64, string, time.Time) error
+	cerrarAnio         func() error
+	horarios           map[string]academico.HorarioTurno
+	historial          map[string][]academico.HorarioTurno
+	configurarHorario  func(academico.HorarioTurno) error
+	bloques            map[string][]academico.BloqueClase
+	crearBloque        func(academico.BloqueClase) (int64, error)
+	ajustarBloque      func(int64, time.Time, time.Time, time.Time) error
+	cursos             []academico.Curso
+	crearCurso         func(academico.DatosCurso) (int64, error)
+	desactivarCurso    func(int64) error
+	grilla             academico.GrillaHorario
+	guardarCeldas      func(int64, time.Time, []academico.CambioCelda, bool) error
+	excepciones        []academico.ExcepcionCalendario
+	registrarExcepcion func(academico.DatosExcepcion, bool) (int64, error)
 }
 
 func (c configuracionFalsa) Resumen(_ context.Context) (academico.ResumenConfiguracion, error) {
@@ -127,6 +129,17 @@ func (c configuracionFalsa) GuardarCeldas(_ context.Context, _, _ int64, fecha t
 		return c.guardarCeldas(0, fecha, cambios, confirmar)
 	}
 	return c.err
+}
+
+func (c configuracionFalsa) ListarExcepciones(_ context.Context, _ int64) ([]academico.ExcepcionCalendario, error) {
+	return c.excepciones, c.err
+}
+
+func (c configuracionFalsa) RegistrarExcepcion(_ context.Context, _ int64, datos academico.DatosExcepcion, confirmar bool) (int64, error) {
+	if c.registrarExcepcion != nil {
+		return c.registrarExcepcion(datos, confirmar)
+	}
+	return 1, c.err
 }
 
 func (c configuracionFalsa) CrearAnio(_ context.Context, _ int64, datos academico.DatosAnio) (int64, error) {

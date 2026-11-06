@@ -625,6 +625,65 @@ func (q *Queries) DesactivarCurso(ctx context.Context, id int64) (int64, error) 
 	return result.RowsAffected(), nil
 }
 
+const excepcionesQueAlcanzanSeccion = `-- name: ExcepcionesQueAlcanzanSeccion :many
+SELECT e.id,
+       e.anio_escolar_id,
+       e.tipo,
+       e.fecha_inicio,
+       e.fecha_fin,
+       e.motivo,
+       e.creado_por,
+       e.creado_en
+FROM excepciones_calendario e
+JOIN secciones s ON s.id = $1
+JOIN grados g ON g.id = s.grado_id
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+WHERE e.anio_escolar_id = an.id
+  AND $2 BETWEEN e.fecha_inicio AND e.fecha_fin
+  AND (
+    NOT EXISTS (SELECT 1 FROM excepciones_grados eg WHERE eg.excepcion_id = e.id)
+    OR EXISTS (
+        SELECT 1 FROM excepciones_grados eg
+        WHERE eg.excepcion_id = e.id AND eg.grado_id = g.id
+    )
+  )
+ORDER BY e.fecha_inicio, e.id
+`
+
+type ExcepcionesQueAlcanzanSeccionParams struct {
+	ID          int64
+	FechaInicio pgtype.Date
+}
+
+func (q *Queries) ExcepcionesQueAlcanzanSeccion(ctx context.Context, arg ExcepcionesQueAlcanzanSeccionParams) ([]ExcepcionesCalendario, error) {
+	rows, err := q.db.Query(ctx, excepcionesQueAlcanzanSeccion, arg.ID, arg.FechaInicio)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ExcepcionesCalendario
+	for rows.Next() {
+		var i ExcepcionesCalendario
+		if err := rows.Scan(
+			&i.ID,
+			&i.AnioEscolarID,
+			&i.Tipo,
+			&i.FechaInicio,
+			&i.FechaFin,
+			&i.Motivo,
+			&i.CreadoPor,
+			&i.CreadoEn,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const gradoDeSeccion = `-- name: GradoDeSeccion :one
 SELECT g.id
 FROM secciones s

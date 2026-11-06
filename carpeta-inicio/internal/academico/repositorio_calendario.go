@@ -109,6 +109,31 @@ func (r *RepositorioConfiguracion) ListarExcepcionesPorAnio(ctx context.Context,
 	return excepciones, nil
 }
 
+// ExcepcionesDeSeccion devuelve las excepciones que alcanzan una sección en la fecha.
+func (r *RepositorioConfiguracion) ExcepcionesDeSeccion(ctx context.Context, seccionID int64, fecha time.Time) ([]ExcepcionCalendario, error) {
+	filas, err := r.consultas.ExcepcionesQueAlcanzanSeccion(ctx, generado.ExcepcionesQueAlcanzanSeccionParams{
+		ID:          seccionID,
+		FechaInicio: parametroFecha(fecha),
+	})
+	if err != nil {
+		return nil, err
+	}
+	excepciones := make([]ExcepcionCalendario, 0, len(filas))
+	for _, fila := range filas {
+		excepciones = append(excepciones, ExcepcionCalendario{
+			ID:            fila.ID,
+			AnioEscolarID: fila.AnioEscolarID,
+			Tipo:          fila.Tipo,
+			FechaInicio:   fila.FechaInicio.Time,
+			FechaFin:      fila.FechaFin.Time,
+			Motivo:        fila.Motivo,
+			CreadoPor:     fila.CreadoPor,
+			CreadoEn:      fila.CreadoEn.Time,
+		})
+	}
+	return excepciones, nil
+}
+
 // CrearUmbral registra una versión del umbral de alerta.
 func (r *RepositorioConfiguracion) CrearUmbral(ctx context.Context, umbral UmbralAlerta) (int64, error) {
 	return r.consultas.CrearUmbralAlerta(ctx, generado.CrearUmbralAlertaParams{

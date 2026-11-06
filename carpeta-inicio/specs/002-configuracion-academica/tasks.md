@@ -197,17 +197,17 @@
 
 ### Pruebas
 
-- [ ] T072 [P] [US3] Escribir pruebas unitarias de excepciones en `pruebas/unidad/calendario_test.go`: rango válido, fin de semana, alcance global, alcance por grado, solapamiento
-- [ ] T073 [P] [US3] Escribir pruebas de integración de excepciones y consulta por sección y fecha en `pruebas/integracion/calendario_test.go`
+- [X] T072 [P] [US3] Escribir pruebas unitarias de excepciones en `pruebas/unidad/calendario_test.go`: rango válido, fin de semana, alcance global, alcance por grado, solapamiento
+- [X] T073 [P] [US3] Escribir pruebas de integración de excepciones y consulta por sección y fecha en `pruebas/integracion/calendario_test.go`
 
 ### Implementación
 
-- [ ] T074 [US3] Implementar `RegistrarExcepcion`, `ExcepcionesVigentes` y `DetectarSolapamiento` en `internal/academico/servicio_calendario.go`
-- [ ] T075 [US3] Implementar el manejador de calendario con confirmación de solapamiento en `internal/academico/manejador_calendario.go`
-- [ ] T076 [US3] Crear la plantilla `calendario.templ` en `web/plantillas/configuracion/` con filtros por mes y grado
-- [ ] T077 [US3] Registrar la auditoría de `registrar_excepcion`
-- [ ] T078 [US3] Escribir las pruebas de manejadores de US3 en `pruebas/manejadores/configuracion_calendario_test.go`
-- [ ] T079 [US3] Escribir la prueba E2E de US3 en `pruebas/e2e/configuracion_calendario_test.spec.ts`
+- [X] T074 [US3] Implementar `RegistrarExcepcion`, `ExcepcionesVigentes` y `DetectarSolapamiento` en `internal/academico/servicio_calendario.go`
+- [X] T075 [US3] Implementar el manejador de calendario con confirmación de solapamiento en `internal/academico/manejador_calendario.go`
+- [X] T076 [US3] Crear la plantilla `calendario.templ` en `web/plantillas/configuracion/` con filtros por mes y grado
+- [X] T077 [US3] Registrar la auditoría de `registrar_excepcion`
+- [X] T078 [US3] Escribir las pruebas de manejadores de US3 en `pruebas/manejadores/configuracion_calendario_test.go`
+- [X] T079 [US3] Escribir la prueba E2E de US3 en `pruebas/e2e/configuracion_calendario_test.spec.ts`
 
 **Punto de control**: calendario con alcance correcto y solapamientos advertidos.
 

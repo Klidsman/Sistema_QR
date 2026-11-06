@@ -37,6 +37,8 @@ type ServicioAcademico interface {
 	DesactivarCurso(ctx context.Context, usuarioID, cursoID int64) error
 	ObtenerGrilla(ctx context.Context, seccionID int64, fecha time.Time) (GrillaHorario, error)
 	GuardarCeldas(ctx context.Context, usuarioID, seccionID int64, fecha time.Time, cambios []CambioCelda, confirmar bool) error
+	ListarExcepciones(ctx context.Context, anioID int64) ([]ExcepcionCalendario, error)
+	RegistrarExcepcion(ctx context.Context, usuarioID int64, datos DatosExcepcion, confirmar bool) (int64, error)
 	CrearAnio(ctx context.Context, usuarioID int64, datos DatosAnio) (int64, error)
 	CerrarAnio(ctx context.Context, usuarioID, anioID int64) error
 	CrearGrado(ctx context.Context, usuarioID int64, datos DatosGrado) (int64, error)
@@ -80,6 +82,7 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Get("/configuracion/bloques", m.bloques)
 		lectura.Get("/configuracion/cursos", m.cursos)
 		lectura.Get("/configuracion/horarios", m.horarios)
+		lectura.Get("/configuracion/calendario", m.calendario)
 	})
 
 	enrutador.Group(func(edicionCompartida chi.Router) {
@@ -100,6 +103,7 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Post("/configuracion/cursos", m.crearCurso)
 		escritura.Post("/configuracion/cursos/{id}/desactivacion", m.desactivarCurso)
 		escritura.Post("/configuracion/horarios", m.guardarHorario)
+		escritura.Post("/configuracion/calendario", m.registrarExcepcion)
 	})
 }
 
@@ -736,6 +740,8 @@ func mensajeDeError(err error) string {
 		return "La sección no existe en el año escolar."
 	case errors.Is(err, ErrRequiereConfirmacion):
 		return "La celda ya tiene un curso asignado. Confirme el reemplazo para continuar."
+	case errors.Is(err, ErrExcepcionSolapada):
+		return "La excepción se superpone con otra del mismo alcance. Confirme para guardarla de todos modos."
 	default:
 		return "No se pudo guardar el cambio. Revise los datos e intente de nuevo."
 	}

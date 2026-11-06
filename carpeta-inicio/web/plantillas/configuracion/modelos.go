@@ -25,6 +25,25 @@ type SeccionVista struct {
 	Turno  string
 }
 
+// ExcepcionVista es una excepción de calendario preparada para mostrarse.
+type ExcepcionVista struct {
+	ID     int64
+	Tipo   string
+	Inicio string
+	Fin    string
+	Motivo string
+	Grados string
+}
+
+// FormularioExcepcion conserva los datos del formulario de calendario.
+type FormularioExcepcion struct {
+	Tipo        string
+	FechaInicio string
+	FechaFin    string
+	Motivo      string
+	Grados      []int64
+}
+
 // CursoVista es un curso preparado para mostrarse en la interfaz.
 type CursoVista struct {
 	ID     int64

@@ -247,6 +247,30 @@ FROM excepciones_grados eg
 JOIN excepciones_calendario e ON e.id = eg.excepcion_id
 WHERE e.anio_escolar_id = $1;
 
+-- name: ExcepcionesQueAlcanzanSeccion :many
+SELECT e.id,
+       e.anio_escolar_id,
+       e.tipo,
+       e.fecha_inicio,
+       e.fecha_fin,
+       e.motivo,
+       e.creado_por,
+       e.creado_en
+FROM excepciones_calendario e
+JOIN secciones s ON s.id = $1
+JOIN grados g ON g.id = s.grado_id
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+WHERE e.anio_escolar_id = an.id
+  AND $2 BETWEEN e.fecha_inicio AND e.fecha_fin
+  AND (
+    NOT EXISTS (SELECT 1 FROM excepciones_grados eg WHERE eg.excepcion_id = e.id)
+    OR EXISTS (
+        SELECT 1 FROM excepciones_grados eg
+        WHERE eg.excepcion_id = e.id AND eg.grado_id = g.id
+    )
+  )
+ORDER BY e.fecha_inicio, e.id;
+
 -- name: CrearUmbralAlerta :one
 INSERT INTO umbrales_alerta (anio_escolar_id, tipo, valor, vigente_desde)
 VALUES ($1, $2, $3, $4)
