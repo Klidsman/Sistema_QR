@@ -1,6 +1,7 @@
 package asistencia
 
 import (
+	"fmt"
 	"time"
 
 	"asistencia/internal/plataforma/fechas"
@@ -68,6 +69,11 @@ func AsignacionVigenteEnFecha(asignacion AsignacionDocente, fecha time.Time) boo
 		return false
 	}
 	return asignacion.FechaFin == nil || fechas.CompararDia(fecha, *asignacion.FechaFin) <= 0
+}
+
+// ClaveClase identifica una hora de clase por fecha, sección, curso y bloque.
+func ClaveClase(fecha time.Time, seccionID, cursoID int64, bloque int) string {
+	return fmt.Sprintf("%s|%d|%d|%d", fechas.FormatearISO(fecha), seccionID, cursoID, bloque)
 }
 
 // ValidarPlazoHoras exige un plazo entre 1 y 168 horas.

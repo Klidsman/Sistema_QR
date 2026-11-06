@@ -144,12 +144,12 @@
 
 **Prueba independiente**: registrar dos bloques del mismo curso con estados distintos y verificar independencia.
 
-- [ ] T069 [P] [US4] Escribir pruebas unitarias de la clave fecha, curso, sección y bloque en `pruebas/unidad/asistencia_bloques_test.go`
-- [ ] T070 [P] [US4] Escribir pruebas de integración de dos bloques independientes en `pruebas/integracion/asistencia_bloques_test.go`
-- [ ] T071 [US4] Incluir el bloque en la clave natural y en la consulta de clase en `internal/asistencia/consultas/asistencia.sql`
-- [ ] T072 [US4] Mostrar el bloque y su horario en la lista y el selector de clases en `web/plantillas/asistencia/`
-- [ ] T073 [US4] Escribir las pruebas de manejadores de cambio de bloque en `pruebas/manejadores/asistencia_bloques_test.go`
-- [ ] T074 [US4] Escribir la prueba E2E de dos bloques con estados distintos en `pruebas/e2e/asistencia_bloques_test.spec.ts`
+- [X] T069 [P] [US4] Escribir pruebas unitarias de la clave fecha, curso, sección y bloque en `pruebas/unidad/asistencia_bloques_test.go`
+- [X] T070 [P] [US4] Escribir pruebas de integración de dos bloques independientes en `pruebas/integracion/asistencia_bloques_test.go`
+- [X] T071 [US4] Incluir el bloque en la clave natural y en la consulta de clase en `internal/asistencia/consultas/asistencia.sql`
+- [X] T072 [US4] Mostrar el bloque y su horario en la lista y el selector de clases en `web/plantillas/asistencia/`
+- [X] T073 [US4] Escribir las pruebas de manejadores de cambio de bloque en `pruebas/manejadores/asistencia_bloques_test.go`
+- [X] T074 [US4] Escribir la prueba E2E de dos bloques con estados distintos en `pruebas/e2e/asistencia_bloques_test.spec.ts`
 
 **Punto de control**: registro por hora completo.
 

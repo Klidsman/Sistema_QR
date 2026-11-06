@@ -99,6 +99,7 @@ func TestAsistenciaClase_GuardaYMarchaTodos(t *testing.T) {
 	assert.Equal(t, int64(10), falso.guardados[0].AlumnoID)
 	assert.Equal(t, asistencia.EstadoFalta, falso.guardados[0].Estado)
 	assert.Equal(t, "Sin justificar", falso.guardados[0].Observacion)
+	assert.Equal(t, 1, falso.bloqueRecibido)
 
 	peticion = peticionPostFormulario(t, sesiones, "/asistencia/clase/todos", url.Values{
 		"fecha":      {fechas.FormatearISO(fechas.Hoy())},
@@ -109,6 +110,24 @@ func TestAsistenciaClase_GuardaYMarchaTodos(t *testing.T) {
 	respuesta = ejecutarAsistencia(manejador, peticion)
 	require.Equal(t, http.StatusSeeOther, respuesta.Code)
 	assert.Contains(t, respuesta.Header().Get("Location"), "ok=todos")
+}
+
+func TestAsistenciaClase_EnviaElBloqueIndicado(t *testing.T) {
+	falso := &asistenciaFalsa{detalle: detalleClaseDePrueba(t)}
+	manejador, sesiones := nuevoManejadorAsistencia(t, falso)
+
+	peticion := peticionPostFormulario(t, sesiones, "/asistencia/clase", url.Values{
+		"fecha":      {fechas.FormatearISO(fechas.Hoy())},
+		"seccion_id": {"5"},
+		"curso_id":   {"2"},
+		"bloque":     {"2"},
+		"estado_10":  {asistencia.EstadoPresente},
+	}, "docente")
+	respuesta := ejecutarAsistencia(manejador, peticion)
+
+	require.Equal(t, http.StatusSeeOther, respuesta.Code)
+	assert.Equal(t, 2, falso.bloqueRecibido)
+	assert.Contains(t, respuesta.Header().Get("Location"), "bloque=2")
 }
 
 func TestAsistenciaClase_DirectorNoAccedeAlRegistro(t *testing.T) {

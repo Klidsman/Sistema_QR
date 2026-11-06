@@ -142,18 +142,19 @@ func TestDocentes_AdministradorRestableceYDesactiva(t *testing.T) {
 }
 
 type asistenciaFalsa struct {
-	asignaciones  []asistencia.AsignacionVista
-	creada        *asistencia.DatosAsignacion
-	cerrada       int64
-	clases        []asistencia.ClaseAsignada
-	detalle       asistencia.ClaseDetalle
-	guardados     []asistencia.CambioRegistro
-	marcarCreados int
-	consulta      []asistencia.ConsultaRegistro
-	corregido     *asistencia.ConsultaRegistro
-	correccionErr error
-	plazo         asistencia.ParametrosAsistencia
-	plazoNuevo    int
+	asignaciones   []asistencia.AsignacionVista
+	creada         *asistencia.DatosAsignacion
+	cerrada        int64
+	clases         []asistencia.ClaseAsignada
+	detalle        asistencia.ClaseDetalle
+	guardados      []asistencia.CambioRegistro
+	marcarCreados  int
+	consulta       []asistencia.ConsultaRegistro
+	corregido      *asistencia.ConsultaRegistro
+	correccionErr  error
+	plazo          asistencia.ParametrosAsistencia
+	plazoNuevo     int
+	bloqueRecibido int
 }
 
 func (a *asistenciaFalsa) ListarAsignaciones(context.Context) ([]asistencia.AsignacionVista, error) {
@@ -190,8 +191,9 @@ func (a *asistenciaFalsa) ListarClase(_ context.Context, _ int64, _ bool, _ time
 	return a.detalle, nil
 }
 
-func (a *asistenciaFalsa) GuardarRegistros(_ context.Context, _ int64, _ bool, _ time.Time, _, _ int64, _ int, cambios []asistencia.CambioRegistro) error {
+func (a *asistenciaFalsa) GuardarRegistros(_ context.Context, _ int64, _ bool, _ time.Time, _, _ int64, bloque int, cambios []asistencia.CambioRegistro) error {
 	a.guardados = cambios
+	a.bloqueRecibido = bloque
 	return nil
 }
 

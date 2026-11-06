@@ -144,7 +144,7 @@ func (s *Servicio) GuardarRegistros(ctx context.Context, usuarioID int64, admini
 
 	return s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
 		if _, err := db.Exec(ctx, "SELECT pg_advisory_xact_lock(hashtext($1))",
-			fmt.Sprintf("clase_%d_%d_%d_%s", seccionID, cursoID, bloque, fechas.FormatearISO(fecha))); err != nil {
+			ClaveClase(fecha, seccionID, cursoID, bloque)); err != nil {
 			return fmt.Errorf("bloqueando la clase: %w", err)
 		}
 		for _, cambio := range cambios {
@@ -209,7 +209,7 @@ func (s *Servicio) MarcarTodosPresentes(ctx context.Context, usuarioID int64, ad
 	creados := 0
 	err = s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
 		if _, err := db.Exec(ctx, "SELECT pg_advisory_xact_lock(hashtext($1))",
-			fmt.Sprintf("clase_%d_%d_%d_%s", seccionID, cursoID, bloque, fechas.FormatearISO(fecha))); err != nil {
+			ClaveClase(fecha, seccionID, cursoID, bloque)); err != nil {
 			return fmt.Errorf("bloqueando la clase: %w", err)
 		}
 		for _, alumno := range detalle.Alumnos {
