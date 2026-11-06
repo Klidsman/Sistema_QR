@@ -60,6 +60,15 @@ func (r *RepositorioConfiguracion) BuscarAnioActivo(ctx context.Context) (AnioEs
 	return aAnioEscolar(fila), nil
 }
 
+// BuscarAnioPorID devuelve el año escolar con ese identificador.
+func (r *RepositorioConfiguracion) BuscarAnioPorID(ctx context.Context, id int64) (AnioEscolar, error) {
+	fila, err := r.consultas.BuscarAnioEscolarPorID(ctx, id)
+	if err != nil {
+		return AnioEscolar{}, err
+	}
+	return aAnioEscolar(fila), nil
+}
+
 // BuscarAnioPorNombre devuelve el identificador del año con ese nombre.
 func (r *RepositorioConfiguracion) BuscarAnioPorNombre(ctx context.Context, nombre string) (int64, error) {
 	return r.consultas.BuscarAnioEscolarPorNombre(ctx, nombre)
@@ -110,6 +119,19 @@ func (r *RepositorioConfiguracion) BuscarGradoPorNombre(ctx context.Context, ani
 		AnioEscolarID: anioID,
 		Nombre:        nombre,
 	})
+}
+
+// BuscarGradoPorID devuelve el grado y el estado de su año escolar.
+func (r *RepositorioConfiguracion) BuscarGradoPorID(ctx context.Context, id int64) (Grado, string, error) {
+	fila, err := r.consultas.BuscarGradoPorID(ctx, id)
+	if err != nil {
+		return Grado{}, "", err
+	}
+	return Grado{
+		ID:            fila.ID,
+		AnioEscolarID: fila.AnioEscolarID,
+		Nombre:        fila.Nombre,
+	}, fila.AnioEstado, nil
 }
 
 // ListarGradosPorAnio devuelve los grados del año indicado.
@@ -218,10 +240,6 @@ func aAnioEscolar(fila generado.AniosEscolare) AnioEscolar {
 		anio.CerradoEn = &cerrado
 	}
 	return anio
-}
-
-func parametroFecha(fecha time.Time) pgtype.Date {
-	return pgtype.Date{Time: fecha, Valid: true}
 }
 
 func parametroHora(hora time.Time) pgtype.Time {

@@ -8,6 +8,11 @@ SELECT id
 FROM anios_escolares
 WHERE nombre = $1;
 
+-- name: BuscarAnioEscolarPorID :one
+SELECT id, nombre, fecha_inicio, fecha_fin, estado, cerrado_en
+FROM anios_escolares
+WHERE id = $1;
+
 -- name: BuscarAnioActivo :one
 SELECT id, nombre, fecha_inicio, fecha_fin, estado, cerrado_en
 FROM anios_escolares
@@ -42,6 +47,12 @@ SELECT id
 FROM grados
 WHERE anio_escolar_id = $1
   AND nombre = $2;
+
+-- name: BuscarGradoPorID :one
+SELECT g.id, g.anio_escolar_id, g.nombre, an.estado AS anio_estado
+FROM grados g
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+WHERE g.id = $1;
 
 -- name: ListarGradosPorAnio :many
 SELECT id, anio_escolar_id, nombre

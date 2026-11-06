@@ -96,17 +96,17 @@
 
 ### Pruebas
 
-- [ ] T035 [P] [US1] Escribir pruebas unitarias de reglas de año, grado y sección en `pruebas/unidad/configuracion_academica_test.go`: fecha de fin posterior a inicio, un solo año activo, nombre de grado único por año, sección con turno único
-- [ ] T036 [P] [US1] Escribir pruebas de integración del repositorio de años, grados y secciones en `pruebas/integracion/academico_repositorio_test.go`
+- [X] T035 [P] [US1] Escribir pruebas unitarias de reglas de año, grado y sección en `pruebas/unidad/configuracion_academica_test.go`: fecha de fin posterior a inicio, un solo año activo, nombre de grado único por año, sección con turno único
+- [X] T036 [P] [US1] Escribir pruebas de integración del repositorio de años, grados y secciones en `pruebas/integracion/academico_repositorio_test.go`
 
 ### Implementación
 
-- [ ] T037 [US1] Implementar `CrearAnio`, `CerrarAnio`, `CrearGrado`, `CrearSeccion`, `CambiarTurno` y los listados en `internal/academico/servicio_configuracion.go`
-- [ ] T038 [US1] Implementar el manejador de panel, año, grados y secciones en `internal/academico/manejador_configuracion.go` con las rutas de `contracts/rutas.md`
-- [ ] T039 [US1] Crear las plantillas `anio.templ`, `grados.templ` y `secciones.templ` en `web/plantillas/configuracion/`, con formularios accesibles y errores junto al campo
-- [ ] T040 [US1] Integrar auditoría en año, grado, sección y cambio de turno con las acciones `crear`, `cerrar` y `cambiar_turno`
-- [ ] T041 [US1] Escribir las pruebas de manejadores de US1 en `pruebas/manejadores/configuracion_anio_test.go`: alta válida, fechas inválidas, año activo duplicado, año cerrado y director en POST
-- [ ] T042 [US1] Escribir la prueba E2E de US1 en `pruebas/e2e/configuracion_anio_test.spec.ts`
+- [X] T037 [US1] Implementar `CrearAnio`, `CerrarAnio`, `CrearGrado`, `CrearSeccion`, `CambiarTurno` y los listados en `internal/academico/servicio_configuracion.go`
+- [X] T038 [US1] Implementar el manejador de panel, año, grados y secciones en `internal/academico/manejador_configuracion.go` con las rutas de `contracts/rutas.md`
+- [X] T039 [US1] Crear las plantillas `anio.templ`, `grados.templ` y `secciones.templ` en `web/plantillas/configuracion/`, con formularios accesibles y errores junto al campo
+- [X] T040 [US1] Integrar auditoría en año, grado, sección y cambio de turno con las acciones `crear`, `cerrar` y `cambiar_turno`
+- [X] T041 [US1] Escribir las pruebas de manejadores de US1 en `pruebas/manejadores/configuracion_anio_test.go`: alta válida, fechas inválidas, año activo duplicado, año cerrado y director en POST
+- [X] T042 [US1] Escribir la prueba E2E de US1 en `pruebas/e2e/configuracion_anio_test.spec.ts`
 
 **Punto de control**: US1 completamente funcional y verificable por separado.
 

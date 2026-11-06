@@ -2,6 +2,7 @@ package academico
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"asistencia/internal/plataforma/fechas"
@@ -9,24 +10,60 @@ import (
 
 // Errores de validación de la configuración académica.
 var (
-	ErrFechasAnioInvalidas  = errors.New("la fecha de fin debe ser posterior a la fecha de inicio")
-	ErrVigenciaPasada       = errors.New("la fecha de vigencia debe ser hoy o una fecha futura")
-	ErrToleranciaInvalida   = errors.New("la tolerancia debe estar entre 0 y 120 minutos")
-	ErrCierreNoPosterior    = errors.New("la hora de cierre debe ser posterior a la hora límite de tardanza")
-	ErrToleranciaExcedida   = errors.New("la hora de ingreso más la tolerancia no puede superar la hora límite de tardanza")
-	ErrHorarioFueraDeOrden  = errors.New("las horas del turno deben ir de ingreso a límite de tardanza y a cierre")
-	ErrCruzaMedianoche      = errors.New("los horarios deben estar dentro del mismo día")
-	ErrHorariosSuperpuestos = errors.New("los horarios de mañana y tarde se superponen")
-	ErrBloqueNumeroInvalido = errors.New("el número de bloque debe estar entre 1 y 20")
-	ErrBloqueHorasInvalidas = errors.New("la hora de fin del bloque debe ser posterior a la de inicio")
-	ErrBloqueFueraDeHorario = errors.New("el bloque debe estar dentro del horario del turno")
-	ErrBloqueSolapado       = errors.New("el bloque se superpone con otro bloque del mismo turno")
-	ErrDiaFueraDeRango      = errors.New("el día de la semana debe estar entre lunes y viernes")
-	ErrValorUmbralInvalido  = errors.New("el valor del umbral debe ser un entero mayor que cero")
-	ErrTipoInvalido         = errors.New("el tipo indicado no es válido")
-	ErrMotivoExcepcionCorto = errors.New("el motivo debe tener entre 3 y 200 caracteres")
-	ErrRangoFechasExcepcion = errors.New("la fecha de fin debe ser igual o posterior a la de inicio")
+	ErrFechasAnioInvalidas   = errors.New("la fecha de fin debe ser posterior a la fecha de inicio")
+	ErrVigenciaPasada        = errors.New("la fecha de vigencia debe ser hoy o una fecha futura")
+	ErrToleranciaInvalida    = errors.New("la tolerancia debe estar entre 0 y 120 minutos")
+	ErrCierreNoPosterior     = errors.New("la hora de cierre debe ser posterior a la hora límite de tardanza")
+	ErrToleranciaExcedida    = errors.New("la hora de ingreso más la tolerancia no puede superar la hora límite de tardanza")
+	ErrHorarioFueraDeOrden   = errors.New("las horas del turno deben ir de ingreso a límite de tardanza y a cierre")
+	ErrCruzaMedianoche       = errors.New("los horarios deben estar dentro del mismo día")
+	ErrHorariosSuperpuestos  = errors.New("los horarios de mañana y tarde se superponen")
+	ErrBloqueNumeroInvalido  = errors.New("el número de bloque debe estar entre 1 y 20")
+	ErrBloqueHorasInvalidas  = errors.New("la hora de fin del bloque debe ser posterior a la de inicio")
+	ErrBloqueFueraDeHorario  = errors.New("el bloque debe estar dentro del horario del turno")
+	ErrBloqueSolapado        = errors.New("el bloque se superpone con otro bloque del mismo turno")
+	ErrDiaFueraDeRango       = errors.New("el día de la semana debe estar entre lunes y viernes")
+	ErrValorUmbralInvalido   = errors.New("el valor del umbral debe ser un entero mayor que cero")
+	ErrTipoInvalido          = errors.New("el tipo indicado no es válido")
+	ErrMotivoExcepcionCorto  = errors.New("el motivo debe tener entre 3 y 200 caracteres")
+	ErrRangoFechasExcepcion  = errors.New("la fecha de fin debe ser igual o posterior a la de inicio")
+	ErrNombreInvalido        = errors.New("el nombre debe tener entre 2 y 80 caracteres")
+	ErrNombreSeccionInvalido = errors.New("el nombre de la sección debe tener entre 1 y 10 caracteres")
+	ErrTurnoInvalido         = errors.New("el turno debe ser mañana o tarde")
 )
+
+// NormalizarNombre recorta los extremos y colapsa los espacios internos.
+func NormalizarNombre(nombre string) string {
+	return strings.Join(strings.Fields(nombre), " ")
+}
+
+// ValidarNombre exige un nombre de 2 a 80 caracteres después de normalizarlo.
+func ValidarNombre(nombre string) error {
+	normalizado := NormalizarNombre(nombre)
+	longitud := len([]rune(normalizado))
+	if longitud < 2 || longitud > 80 {
+		return ErrNombreInvalido
+	}
+	return nil
+}
+
+// ValidarNombreSeccion exige un nombre corto para la sección (por ejemplo A, B o C).
+func ValidarNombreSeccion(nombre string) error {
+	normalizado := NormalizarNombre(nombre)
+	longitud := len([]rune(normalizado))
+	if longitud < 1 || longitud > 10 {
+		return ErrNombreSeccionInvalido
+	}
+	return nil
+}
+
+// ValidarTurno exige uno de los dos turnos válidos.
+func ValidarTurno(turno string) error {
+	if !TurnoValido(turno) {
+		return ErrTurnoInvalido
+	}
+	return nil
+}
 
 // ValidarVigencia rechaza fechas de vigencia anteriores a hoy.
 func ValidarVigencia(vigenteDesde, hoy time.Time) error {

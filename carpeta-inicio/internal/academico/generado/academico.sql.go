@@ -153,6 +153,26 @@ func (q *Queries) BuscarAnioActivo(ctx context.Context) (AniosEscolare, error) {
 	return i, err
 }
 
+const buscarAnioEscolarPorID = `-- name: BuscarAnioEscolarPorID :one
+SELECT id, nombre, fecha_inicio, fecha_fin, estado, cerrado_en
+FROM anios_escolares
+WHERE id = $1
+`
+
+func (q *Queries) BuscarAnioEscolarPorID(ctx context.Context, id int64) (AniosEscolare, error) {
+	row := q.db.QueryRow(ctx, buscarAnioEscolarPorID, id)
+	var i AniosEscolare
+	err := row.Scan(
+		&i.ID,
+		&i.Nombre,
+		&i.FechaInicio,
+		&i.FechaFin,
+		&i.Estado,
+		&i.CerradoEn,
+	)
+	return i, err
+}
+
 const buscarAnioEscolarPorNombre = `-- name: BuscarAnioEscolarPorNombre :one
 SELECT id
 FROM anios_escolares
@@ -215,6 +235,32 @@ func (q *Queries) BuscarCursoPorID(ctx context.Context, id int64) (Curso, error)
 		&i.Nombre,
 		&i.Activo,
 		&i.CreadoEn,
+	)
+	return i, err
+}
+
+const buscarGradoPorID = `-- name: BuscarGradoPorID :one
+SELECT g.id, g.anio_escolar_id, g.nombre, an.estado AS anio_estado
+FROM grados g
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+WHERE g.id = $1
+`
+
+type BuscarGradoPorIDRow struct {
+	ID            int64
+	AnioEscolarID int64
+	Nombre        string
+	AnioEstado    string
+}
+
+func (q *Queries) BuscarGradoPorID(ctx context.Context, id int64) (BuscarGradoPorIDRow, error) {
+	row := q.db.QueryRow(ctx, buscarGradoPorID, id)
+	var i BuscarGradoPorIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.AnioEscolarID,
+		&i.Nombre,
+		&i.AnioEstado,
 	)
 	return i, err
 }

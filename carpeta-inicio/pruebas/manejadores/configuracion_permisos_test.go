@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"asistencia/internal/academico"
 
@@ -17,12 +18,74 @@ import (
 )
 
 type configuracionFalsa struct {
-	resumen academico.ResumenConfiguracion
-	err     error
+	resumen      academico.ResumenConfiguracion
+	err          error
+	grados       []academico.Grado
+	secciones    []academico.Seccion
+	crearAnio    func(academico.DatosAnio) (int64, error)
+	crearGrado   func(academico.DatosGrado) (int64, error)
+	crearSeccion func(academico.DatosSeccion) (int64, error)
+	cambiarTurno func(int64, string, time.Time) error
+	cerrarAnio   func() error
 }
 
 func (c configuracionFalsa) Resumen(_ context.Context) (academico.ResumenConfiguracion, error) {
 	return c.resumen, c.err
+}
+
+func (c configuracionFalsa) ListarAnios(_ context.Context) ([]academico.AnioEscolar, error) {
+	return nil, c.err
+}
+
+func (c configuracionFalsa) AnioActivo(_ context.Context) (*academico.AnioEscolar, error) {
+	return c.resumen.Anio, c.err
+}
+
+func (c configuracionFalsa) ListarGrados(_ context.Context, _ int64) ([]academico.Grado, error) {
+	return c.grados, c.err
+}
+
+func (c configuracionFalsa) ListarSecciones(_ context.Context, _ int64) ([]academico.Seccion, error) {
+	return c.secciones, c.err
+}
+
+func (c configuracionFalsa) ListarTurnosSeccion(_ context.Context, _ int64) ([]academico.TurnoSeccion, error) {
+	return nil, c.err
+}
+
+func (c configuracionFalsa) CrearAnio(_ context.Context, _ int64, datos academico.DatosAnio) (int64, error) {
+	if c.crearAnio != nil {
+		return c.crearAnio(datos)
+	}
+	return 1, c.err
+}
+
+func (c configuracionFalsa) CerrarAnio(_ context.Context, _, _ int64) error {
+	if c.cerrarAnio != nil {
+		return c.cerrarAnio()
+	}
+	return c.err
+}
+
+func (c configuracionFalsa) CrearGrado(_ context.Context, _ int64, datos academico.DatosGrado) (int64, error) {
+	if c.crearGrado != nil {
+		return c.crearGrado(datos)
+	}
+	return 1, c.err
+}
+
+func (c configuracionFalsa) CrearSeccion(_ context.Context, _ int64, datos academico.DatosSeccion) (int64, error) {
+	if c.crearSeccion != nil {
+		return c.crearSeccion(datos)
+	}
+	return 1, c.err
+}
+
+func (c configuracionFalsa) CambiarTurno(_ context.Context, _ int64, seccionID int64, turno string, vigenteDesde time.Time) error {
+	if c.cambiarTurno != nil {
+		return c.cambiarTurno(seccionID, turno, vigenteDesde)
+	}
+	return c.err
 }
 
 func nuevoManejadorConfiguracion(t *testing.T) (*academico.Manejador, *scs.SessionManager) {
