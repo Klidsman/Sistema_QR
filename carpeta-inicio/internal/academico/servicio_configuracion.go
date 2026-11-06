@@ -29,6 +29,7 @@ var (
 	ErrGradoExistente      = errors.New("ya existe un grado con ese nombre en el año")
 	ErrSeccionExistente    = errors.New("ya existe una sección con ese nombre en el grado")
 	ErrHorarioNoEncontrado = errors.New("no hay un horario vigente para ese turno en la fecha")
+	ErrBloqueNoEncontrado  = errors.New("el bloque de clase no existe")
 )
 
 // Reloj devuelve la fecha y hora actuales. Se inyecta en los servicios y en las pruebas.
@@ -521,6 +522,181 @@ func (s *ServicioConfiguracion) ListarHorarios(ctx context.Context, turno string
 		return nil, fmt.Errorf("listando los horarios del turno: %w", err)
 	}
 	return horarios, nil
+}
+
+// CrearBloque registra un bloque de hora de clase y lo audita.
+func (s *ServicioConfiguracion) CrearBloque(ctx context.Context, usuarioID int64, bloque BloqueClase) (int64, error) {
+	if err := ValidarTurno(bloque.Turno); err != nil {
+		return 0, err
+	}
+	if err := ValidarVigencia(bloque.VigenteDesde, s.reloj()); err != nil {
+		return 0, err
+	}
+
+	var id int64
+	err := s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
+		if _, err := db.Exec(ctx, "SELECT pg_advisory_xact_lock(hashtext($1))", "bloques_"+bloque.Turno); err != nil {
+			return fmt.Errorf("bloqueando la configuración de bloques: %w", err)
+		}
+		if err := verificarAnioAbierto(ctx, consultas); err != nil {
+			return err
+		}
+		horario, otros, err := horarioYBloquesVigentes(ctx, consultas, bloque.Turno, bloque.VigenteDesde)
+		if err != nil {
+			return err
+		}
+		if err := ValidarBloque(bloque, horario, otros); err != nil {
+			return err
+		}
+		creado, err := consultas.GuardarBloqueClase(ctx, generado.GuardarBloqueClaseParams{
+			Turno:        bloque.Turno,
+			Numero:       int32(bloque.Numero),
+			HoraInicio:   parametroHora(bloque.HoraInicio),
+			HoraFin:      parametroHora(bloque.HoraFin),
+			VigenteDesde: parametroFecha(bloque.VigenteDesde),
+		})
+		if err != nil {
+			return fmt.Errorf("guardando el bloque de clase: %w", err)
+		}
+		if err := auditoria.Registrar(ctx, db, auditoria.Evento{
+			UsuarioID:  usuarioID,
+			Entidad:    EntidadBloqueClase,
+			EntidadID:  creado,
+			Accion:     AccionCrearBloque,
+			ValorNuevo: mapaBloque(bloque),
+		}); err != nil {
+			return err
+		}
+		id = creado
+		return nil
+	})
+	return id, err
+}
+
+// AjustarHorasBloque registra una versión nueva de un bloque existente con otras horas.
+func (s *ServicioConfiguracion) AjustarHorasBloque(ctx context.Context, usuarioID, bloqueID int64, inicio, fin, vigencia time.Time) error {
+	if err := ValidarVigencia(vigencia, s.reloj()); err != nil {
+		return err
+	}
+
+	anterior, err := s.repositorio.BuscarBloquePorID(ctx, bloqueID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrBloqueNoEncontrado
+	}
+	if err != nil {
+		return fmt.Errorf("buscando el bloque de clase: %w", err)
+	}
+
+	nuevo := BloqueClase{
+		Turno:        anterior.Turno,
+		Numero:       anterior.Numero,
+		HoraInicio:   inicio,
+		HoraFin:      fin,
+		VigenteDesde: vigencia,
+	}
+
+	return s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
+		if _, err := db.Exec(ctx, "SELECT pg_advisory_xact_lock(hashtext($1))", "bloques_"+nuevo.Turno); err != nil {
+			return fmt.Errorf("bloqueando la configuración de bloques: %w", err)
+		}
+		if err := verificarAnioAbierto(ctx, consultas); err != nil {
+			return err
+		}
+		horario, otros, err := horarioYBloquesVigentes(ctx, consultas, nuevo.Turno, vigencia)
+		if err != nil {
+			return err
+		}
+		if err := ValidarBloque(nuevo, horario, otros); err != nil {
+			return err
+		}
+		if _, err := consultas.GuardarBloqueClase(ctx, generado.GuardarBloqueClaseParams{
+			Turno:        nuevo.Turno,
+			Numero:       int32(nuevo.Numero),
+			HoraInicio:   parametroHora(nuevo.HoraInicio),
+			HoraFin:      parametroHora(nuevo.HoraFin),
+			VigenteDesde: parametroFecha(nuevo.VigenteDesde),
+		}); err != nil {
+			return fmt.Errorf("ajustando las horas del bloque: %w", err)
+		}
+		return auditoria.Registrar(ctx, db, auditoria.Evento{
+			UsuarioID:     usuarioID,
+			Entidad:       EntidadBloqueClase,
+			EntidadID:     bloqueID,
+			Accion:        AccionAjustarBloque,
+			ValorAnterior: mapaBloque(anterior),
+			ValorNuevo:    mapaBloque(nuevo),
+		})
+	})
+}
+
+// BloquesVigentes devuelve los bloques de un turno vigentes en la fecha.
+func (s *ServicioConfiguracion) BloquesVigentes(ctx context.Context, turno string, fecha time.Time) ([]BloqueClase, error) {
+	if err := ValidarTurno(turno); err != nil {
+		return nil, err
+	}
+	bloques, err := s.repositorio.BloquesVigentesTurno(ctx, turno, fecha)
+	if err != nil {
+		return nil, fmt.Errorf("listando los bloques del turno: %w", err)
+	}
+	return bloques, nil
+}
+
+func verificarAnioAbierto(ctx context.Context, consultas *generado.Queries) error {
+	anio, err := consultas.BuscarAnioActivo(ctx)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return ErrAnioNoEncontrado
+	}
+	if err != nil {
+		return fmt.Errorf("buscando el año escolar activo: %w", err)
+	}
+	if anio.Estado == EstadoAnioCerrado {
+		return ErrAnioCerrado
+	}
+	return nil
+}
+
+func horarioYBloquesVigentes(ctx context.Context, consultas *generado.Queries, turno string, fecha time.Time) (HorarioTurno, []BloqueClase, error) {
+	filaHorario, err := consultas.HorarioTurnoVigente(ctx, generado.HorarioTurnoVigenteParams{
+		Turno:        turno,
+		VigenteDesde: parametroFecha(fecha),
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return HorarioTurno{}, nil, ErrHorarioNoEncontrado
+	}
+	if err != nil {
+		return HorarioTurno{}, nil, fmt.Errorf("buscando el horario del turno: %w", err)
+	}
+	horario, err := aHorarioTurno(filaHorario)
+	if err != nil {
+		return HorarioTurno{}, nil, err
+	}
+
+	filas, err := consultas.BloquesVigentesTurno(ctx, generado.BloquesVigentesTurnoParams{
+		Turno:        turno,
+		VigenteDesde: parametroFecha(fecha),
+	})
+	if err != nil {
+		return HorarioTurno{}, nil, fmt.Errorf("listando los bloques vigentes: %w", err)
+	}
+	otros := make([]BloqueClase, 0, len(filas))
+	for _, fila := range filas {
+		bloque, err := aBloqueClase(fila)
+		if err != nil {
+			return HorarioTurno{}, nil, err
+		}
+		otros = append(otros, bloque)
+	}
+	return horario, otros, nil
+}
+
+func mapaBloque(bloque BloqueClase) map[string]any {
+	return map[string]any{
+		"turno":         bloque.Turno,
+		"numero":        bloque.Numero,
+		"hora_inicio":   fechas.FormatearHora(bloque.HoraInicio),
+		"hora_fin":      fechas.FormatearHora(bloque.HoraFin),
+		"vigente_desde": fechas.FormatearISO(bloque.VigenteDesde),
+	}
 }
 
 func mapaHorario(horario HorarioTurno) map[string]any {

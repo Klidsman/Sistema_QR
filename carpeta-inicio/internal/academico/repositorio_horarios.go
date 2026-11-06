@@ -9,9 +9,9 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// CrearBloque registra una versión de un bloque de hora de clase.
-func (r *RepositorioConfiguracion) CrearBloque(ctx context.Context, bloque BloqueClase) (int64, error) {
-	return r.consultas.CrearBloqueClase(ctx, generado.CrearBloqueClaseParams{
+// GuardarBloque registra o reemplaza una versión de un bloque de hora de clase.
+func (r *RepositorioConfiguracion) GuardarBloque(ctx context.Context, bloque BloqueClase) (int64, error) {
+	return r.consultas.GuardarBloqueClase(ctx, generado.GuardarBloqueClaseParams{
 		Turno:        bloque.Turno,
 		Numero:       int32(bloque.Numero),
 		HoraInicio:   parametroHora(bloque.HoraInicio),

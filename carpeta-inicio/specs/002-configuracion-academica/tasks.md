@@ -145,18 +145,18 @@
 
 ### Pruebas
 
-- [ ] T052 [P] [US6] Escribir pruebas unitarias de bloques en `pruebas/unidad/bloques_clase_test.go`
-- [ ] T053 [P] [US6] Escribir pruebas de integración de versionado y consulta de bloques en `pruebas/integracion/bloques_clase_test.go`
+- [X] T052 [P] [US6] Escribir pruebas unitarias de bloques en `pruebas/unidad/bloques_clase_test.go`
+- [X] T053 [P] [US6] Escribir pruebas de integración de versionado y consulta de bloques en `pruebas/integracion/bloques_clase_test.go`
 
 ### Implementación
 
-- [ ] T054 [US6] Implementar `CrearBloque`, `AjustarHorasBloque` y `BloquesVigentes` en `internal/academico/servicio_horarios.go`
-- [ ] T055 [US6] Implementar el manejador de bloques (`GET /configuracion/bloques`, `POST /configuracion/bloques`, `POST /configuracion/bloques/{id}/horas`) en `internal/academico/manejador_horarios.go`
-- [ ] T056 [US6] Crear la plantilla `bloques.templ` en `web/plantillas/configuracion/` con la grilla del turno y las horas vigentes
-- [ ] T057 [US6] Aplicar permisos: solo administrador crea bloques; administrador y director ajustan horas en `internal/plataforma/intermediarios/roles.go`
-- [ ] T058 [US6] Registrar la auditoría de `crear_bloque` y `ajustar_bloque`
-- [ ] T059 [US6] Escribir las pruebas de manejadores de US6 en `pruebas/manejadores/configuracion_bloques_test.go`
-- [ ] T060 [US6] Escribir la prueba E2E de US6 en `pruebas/e2e/configuracion_bloques_test.spec.ts`
+- [X] T054 [US6] Implementar `CrearBloque`, `AjustarHorasBloque` y `BloquesVigentes` en `internal/academico/servicio_horarios.go`
+- [X] T055 [US6] Implementar el manejador de bloques (`GET /configuracion/bloques`, `POST /configuracion/bloques`, `POST /configuracion/bloques/{id}/horas`) en `internal/academico/manejador_horarios.go`
+- [X] T056 [US6] Crear la plantilla `bloques.templ` en `web/plantillas/configuracion/` con la grilla del turno y las horas vigentes
+- [X] T057 [US6] Aplicar permisos: solo administrador crea bloques; administrador y director ajustan horas en `internal/plataforma/intermediarios/roles.go`
+- [X] T058 [US6] Registrar la auditoría de `crear_bloque` y `ajustar_bloque`
+- [X] T059 [US6] Escribir las pruebas de manejadores de US6 en `pruebas/manejadores/configuracion_bloques_test.go`
+- [X] T060 [US6] Escribir la prueba E2E de US6 en `pruebas/e2e/configuracion_bloques_test.spec.ts`
 
 **Punto de control**: bloques versionados y ajustables según rol.
 

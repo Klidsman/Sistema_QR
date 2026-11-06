@@ -406,33 +406,6 @@ func (q *Queries) CrearAnioEscolar(ctx context.Context, arg CrearAnioEscolarPara
 	return id, err
 }
 
-const crearBloqueClase = `-- name: CrearBloqueClase :one
-INSERT INTO bloques_clase (turno, numero, hora_inicio, hora_fin, vigente_desde)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id
-`
-
-type CrearBloqueClaseParams struct {
-	Turno        string
-	Numero       int32
-	HoraInicio   pgtype.Time
-	HoraFin      pgtype.Time
-	VigenteDesde pgtype.Date
-}
-
-func (q *Queries) CrearBloqueClase(ctx context.Context, arg CrearBloqueClaseParams) (int64, error) {
-	row := q.db.QueryRow(ctx, crearBloqueClase,
-		arg.Turno,
-		arg.Numero,
-		arg.HoraInicio,
-		arg.HoraFin,
-		arg.VigenteDesde,
-	)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
-}
-
 const crearCurso = `-- name: CrearCurso :one
 INSERT INTO cursos (anio_escolar_id, nombre)
 VALUES ($1, $2)
@@ -645,6 +618,36 @@ func (q *Queries) GradoDeSeccion(ctx context.Context, id int64) (int64, error) {
 	var id_2 int64
 	err := row.Scan(&id_2)
 	return id_2, err
+}
+
+const guardarBloqueClase = `-- name: GuardarBloqueClase :one
+INSERT INTO bloques_clase (turno, numero, hora_inicio, hora_fin, vigente_desde)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (turno, numero, vigente_desde) DO UPDATE SET
+    hora_inicio = EXCLUDED.hora_inicio,
+    hora_fin = EXCLUDED.hora_fin
+RETURNING id
+`
+
+type GuardarBloqueClaseParams struct {
+	Turno        string
+	Numero       int32
+	HoraInicio   pgtype.Time
+	HoraFin      pgtype.Time
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) GuardarBloqueClase(ctx context.Context, arg GuardarBloqueClaseParams) (int64, error) {
+	row := q.db.QueryRow(ctx, guardarBloqueClase,
+		arg.Turno,
+		arg.Numero,
+		arg.HoraInicio,
+		arg.HoraFin,
+		arg.VigenteDesde,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const guardarHorarioTurno = `-- name: GuardarHorarioTurno :one

@@ -29,6 +29,9 @@ type ServicioAcademico interface {
 	HorarioVigente(ctx context.Context, turno string, fecha time.Time) (HorarioTurno, error)
 	ListarHorarios(ctx context.Context, turno string) ([]HorarioTurno, error)
 	ConfigurarHorario(ctx context.Context, usuarioID int64, horario HorarioTurno) error
+	BloquesVigentes(ctx context.Context, turno string, fecha time.Time) ([]BloqueClase, error)
+	CrearBloque(ctx context.Context, usuarioID int64, bloque BloqueClase) (int64, error)
+	AjustarHorasBloque(ctx context.Context, usuarioID, bloqueID int64, inicio, fin, vigencia time.Time) error
 	CrearAnio(ctx context.Context, usuarioID int64, datos DatosAnio) (int64, error)
 	CerrarAnio(ctx context.Context, usuarioID, anioID int64) error
 	CrearGrado(ctx context.Context, usuarioID int64, datos DatosGrado) (int64, error)
@@ -69,12 +72,14 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Get("/configuracion/grados", m.grados)
 		lectura.Get("/configuracion/secciones", m.secciones)
 		lectura.Get("/configuracion/turnos", m.turnos)
+		lectura.Get("/configuracion/bloques", m.bloques)
 	})
 
-	enrutador.Group(func(edicionTurnos chi.Router) {
-		edicionTurnos.Use(intermediarios.RequerirRolConEscritura(m.sesiones,
+	enrutador.Group(func(edicionCompartida chi.Router) {
+		edicionCompartida.Use(intermediarios.RequerirRolConEscritura(m.sesiones,
 			intermediarios.RolAdministrador, intermediarios.RolDirector))
-		edicionTurnos.Post("/configuracion/turnos/{turno}", m.configurarHorario)
+		edicionCompartida.Post("/configuracion/turnos/{turno}", m.configurarHorario)
+		edicionCompartida.Post("/configuracion/bloques/{id}/horas", m.ajustarHorasBloque)
 	})
 
 	enrutador.Group(func(escritura chi.Router) {
@@ -84,6 +89,7 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Post("/configuracion/grados", m.crearGrado)
 		escritura.Post("/configuracion/secciones", m.crearSeccion)
 		escritura.Post("/configuracion/secciones/{id}/turno", m.cambiarTurno)
+		escritura.Post("/configuracion/bloques", m.crearBloque)
 	})
 }
 
@@ -350,6 +356,157 @@ func aHorariosVista(horarios []HorarioTurno) []vista.HorarioVista {
 	return resultado
 }
 
+func (m *Manejador) bloques(respuesta http.ResponseWriter, peticion *http.Request) {
+	m.renderizarBloques(respuesta, peticion, http.StatusOK, turnoDeConsulta(peticion),
+		"", peticion.URL.Query().Get("ok"))
+}
+
+func (m *Manejador) crearBloque(respuesta http.ResponseWriter, peticion *http.Request) {
+	bloque, err := bloqueDeFormulario(peticion)
+	if err != nil {
+		m.renderizarBloques(respuesta, peticion, http.StatusUnprocessableEntity, turnoDeConsulta(peticion),
+			mensajeDeError(err), "")
+		return
+	}
+	if _, err := m.configuracion.CrearBloque(peticion.Context(), m.usuarioID(peticion.Context()), bloque); err != nil {
+		m.renderizarBloques(respuesta, peticion, http.StatusUnprocessableEntity, bloque.Turno,
+			mensajeDeError(err), "")
+		return
+	}
+	http.Redirect(respuesta, peticion,
+		"/configuracion/bloques?turno="+bloque.Turno+"&ok=creado", http.StatusSeeOther)
+}
+
+func (m *Manejador) ajustarHorasBloque(respuesta http.ResponseWriter, peticion *http.Request) {
+	turno := turnoDeConsulta(peticion)
+	bloqueID, err := strconv.ParseInt(chi.URLParam(peticion, "id"), 10, 64)
+	if err != nil || bloqueID <= 0 {
+		m.renderizarBloques(respuesta, peticion, http.StatusUnprocessableEntity, turno,
+			mensajeDeError(ErrBloqueNoEncontrado), "")
+		return
+	}
+	inicio, err := fechas.ParsearHora(peticion.PostFormValue("hora_inicio"))
+	if err != nil {
+		m.renderizarBloques(respuesta, peticion, http.StatusUnprocessableEntity, turno,
+			mensajeDeError(err), "")
+		return
+	}
+	fin, err := fechas.ParsearHora(peticion.PostFormValue("hora_fin"))
+	if err != nil {
+		m.renderizarBloques(respuesta, peticion, http.StatusUnprocessableEntity, turno,
+			mensajeDeError(err), "")
+		return
+	}
+	vigencia, err := fechas.ParsearDia(peticion.PostFormValue("vigente_desde"))
+	if err != nil {
+		m.renderizarBloques(respuesta, peticion, http.StatusUnprocessableEntity, turno,
+			mensajeDeError(err), "")
+		return
+	}
+	if err := m.configuracion.AjustarHorasBloque(peticion.Context(), m.usuarioID(peticion.Context()),
+		bloqueID, inicio, fin, vigencia); err != nil {
+		m.renderizarBloques(respuesta, peticion, http.StatusUnprocessableEntity, turno,
+			mensajeDeError(err), "")
+		return
+	}
+	http.Redirect(respuesta, peticion,
+		"/configuracion/bloques?turno="+turno+"&ok=ajustado", http.StatusSeeOther)
+}
+
+func (m *Manejador) renderizarBloques(respuesta http.ResponseWriter, peticion *http.Request, estado int, turno, mensajeError, codigoCorrecto string) {
+	ctx := peticion.Context()
+	activo, err := m.configuracion.AnioActivo(ctx)
+	if err != nil {
+		m.registro.Error("no se pudo buscar el año activo", "error", err)
+		http.Error(respuesta, "No se pudo cargar la configuración", http.StatusInternalServerError)
+		return
+	}
+	var bloques []BloqueClase
+	if activo != nil {
+		bloques, err = m.configuracion.BloquesVigentes(ctx, turno, fechas.Hoy())
+		if err != nil {
+			m.registro.Error("no se pudieron cargar los bloques", "error", err)
+			http.Error(respuesta, "No se pudo cargar la configuración", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	m.renderizar(respuesta, peticion, estado, vista.Bloques(
+		m.nombreUsuario(ctx),
+		intermediarios.RolUsuario(ctx),
+		m.tokenCSRF(ctx),
+		aAnioVista(activo),
+		turno,
+		aBloquesVista(bloques),
+		mensajeCorrectoBloque(codigoCorrecto),
+		mensajeError,
+	))
+}
+
+func turnoDeConsulta(peticion *http.Request) string {
+	turno := peticion.URL.Query().Get("turno")
+	if !TurnoValido(turno) {
+		return TurnoManana
+	}
+	return turno
+}
+
+func bloqueDeFormulario(peticion *http.Request) (BloqueClase, error) {
+	turno := peticion.PostFormValue("turno")
+	if err := ValidarTurno(turno); err != nil {
+		return BloqueClase{}, err
+	}
+	numero, err := strconv.Atoi(strings.TrimSpace(peticion.PostFormValue("numero")))
+	if err != nil {
+		return BloqueClase{}, ErrBloqueNumeroInvalido
+	}
+	inicio, err := fechas.ParsearHora(peticion.PostFormValue("hora_inicio"))
+	if err != nil {
+		return BloqueClase{}, err
+	}
+	fin, err := fechas.ParsearHora(peticion.PostFormValue("hora_fin"))
+	if err != nil {
+		return BloqueClase{}, err
+	}
+	vigencia, err := fechas.ParsearDia(peticion.PostFormValue("vigente_desde"))
+	if err != nil {
+		return BloqueClase{}, err
+	}
+	return BloqueClase{
+		Turno:        turno,
+		Numero:       numero,
+		HoraInicio:   inicio,
+		HoraFin:      fin,
+		VigenteDesde: vigencia,
+	}, nil
+}
+
+func mensajeCorrectoBloque(codigo string) string {
+	switch codigo {
+	case "creado":
+		return "El bloque de clase se creó correctamente."
+	case "ajustado":
+		return "Las horas del bloque se actualizaron correctamente."
+	default:
+		return ""
+	}
+}
+
+func aBloquesVista(bloques []BloqueClase) []vista.BloqueVista {
+	resultado := make([]vista.BloqueVista, 0, len(bloques))
+	for _, bloque := range bloques {
+		resultado = append(resultado, vista.BloqueVista{
+			ID:           bloque.ID,
+			Turno:        bloque.Turno,
+			Numero:       bloque.Numero,
+			HoraInicio:   fechas.FormatearHora(bloque.HoraInicio),
+			HoraFin:      fechas.FormatearHora(bloque.HoraFin),
+			VigenteDesde: bloque.VigenteDesde,
+		})
+	}
+	return resultado
+}
+
 func (m *Manejador) renderizarAnio(respuesta http.ResponseWriter, peticion *http.Request, estado int, mensajeError, codigoCorrecto, nombre string) {
 	anios, err := m.configuracion.ListarAnios(peticion.Context())
 	if err != nil {
@@ -545,6 +702,16 @@ func mensajeDeError(err error) string {
 		return "Los horarios deben estar dentro del mismo día."
 	case errors.Is(err, ErrHorariosSuperpuestos):
 		return "Los horarios de mañana y tarde se superponen."
+	case errors.Is(err, ErrBloqueNoEncontrado):
+		return "El bloque de clase no existe."
+	case errors.Is(err, ErrBloqueNumeroInvalido):
+		return "El número de bloque debe estar entre 1 y 20."
+	case errors.Is(err, ErrBloqueHorasInvalidas):
+		return "La hora de fin del bloque debe ser posterior a la de inicio."
+	case errors.Is(err, ErrBloqueFueraDeHorario):
+		return "El bloque debe estar dentro del horario del turno."
+	case errors.Is(err, ErrBloqueSolapado):
+		return "El bloque se superpone con otro bloque del mismo turno."
 	default:
 		return "No se pudo guardar el cambio. Revise los datos e intente de nuevo."
 	}

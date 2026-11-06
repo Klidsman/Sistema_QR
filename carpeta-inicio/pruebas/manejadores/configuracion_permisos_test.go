@@ -30,6 +30,9 @@ type configuracionFalsa struct {
 	horarios          map[string]academico.HorarioTurno
 	historial         map[string][]academico.HorarioTurno
 	configurarHorario func(academico.HorarioTurno) error
+	bloques           map[string][]academico.BloqueClase
+	crearBloque       func(academico.BloqueClase) (int64, error)
+	ajustarBloque     func(int64, time.Time, time.Time, time.Time) error
 }
 
 func (c configuracionFalsa) Resumen(_ context.Context) (academico.ResumenConfiguracion, error) {
@@ -70,6 +73,24 @@ func (c configuracionFalsa) ListarHorarios(_ context.Context, turno string) ([]a
 func (c configuracionFalsa) ConfigurarHorario(_ context.Context, _ int64, horario academico.HorarioTurno) error {
 	if c.configurarHorario != nil {
 		return c.configurarHorario(horario)
+	}
+	return c.err
+}
+
+func (c configuracionFalsa) BloquesVigentes(_ context.Context, turno string, _ time.Time) ([]academico.BloqueClase, error) {
+	return c.bloques[turno], c.err
+}
+
+func (c configuracionFalsa) CrearBloque(_ context.Context, _ int64, bloque academico.BloqueClase) (int64, error) {
+	if c.crearBloque != nil {
+		return c.crearBloque(bloque)
+	}
+	return 1, c.err
+}
+
+func (c configuracionFalsa) AjustarHorasBloque(_ context.Context, _ int64, bloqueID int64, inicio, fin, vigencia time.Time) error {
+	if c.ajustarBloque != nil {
+		return c.ajustarBloque(bloqueID, inicio, fin, vigencia)
 	}
 	return c.err
 }

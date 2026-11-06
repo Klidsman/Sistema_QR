@@ -316,9 +316,12 @@ FROM secciones s
 JOIN grados g ON g.id = s.grado_id
 WHERE s.id = $1;
 
--- name: CrearBloqueClase :one
+-- name: GuardarBloqueClase :one
 INSERT INTO bloques_clase (turno, numero, hora_inicio, hora_fin, vigente_desde)
 VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (turno, numero, vigente_desde) DO UPDATE SET
+    hora_inicio = EXCLUDED.hora_inicio,
+    hora_fin = EXCLUDED.hora_fin
 RETURNING id;
 
 -- name: BloquesVigentesTurno :many

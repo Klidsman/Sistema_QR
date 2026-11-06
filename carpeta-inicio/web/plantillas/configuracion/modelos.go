@@ -25,6 +25,16 @@ type SeccionVista struct {
 	Turno  string
 }
 
+// BloqueVista es un bloque de hora de clase preparado para mostrarse en la interfaz.
+type BloqueVista struct {
+	ID           int64
+	Turno        string
+	Numero       int
+	HoraInicio   string
+	HoraFin      string
+	VigenteDesde time.Time
+}
+
 // HorarioVista es un horario de turno preparado para mostrarse en la interfaz.
 type HorarioVista struct {
 	Turno              string
