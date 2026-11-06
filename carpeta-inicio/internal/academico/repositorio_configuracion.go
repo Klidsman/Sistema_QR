@@ -151,6 +151,31 @@ func (r *RepositorioConfiguracion) ListarGradosPorAnio(ctx context.Context, anio
 	return grados, nil
 }
 
+// BuscarSeccionPorID devuelve la sección con ese identificador.
+func (r *RepositorioConfiguracion) BuscarSeccionPorID(ctx context.Context, id int64) (Seccion, error) {
+	fila, err := r.consultas.BuscarSeccionPorID(ctx, id)
+	if err != nil {
+		return Seccion{}, err
+	}
+	return Seccion{
+		ID:            fila.ID,
+		Nombre:        fila.Nombre,
+		Turno:         fila.Turno,
+		GradoID:       fila.GradoID,
+		Grado:         fila.Grado,
+		AnioEscolarID: fila.AnioEscolarID,
+		AnioEscolar:   fila.AnioEscolar,
+	}, nil
+}
+
+// BuscarCursoPorNombre devuelve el identificador del curso con ese nombre en el año.
+func (r *RepositorioConfiguracion) BuscarCursoPorNombre(ctx context.Context, anioID int64, nombre string) (int64, error) {
+	return r.consultas.BuscarCursoPorNombre(ctx, generado.BuscarCursoPorNombreParams{
+		AnioEscolarID: anioID,
+		Lower:         nombre,
+	})
+}
+
 // CrearSeccion registra una sección en el grado indicado.
 func (r *RepositorioConfiguracion) CrearSeccion(ctx context.Context, gradoID int64, nombre string) (int64, error) {
 	return r.consultas.CrearSeccion(ctx, generado.CrearSeccionParams{

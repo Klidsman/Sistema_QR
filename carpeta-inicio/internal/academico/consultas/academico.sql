@@ -277,6 +277,12 @@ INSERT INTO cursos_grados (curso_id, grado_id)
 VALUES ($1, $2)
 ON CONFLICT DO NOTHING;
 
+-- name: BuscarCursoPorNombre :one
+SELECT id
+FROM cursos
+WHERE anio_escolar_id = $1
+  AND lower(nombre) = lower($2);
+
 -- name: ListarCursosPorAnio :many
 SELECT id, anio_escolar_id, nombre, activo, creado_en
 FROM cursos

@@ -33,6 +33,11 @@ type configuracionFalsa struct {
 	bloques           map[string][]academico.BloqueClase
 	crearBloque       func(academico.BloqueClase) (int64, error)
 	ajustarBloque     func(int64, time.Time, time.Time, time.Time) error
+	cursos            []academico.Curso
+	crearCurso        func(academico.DatosCurso) (int64, error)
+	desactivarCurso   func(int64) error
+	grilla            academico.GrillaHorario
+	guardarCeldas     func(int64, time.Time, []academico.CambioCelda, bool) error
 }
 
 func (c configuracionFalsa) Resumen(_ context.Context) (academico.ResumenConfiguracion, error) {
@@ -91,6 +96,35 @@ func (c configuracionFalsa) CrearBloque(_ context.Context, _ int64, bloque acade
 func (c configuracionFalsa) AjustarHorasBloque(_ context.Context, _ int64, bloqueID int64, inicio, fin, vigencia time.Time) error {
 	if c.ajustarBloque != nil {
 		return c.ajustarBloque(bloqueID, inicio, fin, vigencia)
+	}
+	return c.err
+}
+
+func (c configuracionFalsa) ListarCursos(_ context.Context, _ int64) ([]academico.Curso, error) {
+	return c.cursos, c.err
+}
+
+func (c configuracionFalsa) CrearCurso(_ context.Context, _ int64, datos academico.DatosCurso) (int64, error) {
+	if c.crearCurso != nil {
+		return c.crearCurso(datos)
+	}
+	return 1, c.err
+}
+
+func (c configuracionFalsa) DesactivarCurso(_ context.Context, _, cursoID int64) error {
+	if c.desactivarCurso != nil {
+		return c.desactivarCurso(cursoID)
+	}
+	return c.err
+}
+
+func (c configuracionFalsa) ObtenerGrilla(_ context.Context, _ int64, _ time.Time) (academico.GrillaHorario, error) {
+	return c.grilla, c.err
+}
+
+func (c configuracionFalsa) GuardarCeldas(_ context.Context, _, _ int64, fecha time.Time, cambios []academico.CambioCelda, confirmar bool) error {
+	if c.guardarCeldas != nil {
+		return c.guardarCeldas(0, fecha, cambios, confirmar)
 	}
 	return c.err
 }

@@ -31,6 +31,21 @@ func (r *RepositorioConfiguracion) CrearCurso(ctx context.Context, curso Curso) 
 	return id, err
 }
 
+// BuscarCursoPorID devuelve el curso con ese identificador.
+func (r *RepositorioConfiguracion) BuscarCursoPorID(ctx context.Context, id int64) (Curso, error) {
+	fila, err := r.consultas.BuscarCursoPorID(ctx, id)
+	if err != nil {
+		return Curso{}, err
+	}
+	return Curso{
+		ID:            fila.ID,
+		AnioEscolarID: fila.AnioEscolarID,
+		Nombre:        fila.Nombre,
+		Activo:        fila.Activo,
+		CreadoEn:      fila.CreadoEn.Time,
+	}, nil
+}
+
 // ListarCursosPorAnio devuelve los cursos del año con sus grados.
 func (r *RepositorioConfiguracion) ListarCursosPorAnio(ctx context.Context, anioID int64) ([]Curso, error) {
 	filas, err := r.consultas.ListarCursosPorAnio(ctx, anioID)

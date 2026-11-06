@@ -32,6 +32,11 @@ type ServicioAcademico interface {
 	BloquesVigentes(ctx context.Context, turno string, fecha time.Time) ([]BloqueClase, error)
 	CrearBloque(ctx context.Context, usuarioID int64, bloque BloqueClase) (int64, error)
 	AjustarHorasBloque(ctx context.Context, usuarioID, bloqueID int64, inicio, fin, vigencia time.Time) error
+	ListarCursos(ctx context.Context, anioID int64) ([]Curso, error)
+	CrearCurso(ctx context.Context, usuarioID int64, datos DatosCurso) (int64, error)
+	DesactivarCurso(ctx context.Context, usuarioID, cursoID int64) error
+	ObtenerGrilla(ctx context.Context, seccionID int64, fecha time.Time) (GrillaHorario, error)
+	GuardarCeldas(ctx context.Context, usuarioID, seccionID int64, fecha time.Time, cambios []CambioCelda, confirmar bool) error
 	CrearAnio(ctx context.Context, usuarioID int64, datos DatosAnio) (int64, error)
 	CerrarAnio(ctx context.Context, usuarioID, anioID int64) error
 	CrearGrado(ctx context.Context, usuarioID int64, datos DatosGrado) (int64, error)
@@ -73,6 +78,8 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Get("/configuracion/secciones", m.secciones)
 		lectura.Get("/configuracion/turnos", m.turnos)
 		lectura.Get("/configuracion/bloques", m.bloques)
+		lectura.Get("/configuracion/cursos", m.cursos)
+		lectura.Get("/configuracion/horarios", m.horarios)
 	})
 
 	enrutador.Group(func(edicionCompartida chi.Router) {
@@ -90,6 +97,9 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Post("/configuracion/secciones", m.crearSeccion)
 		escritura.Post("/configuracion/secciones/{id}/turno", m.cambiarTurno)
 		escritura.Post("/configuracion/bloques", m.crearBloque)
+		escritura.Post("/configuracion/cursos", m.crearCurso)
+		escritura.Post("/configuracion/cursos/{id}/desactivacion", m.desactivarCurso)
+		escritura.Post("/configuracion/horarios", m.guardarHorario)
 	})
 }
 
@@ -712,6 +722,20 @@ func mensajeDeError(err error) string {
 		return "El bloque debe estar dentro del horario del turno."
 	case errors.Is(err, ErrBloqueSolapado):
 		return "El bloque se superpone con otro bloque del mismo turno."
+	case errors.Is(err, ErrCursoSinGrados):
+		return "El curso debe estar vinculado al menos a un grado."
+	case errors.Is(err, ErrCursoExistente):
+		return "Ya existe un curso con ese nombre en el año."
+	case errors.Is(err, ErrCursoNoEncontrado):
+		return "El curso indicado no existe."
+	case errors.Is(err, ErrCursoNoVinculado):
+		return "El curso no está vinculado al grado de la sección."
+	case errors.Is(err, ErrSeccionSinTurno):
+		return "La sección no tiene un turno vigente en la fecha indicada."
+	case errors.Is(err, ErrSeccionNoEncontrada):
+		return "La sección no existe en el año escolar."
+	case errors.Is(err, ErrRequiereConfirmacion):
+		return "La celda ya tiene un curso asignado. Confirme el reemplazo para continuar."
 	default:
 		return "No se pudo guardar el cambio. Revise los datos e intente de nuevo."
 	}

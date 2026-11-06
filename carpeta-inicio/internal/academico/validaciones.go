@@ -30,7 +30,16 @@ var (
 	ErrNombreInvalido        = errors.New("el nombre debe tener entre 2 y 80 caracteres")
 	ErrNombreSeccionInvalido = errors.New("el nombre de la sección debe tener entre 1 y 10 caracteres")
 	ErrTurnoInvalido         = errors.New("el turno debe ser mañana o tarde")
+	ErrCursoSinGrados        = errors.New("el curso debe estar vinculado al menos a un grado")
 )
+
+// ValidarGradosCurso exige al menos un grado para el curso.
+func ValidarGradosCurso(grados []int64) error {
+	if len(grados) == 0 {
+		return ErrCursoSinGrados
+	}
+	return nil
+}
 
 // NormalizarNombre recorta los extremos y colapsa los espacios internos.
 func NormalizarNombre(nombre string) string {

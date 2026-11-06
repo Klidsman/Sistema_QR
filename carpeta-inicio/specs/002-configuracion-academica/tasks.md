@@ -170,20 +170,20 @@
 
 ### Pruebas
 
-- [ ] T061 [P] [US7] Escribir pruebas unitarias de cursos y celdas de horario en `pruebas/unidad/cursos_horario_test.go`: nombre único por año, al menos un grado, curso activo, curso vinculado al grado de la sección
-- [ ] T062 [P] [US7] Escribir pruebas de integración de cursos y versionado por celda en `pruebas/integracion/cursos_horario_test.go`
+- [X] T061 [P] [US7] Escribir pruebas unitarias de cursos y celdas de horario en `pruebas/unidad/cursos_horario_test.go`: nombre único por año, al menos un grado, curso activo, curso vinculado al grado de la sección
+- [X] T062 [P] [US7] Escribir pruebas de integración de cursos y versionado por celda en `pruebas/integracion/cursos_horario_test.go`
 
 ### Implementación
 
-- [ ] T063 [US7] Implementar `CrearCurso`, `DesactivarCurso`, `ListarCursos` y la validación de vínculo con grados en `internal/academico/servicio_cursos.go`
-- [ ] T064 [US7] Implementar `ObtenerGrilla`, `GuardarCeldas` y `CursoDeBloque` en `internal/academico/servicio_horarios.go`
-- [ ] T065 [US7] Implementar el manejador de cursos en `internal/academico/manejador_cursos.go`
-- [ ] T066 [US7] Implementar el manejador de horario semanal (con confirmación de reemplazo) en `internal/academico/manejador_horarios.go`
-- [ ] T067 [US7] Crear las plantillas `cursos.templ` y `horario.templ` en `web/plantillas/configuracion/`
-- [ ] T068 [US7] Aplicar permisos de solo administrador para cursos y horario semanal en `internal/plataforma/intermediarios/roles.go`
-- [ ] T069 [US7] Registrar la auditoría de `crear_curso`, `desactivar_curso` y `asignar_horario`
-- [ ] T070 [US7] Escribir las pruebas de manejadores de US7 en `pruebas/manejadores/configuracion_cursos_test.go`
-- [ ] T071 [US7] Escribir la prueba E2E de US7 en `pruebas/e2e/configuracion_horario_test.spec.ts`
+- [X] T063 [US7] Implementar `CrearCurso`, `DesactivarCurso`, `ListarCursos` y la validación de vínculo con grados en `internal/academico/servicio_cursos.go`
+- [X] T064 [US7] Implementar `ObtenerGrilla`, `GuardarCeldas` y `CursoDeBloque` en `internal/academico/servicio_horarios.go`
+- [X] T065 [US7] Implementar el manejador de cursos en `internal/academico/manejador_cursos.go`
+- [X] T066 [US7] Implementar el manejador de horario semanal (con confirmación de reemplazo) en `internal/academico/manejador_horarios.go`
+- [X] T067 [US7] Crear las plantillas `cursos.templ` y `horario.templ` en `web/plantillas/configuracion/`
+- [X] T068 [US7] Aplicar permisos de solo administrador para cursos y horario semanal en `internal/plataforma/intermediarios/roles.go`
+- [X] T069 [US7] Registrar la auditoría de `crear_curso`, `desactivar_curso` y `asignar_horario`
+- [X] T070 [US7] Escribir las pruebas de manejadores de US7 en `pruebas/manejadores/configuracion_cursos_test.go`
+- [X] T071 [US7] Escribir la prueba E2E de US7 en `pruebas/e2e/configuracion_horario_test.spec.ts`
 
 **Punto de control**: cursos y horario semanal funcionales.
 

@@ -239,6 +239,25 @@ func (q *Queries) BuscarCursoPorID(ctx context.Context, id int64) (Curso, error)
 	return i, err
 }
 
+const buscarCursoPorNombre = `-- name: BuscarCursoPorNombre :one
+SELECT id
+FROM cursos
+WHERE anio_escolar_id = $1
+  AND lower(nombre) = lower($2)
+`
+
+type BuscarCursoPorNombreParams struct {
+	AnioEscolarID int64
+	Lower         string
+}
+
+func (q *Queries) BuscarCursoPorNombre(ctx context.Context, arg BuscarCursoPorNombreParams) (int64, error) {
+	row := q.db.QueryRow(ctx, buscarCursoPorNombre, arg.AnioEscolarID, arg.Lower)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const buscarGradoPorID = `-- name: BuscarGradoPorID :one
 SELECT g.id, g.anio_escolar_id, g.nombre, an.estado AS anio_estado
 FROM grados g

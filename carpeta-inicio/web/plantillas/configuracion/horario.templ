@@ -1,0 +1,145 @@
+package vista
+
+import (
+	"fmt"
+
+	"asistencia/web/plantillas/paginas"
+)
+
+var diasSemana = []string{"Lunes", "Martes", "Miércoles", "Jueves", "Viernes"}
+
+templ Horarios(usuario string, rol string, tokenCSRF string, activo *AnioVista, secciones []SeccionVista, seccionID int64, fecha string, grilla *GrillaVista, confirmar bool, mensaje string, mensajeError string) {
+	@paginas.BaseSesion("Horario semanal", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/configuracion" class="text-sm font-medium text-blue-700">← Configuración</a>
+				<h1 class="mt-1 text-2xl font-semibold">Horario semanal</h1>
+				if activo != nil {
+					<p class="text-sm text-slate-600">Año { activo.Nombre }</p>
+				}
+			</div>
+		</div>
+
+		if mensaje != "" {
+			<p role="status" class="mt-4 rounded bg-green-100 p-3 text-green-800">{ mensaje }</p>
+		}
+		if mensajeError != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensajeError }</p>
+		}
+
+		if activo == nil {
+			<div class="mt-6 rounded border border-amber-200 bg-amber-50 p-4">
+				<p class="text-amber-900">No hay un año escolar activo. Cree el año antes de armar horarios.</p>
+				<a href="/configuracion/anio" class="mt-3 inline-block rounded bg-blue-700 px-4 py-2 font-semibold text-white">Ir al año escolar</a>
+			</div>
+		} else if len(secciones) == 0 {
+			<div class="mt-6 rounded border border-amber-200 bg-amber-50 p-4">
+				<p class="text-amber-900">El año no tiene secciones. Cree al menos una sección antes de armar horarios.</p>
+				<a href="/configuracion/secciones" class="mt-3 inline-block rounded bg-blue-700 px-4 py-2 font-semibold text-white">Ir a secciones</a>
+			</div>
+		} else {
+			<form method="get" action="/configuracion/horarios" class="mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-3">
+				<label class="block">
+					<span class="text-sm font-medium">Sección</span>
+					<select name="seccion_id" class="mt-1 w-full rounded border border-slate-300 p-2">
+						<option value="">Seleccione una sección</option>
+						for _, seccion := range secciones {
+							<option value={ fmt.Sprintf("%d", seccion.ID) } selected?={ seccion.ID == seccionID }>{ seccion.Grado } { seccion.Nombre }</option>
+						}
+					</select>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium">Fecha</span>
+					<input type="date" name="fecha" value={ fecha } class="mt-1 w-full rounded border border-slate-300 p-2"/>
+				</label>
+				<div class="flex items-end">
+					<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Ver horario</button>
+				</div>
+			</form>
+
+			if grilla != nil {
+				<div class="mt-6">
+					<h2 class="text-lg font-semibold">{ grilla.Seccion } · turno de { etiquetaTurno(grilla.Turno) }</h2>
+					if len(grilla.Bloques) == 0 {
+						<p class="mt-2 text-slate-600">El turno no tiene bloques de clase. Configúrelos antes de armar el horario.</p>
+						<a href={ "/configuracion/bloques?turno=" + grilla.Turno } class="mt-3 inline-block rounded bg-blue-700 px-4 py-2 font-semibold text-white">Ir a bloques</a>
+					} else {
+						<form method="post" action="/configuracion/horarios">
+							<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+							<input type="hidden" name="seccion_id" value={ fmt.Sprintf("%d", grilla.SeccionID) }/>
+							<input type="hidden" name="fecha" value={ fecha }/>
+							if confirmar {
+								<input type="hidden" name="confirmar" value="si"/>
+							}
+							<div class="overflow-x-auto rounded border border-slate-200 bg-white">
+								<table class="w-full text-left text-sm">
+									<thead class="bg-slate-100 text-slate-700">
+										<tr>
+											<th class="p-3">Bloque</th>
+											for _, dia := range diasSemana {
+												<th class="p-3">{ dia }</th>
+											}
+										</tr>
+									</thead>
+									<tbody>
+										for _, bloque := range grilla.Bloques {
+											<tr class="border-t border-slate-100 align-top">
+												<td class="p-3 font-medium">
+													{ fmt.Sprintf("%d", bloque.Numero) }
+													<span class="block text-xs text-slate-500">{ bloque.HoraInicio } – { bloque.HoraFin }</span>
+												</td>
+												for dia := 1; dia <= 5; dia++ {
+													<td class="p-2">
+														if rol == "administrador" {
+															<select name={ claveCeldaHorario(dia, bloque.Numero) } aria-label={ fmt.Sprintf("%s bloque %d", diasSemana[dia-1], bloque.Numero) } class="w-full rounded border border-slate-300 p-1">
+																<option value="">Sin clase</option>
+																for _, curso := range grilla.Cursos {
+																	<option value={ fmt.Sprintf("%d", curso.ID) } selected?={ valorSeleccionado(grilla.Seleccion, dia, bloque.Numero) == fmt.Sprintf("%d", curso.ID) }>{ curso.Nombre }</option>
+																}
+															</select>
+														} else {
+															<span>{ nombreCurso(grilla.Cursos, valorSeleccionado(grilla.Seleccion, dia, bloque.Numero)) }</span>
+														}
+													</td>
+												}
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+							if rol == "administrador" {
+								<div class="mt-4">
+									if confirmar {
+										<button type="submit" class="rounded bg-amber-700 px-4 py-2 font-semibold text-white">Confirmar reemplazo</button>
+									} else {
+										<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Guardar horario</button>
+									}
+								</div>
+							}
+						</form>
+					}
+				</div>
+			}
+		}
+	}
+}
+
+func claveCeldaHorario(dia, bloque int) string {
+	return fmt.Sprintf("celda_%d_%d", dia, bloque)
+}
+
+func valorSeleccionado(seleccion map[string]string, dia, bloque int) string {
+	return seleccion[fmt.Sprintf("%d-%d", dia, bloque)]
+}
+
+func nombreCurso(cursos []CursoOpcion, valor string) string {
+	if valor == "" {
+		return "Sin clase"
+	}
+	for _, curso := range cursos {
+		if fmt.Sprintf("%d", curso.ID) == valor {
+			return curso.Nombre
+		}
+	}
+	return "Sin clase"
+}
