@@ -189,6 +189,21 @@ escolar y todo lo que necesita el registro de asistencia.
 Las fechas de vigencia deben ser hoy o posteriores. Los cambios futuros no alteran la
 configuración anterior ni las asistencias ya registradas.
 
+## Asistencia del docente
+
+- **Docentes** (`/docentes`): crea cuentas con nombre, correo y contraseña, restablece la clave y
+  desactiva cuentas sin borrarlas.
+- **Asignaciones** (`/asistencia/asignaciones`): vincula un docente con un curso y una sección
+  desde una fecha. Marca **Titular** o desmárcalo para un reemplazo con fecha de fin.
+- **Consulta** (`/asistencia/consulta`): revisa los registros del docente por fecha y sección,
+  con el ingreso QR y las diferencias. Puedes corregir un registro indicando estado, observación y
+  **motivo obligatorio**.
+- **Parámetros** (`/configuracion/asistencia`): define el plazo de edición del docente, entre 1 y
+  168 horas.
+
+El registro del docente es personal y no reemplaza la asistencia oficial del QR. Las correcciones
+del administrador y los cambios de plazo quedan auditados.
+
 ## Recomendaciones
 
 - Verificar el año escolar activo antes de importar.

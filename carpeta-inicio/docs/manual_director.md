@@ -76,6 +76,15 @@ Además de consultar, el director puede:
 El director no puede crear ni cerrar años, ni crear grados, secciones, feriados, umbrales, cursos
 o bloques. Tampoco puede armar horarios semanales ni desactivar cursos.
 
+## Asistencia del docente
+
+En `/asistencia/consulta` el director consulta los registros del docente por fecha y sección:
+alumnos, curso, bloque, estado, hora de ingreso QR, docente y observaciones. Los alumnos con
+diferencias entre el QR y el registro aparecen resaltados como información.
+
+El director no puede corregir registros ni cambiar el plazo de edición. También puede descargar
+la exportación CSV por sección desde `/asistencia/exportar`.
+
 ## Permisos
 
 El sistema aplica dos reglas:

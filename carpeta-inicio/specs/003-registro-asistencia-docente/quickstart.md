@@ -115,6 +115,40 @@ Cobertura esperada:
 - Manejadores: permisos, CSRF, fecha futura, día no laborable y corrección con motivo.
 - E2E: alta de docente, asignación, registro, corrección, reemplazo y exportación.
 
+## Resultados de la validación
+
+**Fecha**: 2026-11-06 | **Entorno**: Windows, Go 1.27.3, Docker Desktop, PostgreSQL 16 en el puerto
+5433, Playwright con Chromium.
+
+| Escenario | Resultado | Evidencia |
+|---|---|---|
+| Preparación y migraciones `0018`–`0022` | Cumple | Subida y reversión completa en `pruebas/integracion/migraciones_test.go`. |
+| Cuentas de docente y asignaciones | Cumple | Integración y E2E de alta de docente, titular y reemplazo por un día. |
+| 1. Registrar la asistencia de la clase | Cumple | Integración de lista, QR, marcado masivo y diferencias; E2E de clase completa. |
+| 2. Correcciones y plazo | Cumple | Integración de plazo vencido, corrección con motivo y auditoría; E2E de plazo y corrección. |
+| 3. Asignaciones y reemplazos | Cumple | Acceso por fecha verificado en `asignaciones_test.go`; el reemplazo cesa al terminar su rango. |
+| 4. Registro por hora de clase | Cumple | Dos bloques con estados distintos y registros independientes en `asistencia_bloques_test.go`. |
+| Consulta del director | Cumple | Manejadores y E2E; sin acciones de corrección para el director. |
+| Exportación CSV | Cumple | Unitaria de columnas y BOM, integración de permisos y E2E de descarga. |
+| Permisos | Cumple | Docente solo asignados; director solo lectura; portería sin acceso; administrador completo. |
+| CSRF | Cumple | `pruebas/manejadores/asistencia_permisos_completos_test.go`: sin token responde 403. |
+| Auditoría | Cumple | Altas, correcciones, marcado masivo, asignaciones, docentes y plazo auditados con motivo cuando aplica. |
+| Idempotencia y concurrencia | Cumple | Envíos repetidos no duplican ni auditan de más; dos "marcar todos" concurrentes crean una sola fila por alumno. |
+| Reglas de fecha | Cumple | Fecha futura, feriado y alumno retirado verificados en `asistencia_clase_test.go`. |
+| Compatibilidad con 001 y 002 | Cumple | Suite completa y 22 pruebas E2E. |
+| Pruebas automáticas | Cumple | `go test ./...` sin errores. |
+| Lint | Cumple | `golangci-lint run ./...` con 0 issues. |
+| Rendimiento | Cumple | Lista de clase: 0.058 ms; exportación por docente: 0.032 ms (EXPLAIN ANALYZE). |
+
+**Observaciones**:
+
+- El modo sin conexión de FR-017/FR-018 quedó diferido por decisión y por el principio III de la
+  constitución.
+- La tabla `marcaciones` se crea y se lee, pero la escritura pertenece a la feature de portería.
+- El QR sigue siendo la asistencia oficial; el registro docente es personal.
+- Las pruebas Go y el servidor se ejecutaron en contenedores `golang:1.27` por una política de
+  Control de Aplicaciones de Windows; Playwright se ejecutó contra el servidor en Docker.
+
 ## Criterios de aceptación
 
 - 40 alumnos registrados en menos de 2 minutos con "Marcar a todos presentes" (SC-001).

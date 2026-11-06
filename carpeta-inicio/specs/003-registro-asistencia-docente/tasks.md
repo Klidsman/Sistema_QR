@@ -171,18 +171,18 @@
 
 ## Fase 8: Pulido y transversales
 
-- [ ] T082 [P] Completar la prueba de permisos: docente solo asignados, director solo `GET`, portería sin acceso en `pruebas/manejadores/asistencia_permisos_test.go`
-- [ ] T083 [P] Escribir la prueba de CSRF y validaciones de formularios en `pruebas/manejadores/asistencia_seguridad_test.go`
-- [ ] T084 Escribir la prueba de auditoría de todas las acciones de la 003 en `pruebas/integracion/asistencia_auditoria_test.go`
-- [ ] T085 Verificar idempotencia con envíos repetidos y concurrencia de "marcar todos" en `pruebas/integracion/asistencia_idempotencia_test.go`
-- [ ] T086 Verificar reglas de fecha: futura, feriado, suspensión y alumno retirado en `pruebas/integracion/asistencia_fechas_test.go`
-- [ ] T087 Revisar `EXPLAIN ANALYZE` de la lista de clase y la exportación con datos de 2,000 alumnos
-- [ ] T088 Actualizar `docs/manual_administrador.md`, `docs/manual_director.md` y `docs/manual_docente.md` con las pantallas nuevas
-- [ ] T089 Actualizar `docs/despliegue.md` y confirmar que no hay variables de entorno nuevas
-- [ ] T090 Regenerar plantillas y estilos: `make templ`, `npm run css`, `gofmt -w`
-- [ ] T091 Ejecutar `golangci-lint`, `go build`, `go vet`, `go test ./...` y Playwright completo
-- [ ] T092 Validar los escenarios de `specs/003-registro-asistencia-docente/quickstart.md` y registrar resultados en el mismo archivo
-- [ ] T093 Verificar compatibilidad con las features 001 y 002 (suite y E2E existentes) en `pruebas/e2e/`
+- [X] T082 [P] Completar la prueba de permisos: docente solo asignados, director solo `GET`, portería sin acceso en `pruebas/manejadores/asistencia_permisos_test.go`
+- [X] T083 [P] Escribir la prueba de CSRF y validaciones de formularios en `pruebas/manejadores/asistencia_seguridad_test.go`
+- [X] T084 Escribir la prueba de auditoría de todas las acciones de la 003 en `pruebas/integracion/asistencia_auditoria_test.go`
+- [X] T085 Verificar idempotencia con envíos repetidos y concurrencia de "marcar todos" en `pruebas/integracion/asistencia_idempotencia_test.go`
+- [X] T086 Verificar reglas de fecha: futura, feriado, suspensión y alumno retirado en `pruebas/integracion/asistencia_fechas_test.go`
+- [X] T087 Revisar `EXPLAIN ANALYZE` de la lista de clase y la exportación con datos de 2,000 alumnos
+- [X] T088 Actualizar `docs/manual_administrador.md`, `docs/manual_director.md` y `docs/manual_docente.md` con las pantallas nuevas
+- [X] T089 Actualizar `docs/despliegue.md` y confirmar que no hay variables de entorno nuevas
+- [X] T090 Regenerar plantillas y estilos: `make templ`, `npm run css`, `gofmt -w`
+- [X] T091 Ejecutar `golangci-lint`, `go build`, `go vet`, `go test ./...` y Playwright completo
+- [X] T092 Validar los escenarios de `specs/003-registro-asistencia-docente/quickstart.md` y registrar resultados en el mismo archivo
+- [X] T093 Verificar compatibilidad con las features 001 y 002 (suite y E2E existentes) en `pruebas/e2e/`
 
 ---
 

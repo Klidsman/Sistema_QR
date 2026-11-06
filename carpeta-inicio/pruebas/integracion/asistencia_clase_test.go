@@ -2,6 +2,7 @@ package integracion
 
 import (
 	"context"
+	"sync"
 	"testing"
 	"time"
 
@@ -152,6 +153,63 @@ func TestAsistenciaClase_ListaGuardaMarcasYDiferencias(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, porSeccion, 2)
 
+	var corregidosAntes int
+	require.NoError(t, pool.QueryRow(ctx,
+		`SELECT count(*) FROM auditoria WHERE entidad = $1 AND accion = $2`,
+		asistencia.EntidadRegistroDocente, asistencia.AccionCorregirRegistro).Scan(&corregidosAntes))
+	mismoCambio := []asistencia.CambioRegistro{{
+		AlumnoID: alumnoSinQR, Estado: asistencia.EstadoPresente,
+	}}
+	require.NoError(t, servicio.GuardarRegistros(ctx, docenteID, false, hoy, seccionID, cursoID, 1, mismoCambio))
+	require.NoError(t, servicio.GuardarRegistros(ctx, docenteID, false, hoy, seccionID, cursoID, 1, mismoCambio))
+	var corregidosDespues int
+	require.NoError(t, pool.QueryRow(ctx,
+		`SELECT count(*) FROM auditoria WHERE entidad = $1 AND accion = $2`,
+		asistencia.EntidadRegistroDocente, asistencia.AccionCorregirRegistro).Scan(&corregidosDespues))
+	assert.Equal(t, corregidosAntes, corregidosDespues, "guardar el mismo estado no debe auditar de nuevo")
+
+	_, err = pool.Exec(ctx,
+		`DELETE FROM registros_docente WHERE fecha = $1 AND seccion_id = $2 AND curso_id = $3 AND bloque_numero = 1`,
+		fechaSQL(hoy), seccionID, cursoID)
+	require.NoError(t, err)
+	var totales [2]int
+	var grupo sync.WaitGroup
+	for i := 0; i < 2; i++ {
+		grupo.Add(1)
+		go func(indice int) {
+			defer grupo.Done()
+			creados, _ := servicio.MarcarTodosPresentes(ctx, docenteID, false, hoy, seccionID, cursoID, 1)
+			totales[indice] = creados
+		}(i)
+	}
+	grupo.Wait()
+	assert.Equal(t, 2, totales[0]+totales[1], "dos ejecuciones concurrentes no deben duplicar")
+	var filas int
+	require.NoError(t, pool.QueryRow(ctx,
+		`SELECT count(*) FROM registros_docente WHERE fecha = $1 AND seccion_id = $2 AND curso_id = $3 AND bloque_numero = 1`,
+		fechaSQL(hoy), seccionID, cursoID).Scan(&filas))
+	assert.Equal(t, 2, filas)
+
+	alumnoRetirado, err := servicioAlumnos.Crear(ctx, usuarioID, alumnos.DatosAlumno{
+		Identificador: "80003333", Nombres: "Retirado", Apellidos: "Prueba", SeccionID: seccionID,
+	})
+	require.NoError(t, err)
+	require.NoError(t, servicioAlumnos.RegistrarSalida(ctx, usuarioID, alumnoRetirado, alumnos.EstadoRetirado, hoy))
+	detalle, err = servicio.ListarClase(ctx, docenteID, false, hoy, seccionID, cursoID, 1)
+	require.NoError(t, err)
+	assert.Len(t, detalle.Alumnos, 2, "un alumno retirado no aparece en la lista")
+
+	_, err = configuracion.RegistrarExcepcion(ctx, usuarioID, academico.DatosExcepcion{
+		AnioEscolarID: anioID,
+		Tipo:          academico.TipoFeriado,
+		FechaInicio:   hoy,
+		FechaFin:      hoy,
+		Motivo:        "Feriado de prueba",
+	}, false)
+	require.NoError(t, err)
+	_, err = servicio.ListarClase(ctx, docenteID, false, hoy, seccionID, cursoID, 1)
+	assert.ErrorIs(t, err, asistencia.ErrDiaNoLaborable)
+
 	var creadosAuditados, marcasMasivas int
 	require.NoError(t, pool.QueryRow(ctx,
 		`SELECT count(*) FROM auditoria WHERE entidad = $1 AND accion = $2`,
@@ -160,7 +218,7 @@ func TestAsistenciaClase_ListaGuardaMarcasYDiferencias(t *testing.T) {
 		`SELECT count(*) FROM auditoria WHERE entidad = $1 AND accion = $2`,
 		asistencia.EntidadRegistroDocente, asistencia.AccionMarcarTodos).Scan(&marcasMasivas))
 	assert.GreaterOrEqual(t, creadosAuditados, 1)
-	assert.Equal(t, 1, marcasMasivas)
+	assert.GreaterOrEqual(t, marcasMasivas, 1)
 }
 
 func fechaSQL(fecha time.Time) time.Time {

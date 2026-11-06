@@ -149,6 +149,9 @@ el bucket como público.
 
 - **Configuración académica**: se administra desde `/configuracion`. No requiere variables de
   entorno nuevas.
+- **Asistencia del docente**: se usa desde `/asistencia`. El plazo de edición se guarda en la
+  tabla `parametros_asistencia` y se ajusta desde `/configuracion/asistencia`; no requiere
+  variables de entorno nuevas.
 - **Salud**: `GET /salud` responde `200` cuando la base de datos está disponible y `503` si no.
 - **Migraciones**: se ejecutan antes de iniciar cada versión con `./servidor migrar`.
 - **Registros**: el proceso escribe logs JSON en la salida estándar. Render los captura.
