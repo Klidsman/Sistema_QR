@@ -28,6 +28,10 @@ type ServicioAsistencia interface {
 	DocentesDisponibles(ctx context.Context) ([]autenticacion.Docente, error)
 	SeccionesDisponibles(ctx context.Context) ([]academico.Seccion, error)
 	CursosDisponibles(ctx context.Context) ([]academico.Curso, error)
+	ClasesAsignadas(ctx context.Context, docenteID int64, fecha time.Time) ([]ClaseAsignada, error)
+	ListarClase(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int) (ClaseDetalle, error)
+	GuardarRegistros(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int, cambios []CambioRegistro) error
+	MarcarTodosPresentes(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int) (int, error)
 }
 
 // Dependencias reúne lo que el manejador de asistencia necesita.
@@ -65,6 +69,15 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Use(intermediarios.RequerirRol(m.sesiones, intermediarios.RolAdministrador))
 		escritura.Post("/asistencia/asignaciones", m.crearAsignacion)
 		escritura.Post("/asistencia/asignaciones/{id}/cierre", m.cerrarAsignacion)
+	})
+
+	enrutador.Group(func(clase chi.Router) {
+		clase.Use(intermediarios.RequerirRol(m.sesiones,
+			intermediarios.RolAdministrador, intermediarios.RolDocente))
+		clase.Get("/asistencia", m.seleccionClase)
+		clase.Get("/asistencia/clase", m.verClase)
+		clase.Post("/asistencia/clase", m.guardarClase)
+		clase.Post("/asistencia/clase/todos", m.marcarTodos)
 	})
 }
 

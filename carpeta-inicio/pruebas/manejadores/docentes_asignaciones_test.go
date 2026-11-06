@@ -142,9 +142,13 @@ func TestDocentes_AdministradorRestableceYDesactiva(t *testing.T) {
 }
 
 type asistenciaFalsa struct {
-	asignaciones []asistencia.AsignacionVista
-	creada       *asistencia.DatosAsignacion
-	cerrada      int64
+	asignaciones  []asistencia.AsignacionVista
+	creada        *asistencia.DatosAsignacion
+	cerrada       int64
+	clases        []asistencia.ClaseAsignada
+	detalle       asistencia.ClaseDetalle
+	guardados     []asistencia.CambioRegistro
+	marcarCreados int
 }
 
 func (a *asistenciaFalsa) ListarAsignaciones(context.Context) ([]asistencia.AsignacionVista, error) {
@@ -171,6 +175,23 @@ func (a *asistenciaFalsa) SeccionesDisponibles(context.Context) ([]academico.Sec
 
 func (a *asistenciaFalsa) CursosDisponibles(context.Context) ([]academico.Curso, error) {
 	return []academico.Curso{{ID: 2, Nombre: "Matemática", Activo: true}}, nil
+}
+
+func (a *asistenciaFalsa) ClasesAsignadas(_ context.Context, _ int64, _ time.Time) ([]asistencia.ClaseAsignada, error) {
+	return a.clases, nil
+}
+
+func (a *asistenciaFalsa) ListarClase(_ context.Context, _ int64, _ bool, _ time.Time, _, _ int64, _ int) (asistencia.ClaseDetalle, error) {
+	return a.detalle, nil
+}
+
+func (a *asistenciaFalsa) GuardarRegistros(_ context.Context, _ int64, _ bool, _ time.Time, _, _ int64, _ int, cambios []asistencia.CambioRegistro) error {
+	a.guardados = cambios
+	return nil
+}
+
+func (a *asistenciaFalsa) MarcarTodosPresentes(_ context.Context, _ int64, _ bool, _ time.Time, _, _ int64, _ int) (int, error) {
+	return a.marcarCreados, nil
 }
 
 func nuevoManejadorAsistencia(t *testing.T, falso *asistenciaFalsa) (*asistencia.Manejador, *scs.SessionManager) {

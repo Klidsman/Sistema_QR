@@ -101,16 +101,16 @@
 
 **Prueba independiente**: marcar a todos presentes, corregir tres excepciones, guardar y recargar.
 
-- [ ] T048 [P] [US1] Escribir pruebas de integración de listar clase, alumnos y marcaciones en `pruebas/integracion/asistencia_clase_test.go`
-- [ ] T049 [US1] Implementar `ListarClase` con alumnos, marcaciones y diferencias en `internal/asistencia/servicio_registros.go`
-- [ ] T050 [US1] Implementar `GuardarRegistros` con upsert idempotente y auditoría en `internal/asistencia/servicio_registros.go`
-- [ ] T051 [US1] Implementar `MarcarTodosPresentes` solo para alumnos sin registro en `internal/asistencia/servicio_registros.go`
-- [ ] T052 [US1] Implementar las rutas `GET /asistencia`, `GET /asistencia/clase`, `POST /asistencia/clase` y `POST /asistencia/clase/todos` en `internal/asistencia/manejador_asistencia.go`
-- [ ] T053 [US1] Crear las plantillas `seleccion.templ` y `clase.templ` en `web/plantillas/asistencia/`
-- [ ] T054 [US1] Mostrar el estado y la hora del QR junto a cada alumno y destacar diferencias sin alterar el QR en `web/plantillas/asistencia/clase.templ`
-- [ ] T055 [US1] Auditar `crear_registro` y `marcar_todos_presentes`
-- [ ] T056 [US1] Escribir las pruebas de manejadores de la clase en `pruebas/manejadores/asistencia_clase_test.go`
-- [ ] T057 [US1] Escribir la prueba E2E de marcar todos y corregir excepciones en `pruebas/e2e/asistencia_clase_test.spec.ts`
+- [X] T048 [P] [US1] Escribir pruebas de integración de listar clase, alumnos y marcaciones en `pruebas/integracion/asistencia_clase_test.go`
+- [X] T049 [US1] Implementar `ListarClase` con alumnos, marcaciones y diferencias en `internal/asistencia/servicio_registros.go`
+- [X] T050 [US1] Implementar `GuardarRegistros` con upsert idempotente y auditoría en `internal/asistencia/servicio_registros.go`
+- [X] T051 [US1] Implementar `MarcarTodosPresentes` solo para alumnos sin registro en `internal/asistencia/servicio_registros.go`
+- [X] T052 [US1] Implementar las rutas `GET /asistencia`, `GET /asistencia/clase`, `POST /asistencia/clase` y `POST /asistencia/clase/todos` en `internal/asistencia/manejador_asistencia.go`
+- [X] T053 [US1] Crear las plantillas `seleccion.templ` y `clase.templ` en `web/plantillas/asistencia/`
+- [X] T054 [US1] Mostrar el estado y la hora del QR junto a cada alumno y destacar diferencias sin alterar el QR en `web/plantillas/asistencia/clase.templ`
+- [X] T055 [US1] Auditar `crear_registro` y `marcar_todos_presentes`
+- [X] T056 [US1] Escribir las pruebas de manejadores de la clase en `pruebas/manejadores/asistencia_clase_test.go`
+- [X] T057 [US1] Escribir la prueba E2E de marcar todos y corregir excepciones en `pruebas/e2e/asistencia_clase_test.spec.ts`
 
 **Punto de control**: US1 funcional y verificable con asignaciones existentes.
 

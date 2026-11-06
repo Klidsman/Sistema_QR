@@ -18,6 +18,47 @@ type CursoOpcion struct {
 	Nombre string
 }
 
+// ClaseSeleccionVista es una clase que el docente puede abrir.
+type ClaseSeleccionVista struct {
+	Curso   string
+	Seccion string
+	Horario string
+	Bloque  int
+	URL     string
+}
+
+// ClaseVista es la cabecera de una hora de clase.
+type ClaseVista struct {
+	SeccionID  int64
+	CursoID    int64
+	Seccion    string
+	Curso      string
+	Turno      string
+	Fecha      string
+	FechaISO   string
+	Bloque     int
+	HoraInicio string
+	HoraFin    string
+}
+
+// AlumnoFilaVista es un alumno con su registro y su QR.
+type AlumnoFilaVista struct {
+	ID            int64
+	Identificador string
+	Nombre        string
+	Estado        string
+	Observacion   string
+	QRTexto       string
+	TieneQR       bool
+	Diferencia    bool
+}
+
+// EstadoOpcion es un estado seleccionable.
+type EstadoOpcion struct {
+	Valor    string
+	Etiqueta string
+}
+
 // AsignacionVista es una asignación preparada para mostrarse.
 type AsignacionVista struct {
 	ID      int64

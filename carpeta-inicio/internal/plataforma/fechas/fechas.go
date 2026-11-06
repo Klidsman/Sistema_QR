@@ -77,6 +77,14 @@ func ParsearHora(texto string) (time.Time, error) {
 		hora.Hour(), hora.Minute(), 0, 0, zonaLima), nil
 }
 
+// Hora devuelve la hora de una marca de tiempo en la zona del colegio, formato HH:MM.
+func Hora(momento time.Time) string {
+	if momento.IsZero() {
+		return ""
+	}
+	return momento.In(zonaLima).Format("15:04")
+}
+
 // FormatearHora devuelve la hora en formato HH:MM.
 func FormatearHora(hora time.Time) string {
 	return hora.Format("15:04")

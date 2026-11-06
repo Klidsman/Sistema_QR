@@ -1,0 +1,108 @@
+package vista
+
+import (
+	"fmt"
+
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Clase(usuario string, rol string, tokenCSRF string, cabecera *ClaseVista, filas []AlumnoFilaVista, estados []EstadoOpcion, mensaje string, mensajeError string) {
+	@paginas.BaseSesion("Asistencia de clase", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/asistencia" class="text-sm font-medium text-blue-700">← Clases</a>
+				<h1 class="mt-1 text-2xl font-semibold">Asistencia de clase</h1>
+				if cabecera != nil {
+					<p class="text-sm text-slate-600">{ cabecera.Curso } · { cabecera.Seccion } · { cabecera.Fecha } · bloque { cabecera.Bloque } ({ cabecera.HoraInicio }–{ cabecera.HoraFin })</p>
+				}
+			</div>
+		</div>
+
+		if mensaje != "" {
+			<p role="status" class="mt-4 rounded bg-green-100 p-3 text-green-800">{ mensaje }</p>
+		}
+		if mensajeError != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensajeError }</p>
+		}
+
+		if cabecera == nil {
+			<p class="mt-6 rounded border border-amber-200 bg-amber-50 p-4 text-amber-900">
+				No se pudo abrir la clase. Revise la fecha, la sección, el curso y el bloque.
+			</p>
+		} else {
+			<div class="mt-4 flex flex-wrap gap-2">
+				<form method="post" action="/asistencia/clase/todos">
+					<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+					<input type="hidden" name="fecha" value={ cabecera.FechaISO }/>
+					<input type="hidden" name="seccion_id" value={ fmt.Sprintf("%d", cabecera.SeccionID) }/>
+					<input type="hidden" name="curso_id" value={ fmt.Sprintf("%d", cabecera.CursoID) }/>
+					<input type="hidden" name="bloque" value={ fmt.Sprintf("%d", cabecera.Bloque) }/>
+					<button type="submit" class="rounded border border-blue-300 bg-blue-50 px-4 py-2 font-semibold text-blue-800">Marcar a todos presentes</button>
+				</form>
+			</div>
+
+			<form method="post" action="/asistencia/clase" class="mt-6">
+				<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+				<input type="hidden" name="fecha" value={ cabecera.FechaISO }/>
+				<input type="hidden" name="seccion_id" value={ fmt.Sprintf("%d", cabecera.SeccionID) }/>
+				<input type="hidden" name="curso_id" value={ fmt.Sprintf("%d", cabecera.CursoID) }/>
+				<input type="hidden" name="bloque" value={ fmt.Sprintf("%d", cabecera.Bloque) }/>
+
+				<div class="overflow-x-auto rounded border border-slate-200 bg-white">
+					<table class="w-full text-left text-sm">
+						<thead class="bg-slate-100 text-slate-700">
+							<tr>
+								<th class="p-3">Alumno</th>
+								<th class="p-3">Identificador</th>
+								<th class="p-3">Ingreso QR</th>
+								<th class="p-3">Estado del docente</th>
+								<th class="p-3">Observación</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, fila := range filas {
+								if fila.Diferencia {
+									<tr class="border-t border-amber-200 bg-amber-50">
+										<td class="p-3 font-medium">{ fila.Nombre }</td>
+										<td class="p-3">{ fila.Identificador }</td>
+										<td class="p-3">{ fila.QRTexto }</td>
+										<td class="p-3">
+											<select name={ fmt.Sprintf("estado_%d", fila.ID) } class="w-full rounded border border-slate-300 p-1">
+												for _, estado := range estados {
+													<option value={ estado.Valor } selected?={ estado.Valor == fila.Estado }>{ estado.Etiqueta }</option>
+												}
+											</select>
+										</td>
+										<td class="p-3">
+											<input type="text" name={ fmt.Sprintf("observacion_%d", fila.ID) } value={ fila.Observacion } maxlength="300" class="w-full rounded border border-slate-300 p-1"/>
+											<span class="block text-xs text-amber-700">Diferencia con el QR</span>
+										</td>
+									</tr>
+								} else {
+									<tr class="border-t border-slate-100">
+										<td class="p-3 font-medium">{ fila.Nombre }</td>
+										<td class="p-3">{ fila.Identificador }</td>
+										<td class="p-3">{ fila.QRTexto }</td>
+										<td class="p-3">
+											<select name={ fmt.Sprintf("estado_%d", fila.ID) } class="w-full rounded border border-slate-300 p-1">
+												for _, estado := range estados {
+													<option value={ estado.Valor } selected?={ estado.Valor == fila.Estado }>{ estado.Etiqueta }</option>
+												}
+											</select>
+										</td>
+										<td class="p-3">
+											<input type="text" name={ fmt.Sprintf("observacion_%d", fila.ID) } value={ fila.Observacion } maxlength="300" class="w-full rounded border border-slate-300 p-1"/>
+										</td>
+									</tr>
+								}
+							}
+						</tbody>
+					</table>
+				</div>
+				<div class="mt-4">
+					<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Guardar asistencia</button>
+				</div>
+			</form>
+		}
+	}
+}
