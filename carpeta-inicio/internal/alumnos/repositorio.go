@@ -74,6 +74,34 @@ func (r *Repositorio) listar(ctx context.Context, filtros FiltrosListado) ([]Alu
 	return listado, nil
 }
 
+func (r *Repositorio) listarCarnets(ctx context.Context, seleccion SeleccionCarnets) ([]AlumnoCarnet, error) {
+	filas, err := r.consultas.ListarAlumnosParaCarnets(ctx, generado.ListarAlumnosParaCarnetsParams{
+		SeccionID: enteroOpcional(seleccion.SeccionID),
+		GradoID:   enteroOpcional(seleccion.GradoID),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	carnets := make([]AlumnoCarnet, 0, len(filas))
+	for _, fila := range filas {
+		carnets = append(carnets, AlumnoCarnet{
+			ID:            fila.ID,
+			Identificador: fila.Identificador,
+			Nombres:       fila.Nombres,
+			Apellidos:     fila.Apellidos,
+			SeccionID:     fila.SeccionID,
+			GradoID:       fila.GradoID,
+			Grado:         fila.GradoNombre,
+			Seccion:       fila.SeccionNombre,
+			AnioEscolar:   fila.AnioEscolarNombre,
+			FotoClave:     fila.FotoClave.String,
+			TokenQR:       fila.QrToken.String,
+		})
+	}
+	return carnets, nil
+}
+
 func (r *Repositorio) buscar(ctx context.Context, id int64) (Alumno, error) {
 	fila, err := r.consultas.BuscarAlumnoPorID(ctx, id)
 	if errors.Is(err, pgx.ErrNoRows) {

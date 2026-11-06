@@ -2,11 +2,13 @@ package vista
 
 import (
 	"fmt"
+	"strconv"
 
+	"asistencia/internal/academico"
 	"asistencia/web/plantillas/paginas"
 )
 
-templ Ficha(usuario string, rol string, tokenCSRF string, alumno Alumno, credencial *Credencial, historial []Credencial, mensaje string, mensajeError string) {
+templ Ficha(usuario string, rol string, tokenCSRF string, alumno Alumno, secciones []academico.Seccion, historialSecciones []HistorialSeccion, fechaHoy string, credencial *Credencial, historial []Credencial, mensaje string, mensajeError string) {
 	@paginas.BaseSesion(alumno.NombreCompleto(), usuario, rol, tokenCSRF) {
 		<div class="flex flex-wrap items-center justify-between gap-3">
 			<div>
@@ -83,6 +85,10 @@ templ Ficha(usuario string, rol string, tokenCSRF string, alumno Alumno, credenc
 					</div>
 					if alumno.FechaSalida != "" {
 						<div>
+							<dt class="text-sm text-slate-500">Tipo de salida</dt>
+							<dd class="font-medium">{ alumno.Estado }</dd>
+						</div>
+						<div>
 							<dt class="text-sm text-slate-500">Fecha de salida</dt>
 							<dd class="font-medium">{ alumno.FechaSalida }</dd>
 						</div>
@@ -92,5 +98,94 @@ templ Ficha(usuario string, rol string, tokenCSRF string, alumno Alumno, credenc
 		</div>
 
 		@SeccionQR(alumno, credencial, historial, rol, tokenCSRF)
+
+		<section class="mt-6 rounded border border-slate-200 bg-white p-4">
+			<h2 class="text-lg font-semibold">Historial de secciones</h2>
+			if len(historialSecciones) == 0 {
+				<p class="mt-3 text-slate-600">Todavía no hay cambios de sección registrados.</p>
+			} else {
+				<div class="mt-3 overflow-x-auto">
+					<table class="w-full text-left text-sm">
+						<thead class="bg-slate-100 text-slate-700">
+							<tr>
+								<th class="p-2">Grado y sección</th>
+								<th class="p-2">Año escolar</th>
+								<th class="p-2">Desde</th>
+								<th class="p-2">Hasta</th>
+								<th class="p-2">Situación</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, tramo := range historialSecciones {
+								<tr class="border-t border-slate-100">
+									<td class="p-2">{ tramo.Grado } { tramo.Seccion }</td>
+									<td class="p-2">{ tramo.AnioEscolar }</td>
+									<td class="p-2">{ tramo.FechaInicio }</td>
+									<td class="p-2">
+										if tramo.FechaFin != "" {
+											{ tramo.FechaFin }
+										}
+									</td>
+									<td class="p-2">
+										if tramo.Actual {
+											<span class="rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-800">Actual</span>
+										} else {
+											<span class="rounded bg-slate-100 px-2 py-1 text-xs font-medium">Cerrado</span>
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</section>
+
+		if rol == "administrador" && alumno.Activo() {
+			<div class="mt-6 grid gap-6 lg:grid-cols-2">
+				<section class="rounded border border-slate-200 bg-white p-4">
+					<h2 class="text-lg font-semibold">Cambiar de sección</h2>
+					<p class="mt-1 text-sm text-slate-600">Cierra el tramo actual y registra el nuevo desde la fecha indicada.</p>
+					<form method="post" action={ fmt.Sprintf("/alumnos/%d/seccion", alumno.ID) } class="mt-3 space-y-3">
+						<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+						<label class="block">
+							<span class="text-sm font-medium">Nueva sección</span>
+							<select name="seccion_id" required class="mt-1 w-full rounded border border-slate-300 p-2">
+								<option value="">Seleccione una sección</option>
+								for _, seccion := range secciones {
+									<option value={ strconv.FormatInt(seccion.ID, 10) }>{ seccion.Etiqueta() }</option>
+								}
+							</select>
+						</label>
+						<label class="block">
+							<span class="text-sm font-medium">Fecha de vigencia</span>
+							<input type="date" name="fecha" value={ fechaHoy } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+						</label>
+						<button type="submit" class="rounded bg-blue-700 px-4 py-2 text-sm font-semibold text-white">Cambiar sección</button>
+					</form>
+				</section>
+
+				<section class="rounded border border-amber-200 bg-amber-50 p-4">
+					<h2 class="text-lg font-semibold">Registrar salida</h2>
+					<p class="mt-1 text-sm text-slate-600">Marca al alumno como retirado o trasladado e invalida su QR de inmediato.</p>
+					<form method="post" action={ fmt.Sprintf("/alumnos/%d/salida", alumno.ID) } class="mt-3 space-y-3" onsubmit="return confirm('La salida es definitiva y el QR del alumno dejará de funcionar. ¿Continuar?');">
+						<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+						<label class="block">
+							<span class="text-sm font-medium">Tipo de salida</span>
+							<select name="tipo" required class="mt-1 w-full rounded border border-slate-300 p-2">
+								<option value="">Seleccione un tipo</option>
+								<option value="retirado">Retirado</option>
+								<option value="trasladado">Trasladado</option>
+							</select>
+						</label>
+						<label class="block">
+							<span class="text-sm font-medium">Fecha de salida</span>
+							<input type="date" name="fecha" value={ fechaHoy } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+						</label>
+						<button type="submit" class="rounded bg-amber-700 px-4 py-2 text-sm font-semibold text-white">Registrar salida</button>
+					</form>
+				</section>
+			</div>
+		}
 	}
 }

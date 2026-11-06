@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"asistencia/internal/academico"
@@ -29,6 +30,10 @@ type ServicioAlumnos interface {
 	Actualizar(ctx context.Context, usuarioID, alumnoID int64, datos DatosAlumno) error
 	ActualizarFoto(ctx context.Context, usuarioID, alumnoID int64, clave string) error
 	Desactivar(ctx context.Context, usuarioID, alumnoID int64) error
+	HistorialSecciones(ctx context.Context, alumnoID int64) ([]HistorialSeccion, error)
+	CambiarSeccion(ctx context.Context, usuarioID, alumnoID, seccionID int64, fecha time.Time) error
+	RegistrarSalida(ctx context.Context, usuarioID, alumnoID int64, tipo string, fecha time.Time) error
+	ListarCarnets(ctx context.Context, seleccion SeleccionCarnets) (LoteCarnets, error)
 }
 
 // ServicioQR son las operaciones de credenciales que usa el manejador.
@@ -41,36 +46,50 @@ type ServicioQR interface {
 
 // Dependencias reúne todo lo que el manejador de alumnos necesita.
 type Dependencias struct {
-	Alumnos      ServicioAlumnos
-	QR           ServicioQR
-	Secciones    academico.BuscadorSeccion
-	Almacen      almacenamiento.AlmacenFotos
-	Sesiones     *scs.SessionManager
-	Registro     *slog.Logger
-	FotoMaximaMB int
+	Alumnos       ServicioAlumnos
+	QR            ServicioQR
+	Secciones     academico.BuscadorSeccion
+	Almacen       almacenamiento.AlmacenFotos
+	Sesiones      *scs.SessionManager
+	Registro      *slog.Logger
+	FotoMaximaMB  int
+	CarnetAnchoMM int
+	CarnetAltoMM  int
 }
 
 // Manejador atiende las pantallas y acciones de alumnos y de sus códigos QR.
 type Manejador struct {
-	alumnos      ServicioAlumnos
-	qr           ServicioQR
-	secciones    academico.BuscadorSeccion
-	almacen      almacenamiento.AlmacenFotos
-	sesiones     *scs.SessionManager
-	registro     *slog.Logger
-	fotoMaximaMB int
+	alumnos       ServicioAlumnos
+	qr            ServicioQR
+	secciones     academico.BuscadorSeccion
+	almacen       almacenamiento.AlmacenFotos
+	sesiones      *scs.SessionManager
+	registro      *slog.Logger
+	fotoMaximaMB  int
+	carnetAnchoMM int
+	carnetAltoMM  int
 }
 
 // NuevoManejador crea el manejador de alumnos.
 func NuevoManejador(dependencias Dependencias) *Manejador {
+	ancho := dependencias.CarnetAnchoMM
+	if ancho <= 0 {
+		ancho = 85
+	}
+	alto := dependencias.CarnetAltoMM
+	if alto <= 0 {
+		alto = 54
+	}
 	return &Manejador{
-		alumnos:      dependencias.Alumnos,
-		qr:           dependencias.QR,
-		secciones:    dependencias.Secciones,
-		almacen:      dependencias.Almacen,
-		sesiones:     dependencias.Sesiones,
-		registro:     dependencias.Registro,
-		fotoMaximaMB: dependencias.FotoMaximaMB,
+		alumnos:       dependencias.Alumnos,
+		qr:            dependencias.QR,
+		secciones:     dependencias.Secciones,
+		almacen:       dependencias.Almacen,
+		sesiones:      dependencias.Sesiones,
+		registro:      dependencias.Registro,
+		fotoMaximaMB:  dependencias.FotoMaximaMB,
+		carnetAnchoMM: ancho,
+		carnetAltoMM:  alto,
 	}
 }
 
@@ -82,6 +101,8 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Get("/alumnos/{id}", m.ficha)
 		lectura.Get("/alumnos/{id}/foto", m.foto)
 		lectura.Get("/alumnos/{id}/qr/imagen", m.imagenQR)
+		lectura.Get("/carnets", m.seleccionCarnets)
+		lectura.Get("/carnets/lote", m.loteCarnets)
 	})
 
 	enrutador.Group(func(escritura chi.Router) {
@@ -91,6 +112,8 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Get("/alumnos/{id}/editar", m.editar)
 		escritura.Post("/alumnos/{id}", m.actualizar)
 		escritura.Post("/alumnos/{id}/desactivacion", m.desactivar)
+		escritura.Post("/alumnos/{id}/seccion", m.cambiarSeccion)
+		escritura.Post("/alumnos/{id}/salida", m.registrarSalida)
 		escritura.Post("/alumnos/{id}/foto", m.subirFoto)
 		escritura.Post("/alumnos/{id}/qr", m.emitirQR)
 		escritura.Post("/alumnos/{id}/qr/reemplazo", m.reemplazarQR)
@@ -245,6 +268,91 @@ func (m *Manejador) desactivar(respuesta http.ResponseWriter, peticion *http.Req
 	http.Redirect(respuesta, peticion, fmt.Sprintf("/alumnos/%d?ok=desactivado", id), http.StatusSeeOther)
 }
 
+func (m *Manejador) cambiarSeccion(respuesta http.ResponseWriter, peticion *http.Request) {
+	id, ok := idDeRuta(peticion)
+	if !ok {
+		http.NotFound(respuesta, peticion)
+		return
+	}
+
+	seccionID := enteroDeTexto(peticion.PostFormValue("seccion_id"))
+	if seccionID <= 0 {
+		m.redirigirConError(respuesta, peticion, id, "seccion_invalida")
+		return
+	}
+	if _, err := m.secciones.BuscarSeccionPorID(peticion.Context(), seccionID); err != nil {
+		m.redirigirConError(respuesta, peticion, id, "seccion_invalida")
+		return
+	}
+	fecha, err := fechaDelFormulario(peticion.PostFormValue("fecha"))
+	if err != nil {
+		m.redirigirConError(respuesta, peticion, id, "fecha_invalida")
+		return
+	}
+
+	err = m.alumnos.CambiarSeccion(peticion.Context(), intermediarios.UsuarioID(peticion.Context()), id, seccionID, fecha)
+	switch {
+	case errors.Is(err, ErrAlumnoNoEncontrado):
+		http.NotFound(respuesta, peticion)
+		return
+	case errors.Is(err, ErrAlumnoNoActivo):
+		m.redirigirConError(respuesta, peticion, id, "alumno_no_activo")
+		return
+	case errors.Is(err, ErrMismaSeccion):
+		m.redirigirConError(respuesta, peticion, id, "misma_seccion")
+		return
+	case errors.Is(err, ErrSeccionInvalida):
+		m.redirigirConError(respuesta, peticion, id, "seccion_invalida")
+		return
+	case errors.Is(err, ErrFechaInvalida):
+		m.redirigirConError(respuesta, peticion, id, "fecha_invalida")
+		return
+	case err != nil:
+		m.errorInterno(respuesta, "cambiando la sección del alumno", err)
+		return
+	}
+	http.Redirect(respuesta, peticion, fmt.Sprintf("/alumnos/%d?ok=seccion_cambiada", id), http.StatusSeeOther)
+}
+
+func (m *Manejador) registrarSalida(respuesta http.ResponseWriter, peticion *http.Request) {
+	id, ok := idDeRuta(peticion)
+	if !ok {
+		http.NotFound(respuesta, peticion)
+		return
+	}
+
+	tipo := peticion.PostFormValue("tipo")
+	if !TipoSalidaValido(tipo) {
+		m.redirigirConError(respuesta, peticion, id, "tipo_salida_invalido")
+		return
+	}
+	fecha, err := fechaDelFormulario(peticion.PostFormValue("fecha"))
+	if err != nil {
+		m.redirigirConError(respuesta, peticion, id, "fecha_invalida")
+		return
+	}
+
+	err = m.alumnos.RegistrarSalida(peticion.Context(), intermediarios.UsuarioID(peticion.Context()), id, tipo, fecha)
+	switch {
+	case errors.Is(err, ErrAlumnoNoEncontrado):
+		http.NotFound(respuesta, peticion)
+		return
+	case errors.Is(err, ErrAlumnoNoActivo):
+		m.redirigirConError(respuesta, peticion, id, "alumno_no_activo")
+		return
+	case errors.Is(err, ErrTipoSalidaInvalido):
+		m.redirigirConError(respuesta, peticion, id, "tipo_salida_invalido")
+		return
+	case errors.Is(err, ErrFechaInvalida):
+		m.redirigirConError(respuesta, peticion, id, "fecha_invalida")
+		return
+	case err != nil:
+		m.errorInterno(respuesta, "registrando la salida del alumno", err)
+		return
+	}
+	http.Redirect(respuesta, peticion, fmt.Sprintf("/alumnos/%d?ok=salida_registrada", id), http.StatusSeeOther)
+}
+
 func (m *Manejador) subirFoto(respuesta http.ResponseWriter, peticion *http.Request) {
 	id, ok := idDeRuta(peticion)
 	if !ok {
@@ -302,11 +410,26 @@ func (m *Manejador) ficha(respuesta http.ResponseWriter, peticion *http.Request)
 		historial = nil
 	}
 
+	historialSecciones, err := m.alumnos.HistorialSecciones(peticion.Context(), id)
+	if err != nil {
+		m.registro.Error("no se pudo leer el historial de secciones", "alumno_id", id, "error", err)
+		historialSecciones = nil
+	}
+
+	secciones, err := m.secciones.ListarSecciones(peticion.Context())
+	if err != nil {
+		m.errorInterno(respuesta, "listando secciones", err)
+		return
+	}
+
 	m.renderizar(respuesta, peticion, http.StatusOK, vista.Ficha(
 		m.nombreUsuario(peticion.Context()),
 		intermediarios.RolUsuario(peticion.Context()),
 		m.tokenCSRF(peticion.Context()),
 		aAlumnoVista(alumno),
+		secciones,
+		aHistorialSeccionesVista(historialSecciones),
+		fechas.FormatearISO(fechas.Hoy()),
 		aCredencialVista(credencial),
 		aHistorialVista(historial),
 		mensajeCorrecto(peticion.URL.Query().Get("ok")),
@@ -614,6 +737,32 @@ func aHistorialVista(historial []CredencialQR) []vista.Credencial {
 	return filas
 }
 
+func aHistorialSeccionesVista(historial []HistorialSeccion) []vista.HistorialSeccion {
+	filas := make([]vista.HistorialSeccion, 0, len(historial))
+	for _, tramo := range historial {
+		fin := ""
+		if tramo.FechaFin != nil {
+			fin = fechas.FormatearDia(*tramo.FechaFin)
+		}
+		filas = append(filas, vista.HistorialSeccion{
+			Grado:       tramo.Grado,
+			Seccion:     tramo.Seccion,
+			AnioEscolar: tramo.AnioEscolar,
+			FechaInicio: fechas.FormatearDia(tramo.FechaInicio),
+			FechaFin:    fin,
+			Actual:      tramo.Actual(),
+		})
+	}
+	return filas
+}
+
+func fechaDelFormulario(texto string) (time.Time, error) {
+	if strings.TrimSpace(texto) == "" {
+		return fechas.Hoy(), nil
+	}
+	return fechas.ParsearDia(texto)
+}
+
 func idDeRuta(peticion *http.Request) (int64, bool) {
 	id, err := strconv.ParseInt(chi.URLParam(peticion, "id"), 10, 64)
 	if err != nil || id <= 0 {
@@ -677,6 +826,10 @@ func mensajeCorrecto(codigo string) string {
 		return "El QR se generó correctamente."
 	case "qr_reemplazado":
 		return "El QR anterior quedó invalidado y se generó uno nuevo."
+	case "seccion_cambiada":
+		return "El alumno cambió de sección y su historial quedó actualizado."
+	case "salida_registrada":
+		return "La salida quedó registrada y el QR del alumno fue invalidado."
 	default:
 		return ""
 	}
@@ -698,6 +851,14 @@ func mensajeError(codigo string) string {
 		return "Debe indicar un motivo válido para reemplazar el QR."
 	case "alumno_no_activo":
 		return "El alumno no está activo, así que no puede tener un QR."
+	case "seccion_invalida":
+		return "La sección elegida no existe."
+	case "misma_seccion":
+		return "El alumno ya pertenece a la sección elegida."
+	case "fecha_invalida":
+		return "La fecha no es válida. Use una fecha igual o posterior al inicio del tramo actual."
+	case "tipo_salida_invalido":
+		return "El tipo de salida debe ser retirado o trasladado."
 	default:
 		return ""
 	}

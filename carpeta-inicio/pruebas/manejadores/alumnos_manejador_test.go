@@ -39,14 +39,23 @@ func (s seccionesFalso) BuscarSeccionPorID(ctx context.Context, id int64) (acade
 }
 
 type alumnosFalso struct {
-	listado         []alumnos.AlumnoListado
-	alumno          alumnos.Alumno
-	obtenerErr      error
-	crearID         int64
-	crearErr        error
-	datosRecibidos  alumnos.DatosAlumno
-	desactivado     bool
-	fotoActualizada string
+	listado             []alumnos.AlumnoListado
+	alumno              alumnos.Alumno
+	obtenerErr          error
+	crearID             int64
+	crearErr            error
+	datosRecibidos      alumnos.DatosAlumno
+	desactivado         bool
+	fotoActualizada     string
+	historialSecciones  []alumnos.HistorialSeccion
+	cambiarSeccionID    int64
+	cambiarSeccionFecha time.Time
+	cambiarSeccionErr   error
+	salidaTipo          string
+	salidaFecha         time.Time
+	salidaErr           error
+	carnets             []alumnos.AlumnoCarnet
+	carnetSeleccion     alumnos.SeleccionCarnets
 }
 
 func (a *alumnosFalso) Listar(ctx context.Context, filtros alumnos.FiltrosListado) ([]alumnos.AlumnoListado, error) {
@@ -81,6 +90,27 @@ func (a *alumnosFalso) ActualizarFoto(ctx context.Context, usuarioID, alumnoID i
 func (a *alumnosFalso) Desactivar(ctx context.Context, usuarioID, alumnoID int64) error {
 	a.desactivado = true
 	return nil
+}
+
+func (a *alumnosFalso) HistorialSecciones(ctx context.Context, alumnoID int64) ([]alumnos.HistorialSeccion, error) {
+	return a.historialSecciones, nil
+}
+
+func (a *alumnosFalso) CambiarSeccion(ctx context.Context, usuarioID, alumnoID, seccionID int64, fecha time.Time) error {
+	a.cambiarSeccionID = seccionID
+	a.cambiarSeccionFecha = fecha
+	return a.cambiarSeccionErr
+}
+
+func (a *alumnosFalso) RegistrarSalida(ctx context.Context, usuarioID, alumnoID int64, tipo string, fecha time.Time) error {
+	a.salidaTipo = tipo
+	a.salidaFecha = fecha
+	return a.salidaErr
+}
+
+func (a *alumnosFalso) ListarCarnets(ctx context.Context, seleccion alumnos.SeleccionCarnets) (alumnos.LoteCarnets, error) {
+	a.carnetSeleccion = seleccion
+	return alumnos.PrepararLote(a.carnets), nil
 }
 
 type qrFalso struct {

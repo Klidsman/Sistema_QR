@@ -1,0 +1,52 @@
+package vista
+
+import (
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Lote(usuario string, rol string, tokenCSRF string, titulo string, lote ContenidoLote, anchoMM int, altoMM int) {
+	@paginas.BaseSesion("Carnés · "+titulo, usuario, rol, tokenCSRF) {
+		@EstilosLote()
+
+		<div class="flex flex-wrap items-center justify-between gap-3 sin-imprimir">
+			<div>
+				<a href="/carnets" class="text-sm font-medium text-blue-700">← Cambiar selección</a>
+				<h1 class="mt-1 text-2xl font-semibold">Carnés de { titulo }</h1>
+				<p class="text-sm text-slate-600">{ len(lote.Carnets) } carné(s) listo(s) para imprimir.</p>
+			</div>
+			<button type="button" onclick="window.print()" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Imprimir</button>
+		</div>
+
+		if lote.Avisos.HayAvisos() {
+			<section role="alert" class="mt-4 rounded border border-amber-300 bg-amber-50 p-4 text-amber-900 sin-imprimir">
+				<h2 class="text-base font-semibold">Avisos previos a la impresión</h2>
+				if lote.Avisos.TotalSinFoto() > 0 {
+					<p class="mt-2 font-medium">{ lote.Avisos.TextoSinFoto() }: el carné se imprime con el marcador "Sin foto".</p>
+					<ul class="mt-1 list-disc pl-5 text-sm">
+						for _, alumno := range lote.Avisos.SinFoto {
+							<li>{ alumno.NombreCompleto() } · { alumno.Grado } { alumno.Seccion }</li>
+						}
+					</ul>
+				}
+				if lote.Avisos.TotalSinQR() > 0 {
+					<p class="mt-2 font-medium">{ lote.Avisos.TextoSinQR() }: no se imprime su carné para no dejar el QR vacío.</p>
+					<ul class="mt-1 list-disc pl-5 text-sm">
+						for _, alumno := range lote.Avisos.SinQR {
+							<li>{ alumno.NombreCompleto() } · { alumno.Grado } { alumno.Seccion }</li>
+						}
+					</ul>
+				}
+			</section>
+		}
+
+		if len(lote.Carnets) == 0 {
+			<p class="mt-6 rounded border border-dashed border-slate-300 p-6 text-center text-slate-500 sin-imprimir">No hay carnés para imprimir en esta selección.</p>
+		} else {
+			<div class="carnets mt-6">
+				for _, alumno := range lote.Carnets {
+					@Carnet(alumno, anchoMM, altoMM)
+				}
+			</div>
+		}
+	}
+}

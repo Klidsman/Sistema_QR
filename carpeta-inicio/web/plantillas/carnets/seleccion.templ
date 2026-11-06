@@ -1,0 +1,58 @@
+package vista
+
+import (
+	"strconv"
+
+	"asistencia/internal/academico"
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Seleccion(usuario string, rol string, tokenCSRF string, secciones []academico.Seccion, grados []Grado, mensajeError string) {
+	@paginas.BaseSesion("Carnés", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/alumnos" class="text-sm font-medium text-blue-700">← Volver a alumnos</a>
+				<h1 class="mt-1 text-2xl font-semibold">Carnés en lote</h1>
+				<p class="text-sm text-slate-600">Elija una sección o un grado para generar los carnés de sus alumnos activos.</p>
+			</div>
+		</div>
+
+		if mensajeError != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensajeError }</p>
+		}
+
+		<form method="get" action="/carnets/lote" class="mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-2">
+			<label class="block">
+				<span class="text-sm font-medium">Sección</span>
+				<select name="seccion_id" class="mt-1 w-full rounded border border-slate-300 p-2">
+					<option value="">Todas</option>
+					for _, seccion := range secciones {
+						<option value={ strconv.FormatInt(seccion.ID, 10) }>{ seccion.Etiqueta() }</option>
+					}
+				</select>
+			</label>
+			<label class="block">
+				<span class="text-sm font-medium">Grado completo</span>
+				<select name="grado_id" class="mt-1 w-full rounded border border-slate-300 p-2">
+					<option value="">Todos</option>
+					for _, grado := range grados {
+						<option value={ strconv.FormatInt(grado.ID, 10) }>{ grado.Etiqueta() }</option>
+					}
+				</select>
+			</label>
+			<p class="text-sm text-slate-500 sm:col-span-2">Si elige una sección, se usa esa selección y se ignora el grado.</p>
+			<div class="sm:col-span-2">
+				<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Generar carnés</button>
+			</div>
+		</form>
+
+		<section class="mt-6 rounded border border-slate-200 bg-white p-4 text-sm text-slate-600">
+			<h2 class="text-base font-semibold text-slate-900">Antes de imprimir</h2>
+			<ul class="mt-2 list-disc space-y-1 pl-5">
+				<li>Solo se incluyen alumnos activos.</li>
+				<li>Los alumnos sin foto se imprimen con el marcador "Sin foto" y se listan en un aviso.</li>
+				<li>Los alumnos sin QR vigente no se imprimen y se listan en un aviso.</li>
+			</ul>
+		</section>
+	}
+}

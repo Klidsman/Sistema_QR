@@ -83,3 +83,13 @@ type Credencial struct {
 	RevocadaEn string
 	Motivo     string
 }
+
+// HistorialSeccion es un tramo de sección ya formateado para la ficha.
+type HistorialSeccion struct {
+	Grado       string
+	Seccion     string
+	AnioEscolar string
+	FechaInicio string
+	FechaFin    string
+	Actual      bool
+}

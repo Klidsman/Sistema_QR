@@ -172,20 +172,20 @@ su registro se conserva.
 
 ### Pruebas de la historia 5
 
-- [ ] T069 [P] [US5] Escribir prueba unitaria de cambio de sección (cierra el registro actual y abre uno nuevo) en `pruebas/unidad/historial_seccion_test.go`
-- [ ] T070 [P] [US5] Escribir prueba de integración de salida (retirado o trasladado) que revoca el QR en `pruebas/integracion/salidas_test.go`
-- [ ] T071 [P] [US5] Escribir prueba de manejador de cambio de sección y salida en `pruebas/manejadores/salidas_manejador_test.go`
+- [X] T069 [P] [US5] Escribir prueba unitaria de cambio de sección (cierra el registro actual y abre uno nuevo) en `pruebas/unidad/historial_seccion_test.go`
+- [X] T070 [P] [US5] Escribir prueba de integración de salida (retirado o trasladado) que revoca el QR en `pruebas/integracion/salidas_test.go`
+- [X] T071 [P] [US5] Escribir prueba de manejador de cambio de sección y salida en `pruebas/manejadores/salidas_manejador_test.go`
 
 ### Implementación de la historia 5
 
-- [ ] T072 [P] [US5] Crear migración `0005_crear_tabla_historial_secciones.sql` en `migraciones/0005_crear_tabla_historial_secciones.sql`
-- [ ] T073 [P] [US5] Implementar el modelo `HistorialSeccion` en `internal/alumnos/modelo_historial.go`
-- [ ] T074 [US5] Implementar consultas sqlc de historial y de salidas en `internal/alumnos/consultas/historial.sql`
-- [ ] T075 [US5] Implementar cambio de sección con fecha de vigencia en `internal/alumnos/servicio.go`
-- [ ] T076 [US5] Implementar salida (retirado o trasladado) que revoca el QR vigente en `internal/alumnos/servicio.go`
-- [ ] T077 [US5] Implementar desactivación que revoca el QR vigente en `internal/alumnos/servicio.go`
-- [ ] T078 [US5] Implementar los manejadores de cambio de sección y salida en `internal/alumnos/manejador.go`
-- [ ] T079 [US5] Mostrar el historial de secciones y salidas en la ficha del alumno en `web/plantillas/alumnos/ficha.templ`
+- [X] T072 [P] [US5] Crear migración `0005_crear_tabla_historial_secciones.sql` en `migraciones/0005_crear_tabla_historial_secciones.sql`
+- [X] T073 [P] [US5] Implementar el modelo `HistorialSeccion` en `internal/alumnos/modelo_historial.go`
+- [X] T074 [US5] Implementar consultas sqlc de historial y de salidas en `internal/alumnos/consultas/historial.sql`
+- [X] T075 [US5] Implementar cambio de sección con fecha de vigencia en `internal/alumnos/servicio.go`
+- [X] T076 [US5] Implementar salida (retirado o trasladado) que revoca el QR vigente en `internal/alumnos/servicio.go`
+- [X] T077 [US5] Implementar desactivación que revoca el QR vigente en `internal/alumnos/servicio.go`
+- [X] T078 [US5] Implementar los manejadores de cambio de sección y salida en `internal/alumnos/manejador.go`
+- [X] T079 [US5] Mostrar el historial de secciones y salidas en la ficha del alumno en `web/plantillas/alumnos/ficha.templ`
 
 **Punto de control**: la historia 5 funciona de forma independiente.
 
@@ -199,17 +199,17 @@ su registro se conserva.
 
 ### Pruebas de la historia 3
 
-- [ ] T080 [P] [US3] Escribir prueba unitaria de avisos previos (sin foto, sin QR vigente) en `pruebas/unidad/carnets_avisos_test.go`
-- [ ] T081 [P] [US3] Escribir prueba de manejador de la vista de lote y del marcador "sin foto" en `pruebas/manejadores/carnets_manejador_test.go`
+- [X] T080 [P] [US3] Escribir prueba unitaria de avisos previos (sin foto, sin QR vigente) en `pruebas/unidad/carnets_avisos_test.go`
+- [X] T081 [P] [US3] Escribir prueba de manejador de la vista de lote y del marcador "sin foto" en `pruebas/manejadores/carnets_manejador_test.go`
 
 ### Implementación de la historia 3
 
-- [ ] T082 [US3] Implementar la selección de alumnos por grado o sección y los avisos previos en `internal/alumnos/carnets.go`
-- [ ] T083 [US3] Implementar consultas sqlc de la selección para carnés en `internal/alumnos/consultas/carnets.sql`
-- [ ] T084 [US3] Implementar los manejadores de `/carnets` y `/carnets/lote` en `internal/alumnos/manejador_carnets.go`
-- [ ] T085 [US3] Crear la plantilla del carné con tamaño `CARNET_ANCHO_MM` y `CARNET_ALTO_MM` en `web/plantillas/carnets/carnet.templ`
-- [ ] T086 [US3] Crear la vista de lote con `@page` para impresión y avisos previos en `web/plantillas/carnets/lote.templ`
-- [ ] T087 [US3] Crear la pantalla de selección de carnés en `web/plantillas/carnets/seleccion.templ`
+- [X] T082 [US3] Implementar la selección de alumnos por grado o sección y los avisos previos en `internal/alumnos/carnets.go`
+- [X] T083 [US3] Implementar consultas sqlc de la selección para carnés en `internal/alumnos/consultas/carnets.sql`
+- [X] T084 [US3] Implementar los manejadores de `/carnets` y `/carnets/lote` en `internal/alumnos/manejador_carnets.go`
+- [X] T085 [US3] Crear la plantilla del carné con tamaño `CARNET_ANCHO_MM` y `CARNET_ALTO_MM` en `web/plantillas/carnets/carnet.templ`
+- [X] T086 [US3] Crear la vista de lote con `@page` para impresión y avisos previos en `web/plantillas/carnets/lote.templ`
+- [X] T087 [US3] Crear la pantalla de selección de carnés en `web/plantillas/carnets/seleccion.templ`
 
 **Punto de control**: la historia 3 funciona de forma independiente.
 

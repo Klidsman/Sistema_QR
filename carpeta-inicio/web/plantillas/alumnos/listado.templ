@@ -12,9 +12,12 @@ templ Listado(usuario string, rol string, tokenCSRF string, secciones []academic
 	@paginas.BaseSesion("Alumnos", usuario, rol, tokenCSRF) {
 		<div class="flex flex-wrap items-center justify-between gap-3">
 			<h1 class="text-2xl font-semibold">Alumnos</h1>
-			if rol == "administrador" {
-				<a href="/alumnos/nuevo" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Nuevo alumno</a>
-			}
+			<div class="flex flex-wrap items-center gap-2">
+				<a href="/carnets" class="rounded border border-slate-300 px-4 py-2 font-medium text-slate-700">Carnés en lote</a>
+				if rol == "administrador" {
+					<a href="/alumnos/nuevo" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Nuevo alumno</a>
+				}
+			</div>
 		</div>
 
 		if mensaje != "" {

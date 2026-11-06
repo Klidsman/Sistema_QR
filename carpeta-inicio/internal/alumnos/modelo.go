@@ -33,14 +33,20 @@ const (
 
 // Errores de negocio del módulo.
 var (
-	ErrIdentificadorExistente = errors.New("el identificador ya está registrado")
-	ErrAlumnoNoEncontrado     = errors.New("el alumno no existe")
-	ErrAlumnoNoActivo         = errors.New("el alumno no está activo")
-	ErrQRYaActivo             = errors.New("el alumno ya tiene un QR vigente")
-	ErrQRSinActivo            = errors.New("el alumno no tiene un QR vigente")
-	ErrMotivoRequerido        = errors.New("el motivo de la revocación no es válido")
-	ErrFotoInvalida           = errors.New("la foto no es un archivo JPG o PNG válido")
-	ErrFotoMuyGrande          = errors.New("la foto supera el tamaño máximo permitido")
+	ErrIdentificadorExistente   = errors.New("el identificador ya está registrado")
+	ErrAlumnoNoEncontrado       = errors.New("el alumno no existe")
+	ErrAlumnoNoActivo           = errors.New("el alumno no está activo")
+	ErrQRYaActivo               = errors.New("el alumno ya tiene un QR vigente")
+	ErrQRSinActivo              = errors.New("el alumno no tiene un QR vigente")
+	ErrMotivoRequerido          = errors.New("el motivo de la revocación no es válido")
+	ErrSeccionInvalida          = errors.New("la sección no es válida")
+	ErrMismaSeccion             = errors.New("el alumno ya pertenece a esa sección")
+	ErrFechaInvalida            = errors.New("la fecha no es válida")
+	ErrHistorialYaCerrado       = errors.New("el tramo de historial ya está cerrado")
+	ErrTipoSalidaInvalido       = errors.New("el tipo de salida no es válido")
+	ErrFotoInvalida             = errors.New("la foto no es un archivo JPG o PNG válido")
+	ErrFotoMuyGrande            = errors.New("la foto supera el tamaño máximo permitido")
+	ErrSeleccionCarnetsInvalida = errors.New("debe elegir un grado o una sección para los carnés")
 )
 
 // DatosAlumno son los campos editables de un alumno.

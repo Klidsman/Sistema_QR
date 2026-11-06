@@ -5,12 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"asistencia/internal/alumnos/generado"
 	"asistencia/internal/plataforma/auditoria"
+	"asistencia/internal/plataforma/fechas"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -34,6 +37,21 @@ func (s *Servicio) Listar(ctx context.Context, filtros FiltrosListado) ([]Alumno
 		return nil, fmt.Errorf("listando alumnos: %w", err)
 	}
 	return listado, nil
+}
+
+// ListarCarnets devuelve el lote imprimible y los avisos previos de la selección.
+func (s *Servicio) ListarCarnets(ctx context.Context, seleccion SeleccionCarnets) (LoteCarnets, error) {
+	if !seleccion.Valida() {
+		return LoteCarnets{}, ErrSeleccionCarnetsInvalida
+	}
+	if seleccion.SeccionID > 0 {
+		seleccion.GradoID = 0
+	}
+	alumnos, err := s.repositorio.listarCarnets(ctx, seleccion)
+	if err != nil {
+		return LoteCarnets{}, fmt.Errorf("listando alumnos para carnés: %w", err)
+	}
+	return PrepararLote(alumnos), nil
 }
 
 // Obtener devuelve la ficha de un alumno.
@@ -77,6 +95,15 @@ func (s *Servicio) Crear(ctx context.Context, usuarioID int64, datos DatosAlumno
 			return fmt.Errorf("creando el alumno: %w", err)
 		}
 		alumnoID = id
+
+		if _, err := consultas.CrearHistorialSeccion(ctx, generado.CrearHistorialSeccionParams{
+			AlumnoID:    id,
+			SeccionID:   datos.SeccionID,
+			FechaInicio: fechaPG(fechas.Hoy()),
+			FechaFin:    pgtype.Date{},
+		}); err != nil {
+			return fmt.Errorf("abriendo el historial de sección: %w", err)
+		}
 
 		return auditoria.Registrar(ctx, db, auditoria.Evento{
 			UsuarioID:  usuarioID,
@@ -181,6 +208,184 @@ func (s *Servicio) Desactivar(ctx context.Context, usuarioID, alumnoID int64) er
 			Accion:        "desactivar",
 			ValorAnterior: map[string]string{"estado": anterior.Estado},
 			ValorNuevo:    map[string]string{"estado": EstadoDesactivado},
+		})
+	})
+}
+
+// HistorialSecciones devuelve los tramos de sección del alumno, del más reciente al más antiguo.
+func (s *Servicio) HistorialSecciones(ctx context.Context, alumnoID int64) ([]HistorialSeccion, error) {
+	filas, err := s.repositorio.consultas.ListarHistorialSecciones(ctx, alumnoID)
+	if err != nil {
+		return nil, fmt.Errorf("listando el historial de secciones: %w", err)
+	}
+
+	historial := make([]HistorialSeccion, 0, len(filas))
+	for _, fila := range filas {
+		tramo := HistorialSeccion{
+			ID:          fila.ID,
+			SeccionID:   fila.SeccionID,
+			Grado:       fila.GradoNombre,
+			Seccion:     fila.SeccionNombre,
+			AnioEscolar: fila.AnioEscolarNombre,
+			FechaInicio: fila.FechaInicio.Time,
+		}
+		if fila.FechaFin.Valid {
+			fin := fila.FechaFin.Time
+			tramo.FechaFin = &fin
+		}
+		historial = append(historial, tramo)
+	}
+	return historial, nil
+}
+
+// CambiarSeccion cierra el tramo actual del alumno y abre uno nuevo con la sección indicada.
+func (s *Servicio) CambiarSeccion(ctx context.Context, usuarioID, alumnoID, seccionID int64, fecha time.Time) error {
+	fecha = fechas.Fecha(fecha)
+
+	return s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
+		alumno, err := s.repositorio.buscar(ctx, alumnoID)
+		if err != nil {
+			return err
+		}
+		if !alumno.Activo() {
+			return ErrAlumnoNoActivo
+		}
+
+		actual, err := historialActual(ctx, consultas, alumnoID)
+		if err != nil {
+			return err
+		}
+		cambio, err := PrepararCambioSeccion(actual, seccionID, fecha)
+		if err != nil {
+			return err
+		}
+
+		inicio := fechas.Fecha(alumno.CreadoEn)
+		if fecha.Before(inicio) {
+			return ErrFechaInvalida
+		}
+
+		if actual != nil {
+			if err := consultas.CerrarHistorialSeccion(ctx, generado.CerrarHistorialSeccionParams{
+				AlumnoID: alumnoID,
+				FechaFin: fechaPG(cambio.FechaCierre),
+			}); err != nil {
+				return fmt.Errorf("cerrando el tramo de sección: %w", err)
+			}
+		} else if _, err := consultas.CrearHistorialSeccion(ctx, generado.CrearHistorialSeccionParams{
+			AlumnoID:    alumnoID,
+			SeccionID:   alumno.SeccionID,
+			FechaInicio: fechaPG(inicio),
+			FechaFin:    fechaPG(cambio.FechaCierre),
+		}); err != nil {
+			return fmt.Errorf("registrando la sección anterior: %w", err)
+		}
+
+		if err := consultas.ActualizarSeccionAlumno(ctx, generado.ActualizarSeccionAlumnoParams{
+			ID:        alumnoID,
+			SeccionID: seccionID,
+		}); err != nil {
+			return fmt.Errorf("actualizando la sección del alumno: %w", err)
+		}
+
+		if _, err := consultas.CrearHistorialSeccion(ctx, generado.CrearHistorialSeccionParams{
+			AlumnoID:    alumnoID,
+			SeccionID:   cambio.SeccionNueva,
+			FechaInicio: fechaPG(cambio.FechaApertura),
+			FechaFin:    pgtype.Date{},
+		}); err != nil {
+			return fmt.Errorf("abriendo el nuevo tramo de sección: %w", err)
+		}
+
+		return auditoria.Registrar(ctx, db, auditoria.Evento{
+			UsuarioID:     usuarioID,
+			Entidad:       "alumno",
+			EntidadID:     alumnoID,
+			Accion:        "cambiar_seccion",
+			ValorAnterior: map[string]any{"seccion_id": cambio.SeccionAnterior},
+			ValorNuevo: map[string]any{
+				"seccion_id": cambio.SeccionNueva,
+				"fecha":      fechas.FormatearISO(cambio.FechaApertura),
+			},
+		})
+	})
+}
+
+// RegistrarSalida marca al alumno como retirado o trasladado, cierra su tramo de sección y
+// revoca el QR vigente en la misma transacción.
+func (s *Servicio) RegistrarSalida(ctx context.Context, usuarioID, alumnoID int64, tipo string, fecha time.Time) error {
+	if !TipoSalidaValido(tipo) {
+		return ErrTipoSalidaInvalido
+	}
+	fecha = fechas.Fecha(fecha)
+	if fecha.IsZero() {
+		return ErrFechaInvalida
+	}
+
+	return s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
+		alumno, err := s.repositorio.buscar(ctx, alumnoID)
+		if err != nil {
+			return err
+		}
+		if !alumno.Activo() {
+			return ErrAlumnoNoActivo
+		}
+
+		inicio := fechas.Fecha(alumno.CreadoEn)
+		if fecha.Before(inicio) {
+			return ErrFechaInvalida
+		}
+
+		actual, err := historialActual(ctx, consultas, alumnoID)
+		if err != nil {
+			return err
+		}
+		if actual != nil && fecha.Before(actual.FechaInicio) {
+			return ErrFechaInvalida
+		}
+
+		if err := consultas.RegistrarSalidaAlumno(ctx, generado.RegistrarSalidaAlumnoParams{
+			ID:          alumnoID,
+			Estado:      tipo,
+			FechaSalida: fechaPG(fecha),
+		}); err != nil {
+			return fmt.Errorf("registrando la salida del alumno: %w", err)
+		}
+
+		if actual != nil {
+			if err := consultas.CerrarHistorialSeccion(ctx, generado.CerrarHistorialSeccionParams{
+				AlumnoID: alumnoID,
+				FechaFin: fechaPG(fecha),
+			}); err != nil {
+				return fmt.Errorf("cerrando el tramo de sección: %w", err)
+			}
+		} else if _, err := consultas.CrearHistorialSeccion(ctx, generado.CrearHistorialSeccionParams{
+			AlumnoID:    alumnoID,
+			SeccionID:   alumno.SeccionID,
+			FechaInicio: fechaPG(inicio),
+			FechaFin:    fechaPG(fecha),
+		}); err != nil {
+			return fmt.Errorf("registrando el tramo cerrado: %w", err)
+		}
+
+		if err := revocarCredencialVigente(ctx, consultas, db, usuarioID, alumnoID, MotivoRetiro); err != nil {
+			return err
+		}
+
+		accion := "retirar"
+		if tipo == EstadoTrasladado {
+			accion = "trasladar"
+		}
+		return auditoria.Registrar(ctx, db, auditoria.Evento{
+			UsuarioID:     usuarioID,
+			Entidad:       "alumno",
+			EntidadID:     alumnoID,
+			Accion:        accion,
+			ValorAnterior: map[string]any{"estado": alumno.Estado},
+			ValorNuevo: map[string]any{
+				"estado":       tipo,
+				"fecha_salida": fechas.FormatearISO(fecha),
+			},
 		})
 	})
 }
@@ -378,4 +583,33 @@ func datosNormalizados(datos DatosAlumno) DatosAlumno {
 func esViolacionUnica(err error) bool {
 	var pgErr *pgconn.PgError
 	return errors.As(err, &pgErr) && pgErr.Code == codigoViolacionUnica
+}
+
+// historialActual devuelve el tramo vigente del alumno o nil si todavía no tiene historial.
+func historialActual(ctx context.Context, consultas *generado.Queries, alumnoID int64) (*HistorialSeccion, error) {
+	fila, err := consultas.BuscarHistorialActual(ctx, alumnoID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("buscando el tramo de sección vigente: %w", err)
+	}
+	tramo := HistorialSeccion{
+		ID:          fila.ID,
+		SeccionID:   fila.SeccionID,
+		Grado:       fila.GradoNombre,
+		Seccion:     fila.SeccionNombre,
+		AnioEscolar: fila.AnioEscolarNombre,
+		FechaInicio: fila.FechaInicio.Time,
+	}
+	if fila.FechaFin.Valid {
+		fin := fila.FechaFin.Time
+		tramo.FechaFin = &fin
+	}
+	return &tramo, nil
+}
+
+// fechaPG convierte una fecha del colegio al tipo date de PostgreSQL.
+func fechaPG(fecha time.Time) pgtype.Date {
+	return pgtype.Date{Time: fecha, Valid: !fecha.IsZero()}
 }
