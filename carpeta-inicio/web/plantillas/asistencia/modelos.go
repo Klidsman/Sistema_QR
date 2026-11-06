@@ -59,6 +59,27 @@ type EstadoOpcion struct {
 	Etiqueta string
 }
 
+// ConsultaFilaVista es un registro de asistencia preparado para consulta.
+type ConsultaFilaVista struct {
+	ID          int64
+	Alumno      string
+	Curso       string
+	Seccion     string
+	Bloque      int
+	Estado      string
+	Observacion string
+	QRTexto     string
+	Docente     string
+	Diferencia  bool
+}
+
+// ParametrosVista son los parámetros de asistencia para mostrar.
+type ParametrosVista struct {
+	Plazo          int
+	Actualizado    string
+	ActualizadoPor string
+}
+
 // AsignacionVista es una asignación preparada para mostrarse.
 type AsignacionVista struct {
 	ID      int64

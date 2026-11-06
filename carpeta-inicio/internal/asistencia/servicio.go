@@ -1,10 +1,6 @@
 package asistencia
 
-import (
-	"time"
-
-	"asistencia/internal/plataforma/fechas"
-)
+import "time"
 
 // DependenciasServicio reúne los componentes que necesita el servicio de asistencia.
 type DependenciasServicio struct {
@@ -28,7 +24,7 @@ type Servicio struct {
 func NuevoServicio(dependencias DependenciasServicio) *Servicio {
 	reloj := dependencias.Reloj
 	if reloj == nil {
-		reloj = fechas.Hoy
+		reloj = time.Now
 	}
 	return &Servicio{
 		repositorio: dependencias.Repositorio,

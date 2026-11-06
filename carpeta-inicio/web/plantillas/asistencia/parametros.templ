@@ -1,0 +1,46 @@
+package vista
+
+import (
+	"fmt"
+
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Parametros(usuario string, rol string, tokenCSRF string, parametros ParametrosVista, mensaje string, mensajeError string) {
+	@paginas.BaseSesion("Parámetros de asistencia", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/configuracion" class="text-sm font-medium text-blue-700">← Configuración</a>
+				<h1 class="mt-1 text-2xl font-semibold">Parámetros de asistencia</h1>
+			</div>
+		</div>
+
+		if mensaje != "" {
+			<p role="status" class="mt-4 rounded bg-green-100 p-3 text-green-800">{ mensaje }</p>
+		}
+		if mensajeError != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensajeError }</p>
+		}
+
+		<div class="mt-6 rounded border border-slate-200 bg-white p-4">
+			<p class="text-sm text-slate-500">Plazo de edición del docente</p>
+			<p class="mt-1 text-2xl font-semibold">{ fmt.Sprintf("%d", parametros.Plazo) } horas</p>
+			if parametros.Actualizado != "" {
+				<p class="mt-1 text-sm text-slate-600">Actualizado el { parametros.Actualizado }</p>
+			}
+		</div>
+
+		if rol == "administrador" {
+			<form method="post" action="/configuracion/asistencia" class="mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-3">
+				<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+				<label class="block">
+					<span class="text-sm font-medium">Plazo de edición en horas *</span>
+					<input type="number" name="plazo_edicion_horas" min="1" max="168" value={ fmt.Sprintf("%d", parametros.Plazo) } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+				</label>
+				<div class="flex items-end">
+					<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Guardar plazo</button>
+				</div>
+			</form>
+		}
+	}
+}

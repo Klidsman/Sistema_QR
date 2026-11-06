@@ -32,6 +32,10 @@ type ServicioAsistencia interface {
 	ListarClase(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int) (ClaseDetalle, error)
 	GuardarRegistros(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int, cambios []CambioRegistro) error
 	MarcarTodosPresentes(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int) (int, error)
+	ConsultaRegistros(ctx context.Context, fecha time.Time, seccionID int64) ([]ConsultaRegistro, error)
+	CorregirRegistro(ctx context.Context, usuarioID, registroID int64, estado, observacion, motivo string) error
+	PlazoEdicion(ctx context.Context) (ParametrosAsistencia, error)
+	ConfigurarPlazo(ctx context.Context, usuarioID int64, horas int) error
 }
 
 // Dependencias reúne lo que el manejador de asistencia necesita.
@@ -63,12 +67,16 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Use(intermediarios.RequerirRol(m.sesiones,
 			intermediarios.RolAdministrador, intermediarios.RolDirector))
 		lectura.Get("/asistencia/asignaciones", m.listarAsignaciones)
+		lectura.Get("/asistencia/consulta", m.consultarAsistencia)
+		lectura.Get("/configuracion/asistencia", m.verParametros)
 	})
 
 	enrutador.Group(func(escritura chi.Router) {
 		escritura.Use(intermediarios.RequerirRol(m.sesiones, intermediarios.RolAdministrador))
 		escritura.Post("/asistencia/asignaciones", m.crearAsignacion)
 		escritura.Post("/asistencia/asignaciones/{id}/cierre", m.cerrarAsignacion)
+		escritura.Post("/asistencia/consulta/correccion", m.corregirAsistencia)
+		escritura.Post("/configuracion/asistencia", m.configurarParametros)
 	})
 
 	enrutador.Group(func(clase chi.Router) {

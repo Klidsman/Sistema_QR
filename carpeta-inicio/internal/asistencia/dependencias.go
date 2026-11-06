@@ -25,6 +25,7 @@ type ResolutorClase interface {
 // ListadorAlumnos devuelve los alumnos activos de una sección en la fecha.
 type ListadorAlumnos interface {
 	ListarAlumnosDeSeccionEnFecha(ctx context.Context, seccionID int64, fecha time.Time) ([]alumnos.AlumnoEnClase, error)
+	AlumnosPorIDs(ctx context.Context, ids []int64) ([]alumnos.AlumnoEnClase, error)
 }
 
 // BuscadorDocente valida el rol y el estado de un docente.

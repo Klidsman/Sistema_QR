@@ -149,6 +149,11 @@ type asistenciaFalsa struct {
 	detalle       asistencia.ClaseDetalle
 	guardados     []asistencia.CambioRegistro
 	marcarCreados int
+	consulta      []asistencia.ConsultaRegistro
+	corregido     *asistencia.ConsultaRegistro
+	correccionErr error
+	plazo         asistencia.ParametrosAsistencia
+	plazoNuevo    int
 }
 
 func (a *asistenciaFalsa) ListarAsignaciones(context.Context) ([]asistencia.AsignacionVista, error) {
@@ -192,6 +197,27 @@ func (a *asistenciaFalsa) GuardarRegistros(_ context.Context, _ int64, _ bool, _
 
 func (a *asistenciaFalsa) MarcarTodosPresentes(_ context.Context, _ int64, _ bool, _ time.Time, _, _ int64, _ int) (int, error) {
 	return a.marcarCreados, nil
+}
+
+func (a *asistenciaFalsa) ConsultaRegistros(_ context.Context, _ time.Time, _ int64) ([]asistencia.ConsultaRegistro, error) {
+	return a.consulta, nil
+}
+
+func (a *asistenciaFalsa) CorregirRegistro(_ context.Context, _, _ int64, estado, observacion, motivo string) error {
+	if a.correccionErr != nil {
+		return a.correccionErr
+	}
+	a.corregido = &asistencia.ConsultaRegistro{Registro: asistencia.RegistroDocente{Estado: estado, Observacion: observacion}}
+	return nil
+}
+
+func (a *asistenciaFalsa) PlazoEdicion(context.Context) (asistencia.ParametrosAsistencia, error) {
+	return a.plazo, nil
+}
+
+func (a *asistenciaFalsa) ConfigurarPlazo(_ context.Context, _ int64, horas int) error {
+	a.plazoNuevo = horas
+	return nil
 }
 
 func nuevoManejadorAsistencia(t *testing.T, falso *asistenciaFalsa) (*asistencia.Manejador, *scs.SessionManager) {

@@ -122,17 +122,17 @@
 
 **Prueba independiente**: corregir dentro del plazo, simular vencimiento, verificar bloqueo y corrección administrativa con motivo.
 
-- [ ] T058 [P] [US2] Escribir pruebas de integración del plazo y la corrección administrativa en `pruebas/integracion/asistencia_correcciones_test.go`
-- [ ] T059 [US2] Implementar la comprobación de plazo con `creado_en + plazo_edicion_horas` en `internal/asistencia/servicio_registros.go`
-- [ ] T060 [US2] Implementar `CorregirRegistro` con motivo obligatorio para el administrador y auditoría
-- [ ] T061 [US2] Implementar `GET /asistencia/consulta` y `POST /asistencia/consulta/correccion` en `internal/asistencia/manejador_consulta.go`
-- [ ] T062 [US2] Crear la plantilla `consulta.templ` con registros, QR y diferencias
-- [ ] T063 [US2] Implementar `PlazoEdicion` y `ConfigurarPlazo` en `internal/asistencia/servicio_parametros.go`
-- [ ] T064 [US2] Implementar `GET/POST /configuracion/asistencia` en `internal/asistencia/manejador_parametros.go`
-- [ ] T065 [US2] Crear la plantilla `parametros_asistencia.templ` en `web/plantillas/configuracion/`
-- [ ] T066 [US2] Auditar `corregir_registro` y `configurar_plazo`
-- [ ] T067 [US2] Escribir las pruebas de manejadores de correcciones y plazo en `pruebas/manejadores/asistencia_correcciones_test.go`
-- [ ] T068 [US2] Escribir la prueba E2E de corrección dentro del plazo y configuración del plazo en `pruebas/e2e/asistencia_correcciones_test.spec.ts`
+- [X] T058 [P] [US2] Escribir pruebas de integración del plazo y la corrección administrativa en `pruebas/integracion/asistencia_correcciones_test.go`
+- [X] T059 [US2] Implementar la comprobación de plazo con `creado_en + plazo_edicion_horas` en `internal/asistencia/servicio_registros.go`
+- [X] T060 [US2] Implementar `CorregirRegistro` con motivo obligatorio para el administrador y auditoría
+- [X] T061 [US2] Implementar `GET /asistencia/consulta` y `POST /asistencia/consulta/correccion` en `internal/asistencia/manejador_consulta.go`
+- [X] T062 [US2] Crear la plantilla `consulta.templ` con registros, QR y diferencias
+- [X] T063 [US2] Implementar `PlazoEdicion` y `ConfigurarPlazo` en `internal/asistencia/servicio_parametros.go`
+- [X] T064 [US2] Implementar `GET/POST /configuracion/asistencia` en `internal/asistencia/manejador_parametros.go`
+- [X] T065 [US2] Crear la plantilla `parametros_asistencia.templ` en `web/plantillas/configuracion/`
+- [X] T066 [US2] Auditar `corregir_registro` y `configurar_plazo`
+- [X] T067 [US2] Escribir las pruebas de manejadores de correcciones y plazo en `pruebas/manejadores/asistencia_correcciones_test.go`
+- [X] T068 [US2] Escribir la prueba E2E de corrección dentro del plazo y configuración del plazo en `pruebas/e2e/asistencia_correcciones_test.spec.ts`
 
 **Punto de control**: correcciones con plazo y consulta del director funcionando.
 
