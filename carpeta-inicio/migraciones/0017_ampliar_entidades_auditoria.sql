@@ -1,0 +1,28 @@
+-- +goose Up
+ALTER TABLE auditoria DROP CONSTRAINT auditoria_entidad_check;
+
+ALTER TABLE auditoria ADD CONSTRAINT auditoria_entidad_check CHECK (entidad IN (
+    'alumno',
+    'credencial_qr',
+    'historial_seccion',
+    'importacion',
+    'anio_escolar',
+    'grado',
+    'seccion',
+    'turno',
+    'calendario',
+    'umbral',
+    'curso',
+    'bloque_clase',
+    'horario_seccion'
+));
+
+-- +goose Down
+ALTER TABLE auditoria DROP CONSTRAINT auditoria_entidad_check;
+
+ALTER TABLE auditoria ADD CONSTRAINT auditoria_entidad_check CHECK (entidad IN (
+    'alumno',
+    'credencial_qr',
+    'historial_seccion',
+    'importacion'
+));

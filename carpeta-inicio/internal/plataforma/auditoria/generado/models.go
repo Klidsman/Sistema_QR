@@ -31,6 +31,7 @@ type AniosEscolare struct {
 	FechaInicio pgtype.Date
 	FechaFin    pgtype.Date
 	Estado      string
+	CerradoEn   pgtype.Timestamptz
 }
 
 type Auditorium struct {
@@ -45,6 +46,16 @@ type Auditorium struct {
 	CreadaEn      pgtype.Timestamptz
 }
 
+type BloquesClase struct {
+	ID           int64
+	Turno        string
+	Numero       int32
+	HoraInicio   pgtype.Time
+	HoraFin      pgtype.Time
+	VigenteDesde pgtype.Date
+	CreadoEn     pgtype.Timestamptz
+}
+
 type CredencialesQr struct {
 	ID               int64
 	AlumnoID         int64
@@ -53,6 +64,35 @@ type CredencialesQr struct {
 	MotivoRevocacion pgtype.Text
 	EmitidaEn        pgtype.Timestamptz
 	RevocadaEn       pgtype.Timestamptz
+}
+
+type Curso struct {
+	ID            int64
+	AnioEscolarID int64
+	Nombre        string
+	Activo        bool
+	CreadoEn      pgtype.Timestamptz
+}
+
+type CursosGrado struct {
+	CursoID int64
+	GradoID int64
+}
+
+type ExcepcionesCalendario struct {
+	ID            int64
+	AnioEscolarID int64
+	Tipo          string
+	FechaInicio   pgtype.Date
+	FechaFin      pgtype.Date
+	Motivo        string
+	CreadoPor     int64
+	CreadoEn      pgtype.Timestamptz
+}
+
+type ExcepcionesGrado struct {
+	ExcepcionID int64
+	GradoID     int64
 }
 
 type Grado struct {
@@ -67,6 +107,27 @@ type HistorialSeccione struct {
 	SeccionID   int64
 	FechaInicio pgtype.Date
 	FechaFin    pgtype.Date
+}
+
+type HorarioSeccion struct {
+	ID           int64
+	SeccionID    int64
+	DiaSemana    int16
+	BloqueNumero int32
+	CursoID      pgtype.Int8
+	VigenteDesde pgtype.Date
+	CreadoEn     pgtype.Timestamptz
+}
+
+type HorariosTurno struct {
+	ID                 int64
+	Turno              string
+	HoraIngreso        pgtype.Time
+	ToleranciaMinutos  int32
+	HoraLimiteTardanza pgtype.Time
+	HoraCierre         pgtype.Time
+	VigenteDesde       pgtype.Date
+	CreadoEn           pgtype.Timestamptz
 }
 
 type ImportacionFila struct {
@@ -91,13 +152,29 @@ type Seccione struct {
 	ID      int64
 	GradoID int64
 	Nombre  string
-	Turno   string
 }
 
 type Sesione struct {
 	Token    string
 	Datos    []byte
 	ExpiraEn pgtype.Timestamptz
+}
+
+type TurnosSeccion struct {
+	ID           int64
+	SeccionID    int64
+	Turno        string
+	VigenteDesde pgtype.Date
+	CreadoEn     pgtype.Timestamptz
+}
+
+type UmbralesAlertum struct {
+	ID            int64
+	AnioEscolarID int64
+	Tipo          string
+	Valor         int32
+	VigenteDesde  pgtype.Date
+	CreadoEn      pgtype.Timestamptz
 }
 
 type Usuario struct {

@@ -80,7 +80,7 @@ SELECT a.id,
        a.actualizado_en,
        s.id AS seccion_id,
        s.nombre AS seccion_nombre,
-       s.turno,
+       COALESCE(t.turno, ''::text) AS turno,
        g.id AS grado_id,
        g.nombre AS grado_nombre,
        an.id AS anio_escolar_id,
@@ -89,6 +89,14 @@ FROM alumnos a
 JOIN secciones s ON s.id = a.seccion_id
 JOIN grados g ON g.id = s.grado_id
 JOIN anios_escolares an ON an.id = g.anio_escolar_id
+LEFT JOIN LATERAL (
+    SELECT ts.turno
+    FROM turnos_seccion ts
+    WHERE ts.seccion_id = s.id
+      AND ts.vigente_desde <= GREATEST(CURRENT_DATE, an.fecha_inicio)
+    ORDER BY ts.vigente_desde DESC
+    LIMIT 1
+) t ON true
 WHERE a.id = $1
 `
 

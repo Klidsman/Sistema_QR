@@ -34,12 +34,20 @@ func SembrarSeccion(t *testing.T, pool *pgxpool.Pool, grado, seccion string) int
 
 	var seccionID int64
 	err = pool.QueryRow(ctx,
-		`INSERT INTO secciones (grado_id, nombre, turno)
-		 VALUES ($1, $2, 'manana')
+		`INSERT INTO secciones (grado_id, nombre)
+		 VALUES ($1, $2)
 		 ON CONFLICT (grado_id, nombre) DO UPDATE SET nombre = EXCLUDED.nombre
 		 RETURNING id`,
 		gradoID, seccion,
 	).Scan(&seccionID)
+	require.NoError(t, err)
+
+	_, err = pool.Exec(ctx,
+		`INSERT INTO turnos_seccion (seccion_id, turno, vigente_desde)
+		 VALUES ($1, 'manana', '2026-03-01')
+		 ON CONFLICT (seccion_id, vigente_desde) DO NOTHING`,
+		seccionID,
+	)
 	require.NoError(t, err)
 
 	return seccionID

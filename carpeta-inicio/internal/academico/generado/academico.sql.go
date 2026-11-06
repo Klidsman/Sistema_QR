@@ -11,6 +11,148 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const anioEscolarQueCubreFecha = `-- name: AnioEscolarQueCubreFecha :one
+SELECT id, nombre, fecha_inicio, fecha_fin, estado, cerrado_en
+FROM anios_escolares
+WHERE fecha_inicio <= $1
+  AND fecha_fin >= $1
+ORDER BY fecha_inicio DESC
+LIMIT 1
+`
+
+func (q *Queries) AnioEscolarQueCubreFecha(ctx context.Context, fechaInicio pgtype.Date) (AniosEscolare, error) {
+	row := q.db.QueryRow(ctx, anioEscolarQueCubreFecha, fechaInicio)
+	var i AniosEscolare
+	err := row.Scan(
+		&i.ID,
+		&i.Nombre,
+		&i.FechaInicio,
+		&i.FechaFin,
+		&i.Estado,
+		&i.CerradoEn,
+	)
+	return i, err
+}
+
+const bloqueVigentePorNumero = `-- name: BloqueVigentePorNumero :one
+SELECT id,
+       turno,
+       numero,
+       to_char(hora_inicio, 'HH24:MI') AS hora_inicio,
+       to_char(hora_fin, 'HH24:MI') AS hora_fin,
+       vigente_desde
+FROM bloques_clase
+WHERE turno = $1
+  AND numero = $2
+  AND vigente_desde <= $3
+ORDER BY vigente_desde DESC
+LIMIT 1
+`
+
+type BloqueVigentePorNumeroParams struct {
+	Turno        string
+	Numero       int32
+	VigenteDesde pgtype.Date
+}
+
+type BloqueVigentePorNumeroRow struct {
+	ID           int64
+	Turno        string
+	Numero       int32
+	HoraInicio   string
+	HoraFin      string
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) BloqueVigentePorNumero(ctx context.Context, arg BloqueVigentePorNumeroParams) (BloqueVigentePorNumeroRow, error) {
+	row := q.db.QueryRow(ctx, bloqueVigentePorNumero, arg.Turno, arg.Numero, arg.VigenteDesde)
+	var i BloqueVigentePorNumeroRow
+	err := row.Scan(
+		&i.ID,
+		&i.Turno,
+		&i.Numero,
+		&i.HoraInicio,
+		&i.HoraFin,
+		&i.VigenteDesde,
+	)
+	return i, err
+}
+
+const bloquesVigentesTurno = `-- name: BloquesVigentesTurno :many
+SELECT DISTINCT ON (numero)
+       id,
+       turno,
+       numero,
+       to_char(hora_inicio, 'HH24:MI') AS hora_inicio,
+       to_char(hora_fin, 'HH24:MI') AS hora_fin,
+       vigente_desde
+FROM bloques_clase
+WHERE turno = $1
+  AND vigente_desde <= $2
+ORDER BY numero, vigente_desde DESC
+`
+
+type BloquesVigentesTurnoParams struct {
+	Turno        string
+	VigenteDesde pgtype.Date
+}
+
+type BloquesVigentesTurnoRow struct {
+	ID           int64
+	Turno        string
+	Numero       int32
+	HoraInicio   string
+	HoraFin      string
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) BloquesVigentesTurno(ctx context.Context, arg BloquesVigentesTurnoParams) ([]BloquesVigentesTurnoRow, error) {
+	rows, err := q.db.Query(ctx, bloquesVigentesTurno, arg.Turno, arg.VigenteDesde)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []BloquesVigentesTurnoRow
+	for rows.Next() {
+		var i BloquesVigentesTurnoRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Turno,
+			&i.Numero,
+			&i.HoraInicio,
+			&i.HoraFin,
+			&i.VigenteDesde,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const buscarAnioActivo = `-- name: BuscarAnioActivo :one
+SELECT id, nombre, fecha_inicio, fecha_fin, estado, cerrado_en
+FROM anios_escolares
+WHERE estado = 'activo'
+`
+
+func (q *Queries) BuscarAnioActivo(ctx context.Context) (AniosEscolare, error) {
+	row := q.db.QueryRow(ctx, buscarAnioActivo)
+	var i AniosEscolare
+	err := row.Scan(
+		&i.ID,
+		&i.Nombre,
+		&i.FechaInicio,
+		&i.FechaFin,
+		&i.Estado,
+		&i.CerradoEn,
+	)
+	return i, err
+}
+
 const buscarAnioEscolarPorNombre = `-- name: BuscarAnioEscolarPorNombre :one
 SELECT id
 FROM anios_escolares
@@ -22,6 +164,59 @@ func (q *Queries) BuscarAnioEscolarPorNombre(ctx context.Context, nombre string)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
+}
+
+const buscarBloquePorID = `-- name: BuscarBloquePorID :one
+SELECT id,
+       turno,
+       numero,
+       to_char(hora_inicio, 'HH24:MI') AS hora_inicio,
+       to_char(hora_fin, 'HH24:MI') AS hora_fin,
+       vigente_desde
+FROM bloques_clase
+WHERE id = $1
+`
+
+type BuscarBloquePorIDRow struct {
+	ID           int64
+	Turno        string
+	Numero       int32
+	HoraInicio   string
+	HoraFin      string
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) BuscarBloquePorID(ctx context.Context, id int64) (BuscarBloquePorIDRow, error) {
+	row := q.db.QueryRow(ctx, buscarBloquePorID, id)
+	var i BuscarBloquePorIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Turno,
+		&i.Numero,
+		&i.HoraInicio,
+		&i.HoraFin,
+		&i.VigenteDesde,
+	)
+	return i, err
+}
+
+const buscarCursoPorID = `-- name: BuscarCursoPorID :one
+SELECT id, anio_escolar_id, nombre, activo, creado_en
+FROM cursos
+WHERE id = $1
+`
+
+func (q *Queries) BuscarCursoPorID(ctx context.Context, id int64) (Curso, error) {
+	row := q.db.QueryRow(ctx, buscarCursoPorID, id)
+	var i Curso
+	err := row.Scan(
+		&i.ID,
+		&i.AnioEscolarID,
+		&i.Nombre,
+		&i.Activo,
+		&i.CreadoEn,
+	)
+	return i, err
 }
 
 const buscarGradoPorNombre = `-- name: BuscarGradoPorNombre :one
@@ -68,7 +263,7 @@ func (q *Queries) BuscarSeccion(ctx context.Context, arg BuscarSeccionParams) (i
 const buscarSeccionPorID = `-- name: BuscarSeccionPorID :one
 SELECT s.id,
        s.nombre,
-       s.turno,
+       COALESCE(t.turno, ''::text) AS turno,
        g.id AS grado_id,
        g.nombre AS grado,
        an.id AS anio_escolar_id,
@@ -76,6 +271,14 @@ SELECT s.id,
 FROM secciones s
 JOIN grados g ON g.id = s.grado_id
 JOIN anios_escolares an ON an.id = g.anio_escolar_id
+LEFT JOIN LATERAL (
+    SELECT ts.turno
+    FROM turnos_seccion ts
+    WHERE ts.seccion_id = s.id
+      AND ts.vigente_desde <= GREATEST(CURRENT_DATE, an.fecha_inicio)
+    ORDER BY ts.vigente_desde DESC
+    LIMIT 1
+) t ON true
 WHERE s.id = $1
 `
 
@@ -123,6 +326,21 @@ func (q *Queries) BuscarSeccionPorNombre(ctx context.Context, arg BuscarSeccionP
 	return id, err
 }
 
+const cerrarAnioEscolar = `-- name: CerrarAnioEscolar :execrows
+UPDATE anios_escolares
+SET estado = 'cerrado', cerrado_en = now()
+WHERE id = $1
+  AND estado = 'activo'
+`
+
+func (q *Queries) CerrarAnioEscolar(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.Exec(ctx, cerrarAnioEscolar, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const crearAnioEscolar = `-- name: CrearAnioEscolar :one
 INSERT INTO anios_escolares (nombre, fecha_inicio, fecha_fin)
 VALUES ($1, $2, $3)
@@ -140,6 +358,114 @@ func (q *Queries) CrearAnioEscolar(ctx context.Context, arg CrearAnioEscolarPara
 	var id int64
 	err := row.Scan(&id)
 	return id, err
+}
+
+const crearBloqueClase = `-- name: CrearBloqueClase :one
+INSERT INTO bloques_clase (turno, numero, hora_inicio, hora_fin, vigente_desde)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id
+`
+
+type CrearBloqueClaseParams struct {
+	Turno        string
+	Numero       int32
+	HoraInicio   pgtype.Time
+	HoraFin      pgtype.Time
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) CrearBloqueClase(ctx context.Context, arg CrearBloqueClaseParams) (int64, error) {
+	row := q.db.QueryRow(ctx, crearBloqueClase,
+		arg.Turno,
+		arg.Numero,
+		arg.HoraInicio,
+		arg.HoraFin,
+		arg.VigenteDesde,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const crearCurso = `-- name: CrearCurso :one
+INSERT INTO cursos (anio_escolar_id, nombre)
+VALUES ($1, $2)
+RETURNING id
+`
+
+type CrearCursoParams struct {
+	AnioEscolarID int64
+	Nombre        string
+}
+
+func (q *Queries) CrearCurso(ctx context.Context, arg CrearCursoParams) (int64, error) {
+	row := q.db.QueryRow(ctx, crearCurso, arg.AnioEscolarID, arg.Nombre)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const crearCursoGrado = `-- name: CrearCursoGrado :exec
+INSERT INTO cursos_grados (curso_id, grado_id)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING
+`
+
+type CrearCursoGradoParams struct {
+	CursoID int64
+	GradoID int64
+}
+
+func (q *Queries) CrearCursoGrado(ctx context.Context, arg CrearCursoGradoParams) error {
+	_, err := q.db.Exec(ctx, crearCursoGrado, arg.CursoID, arg.GradoID)
+	return err
+}
+
+const crearExcepcionCalendario = `-- name: CrearExcepcionCalendario :one
+INSERT INTO excepciones_calendario (
+    anio_escolar_id, tipo, fecha_inicio, fecha_fin, motivo, creado_por
+)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id
+`
+
+type CrearExcepcionCalendarioParams struct {
+	AnioEscolarID int64
+	Tipo          string
+	FechaInicio   pgtype.Date
+	FechaFin      pgtype.Date
+	Motivo        string
+	CreadoPor     int64
+}
+
+func (q *Queries) CrearExcepcionCalendario(ctx context.Context, arg CrearExcepcionCalendarioParams) (int64, error) {
+	row := q.db.QueryRow(ctx, crearExcepcionCalendario,
+		arg.AnioEscolarID,
+		arg.Tipo,
+		arg.FechaInicio,
+		arg.FechaFin,
+		arg.Motivo,
+		arg.CreadoPor,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const crearExcepcionGrado = `-- name: CrearExcepcionGrado :exec
+INSERT INTO excepciones_grados (excepcion_id, grado_id)
+VALUES ($1, $2)
+ON CONFLICT DO NOTHING
+`
+
+type CrearExcepcionGradoParams struct {
+	ExcepcionID int64
+	GradoID     int64
+}
+
+func (q *Queries) CrearExcepcionGrado(ctx context.Context, arg CrearExcepcionGradoParams) error {
+	_, err := q.db.Exec(ctx, crearExcepcionGrado, arg.ExcepcionID, arg.GradoID)
+	return err
 }
 
 const crearGrado = `-- name: CrearGrado :one
@@ -160,29 +486,589 @@ func (q *Queries) CrearGrado(ctx context.Context, arg CrearGradoParams) (int64, 
 	return id, err
 }
 
+const crearHorarioTurno = `-- name: CrearHorarioTurno :one
+INSERT INTO horarios_turno (
+    turno, hora_ingreso, tolerancia_minutos, hora_limite_tardanza, hora_cierre, vigente_desde
+)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id
+`
+
+type CrearHorarioTurnoParams struct {
+	Turno              string
+	HoraIngreso        pgtype.Time
+	ToleranciaMinutos  int32
+	HoraLimiteTardanza pgtype.Time
+	HoraCierre         pgtype.Time
+	VigenteDesde       pgtype.Date
+}
+
+func (q *Queries) CrearHorarioTurno(ctx context.Context, arg CrearHorarioTurnoParams) (int64, error) {
+	row := q.db.QueryRow(ctx, crearHorarioTurno,
+		arg.Turno,
+		arg.HoraIngreso,
+		arg.ToleranciaMinutos,
+		arg.HoraLimiteTardanza,
+		arg.HoraCierre,
+		arg.VigenteDesde,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
 const crearSeccion = `-- name: CrearSeccion :one
-INSERT INTO secciones (grado_id, nombre, turno)
-VALUES ($1, $2, $3)
+INSERT INTO secciones (grado_id, nombre)
+VALUES ($1, $2)
 RETURNING id
 `
 
 type CrearSeccionParams struct {
 	GradoID int64
 	Nombre  string
-	Turno   string
 }
 
 func (q *Queries) CrearSeccion(ctx context.Context, arg CrearSeccionParams) (int64, error) {
-	row := q.db.QueryRow(ctx, crearSeccion, arg.GradoID, arg.Nombre, arg.Turno)
+	row := q.db.QueryRow(ctx, crearSeccion, arg.GradoID, arg.Nombre)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
 }
 
+const crearTurnoSeccion = `-- name: CrearTurnoSeccion :one
+INSERT INTO turnos_seccion (seccion_id, turno, vigente_desde)
+VALUES ($1, $2, $3)
+ON CONFLICT (seccion_id, vigente_desde) DO UPDATE SET turno = EXCLUDED.turno
+RETURNING id
+`
+
+type CrearTurnoSeccionParams struct {
+	SeccionID    int64
+	Turno        string
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) CrearTurnoSeccion(ctx context.Context, arg CrearTurnoSeccionParams) (int64, error) {
+	row := q.db.QueryRow(ctx, crearTurnoSeccion, arg.SeccionID, arg.Turno, arg.VigenteDesde)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const crearUmbralAlerta = `-- name: CrearUmbralAlerta :one
+INSERT INTO umbrales_alerta (anio_escolar_id, tipo, valor, vigente_desde)
+VALUES ($1, $2, $3, $4)
+RETURNING id
+`
+
+type CrearUmbralAlertaParams struct {
+	AnioEscolarID int64
+	Tipo          string
+	Valor         int32
+	VigenteDesde  pgtype.Date
+}
+
+func (q *Queries) CrearUmbralAlerta(ctx context.Context, arg CrearUmbralAlertaParams) (int64, error) {
+	row := q.db.QueryRow(ctx, crearUmbralAlerta,
+		arg.AnioEscolarID,
+		arg.Tipo,
+		arg.Valor,
+		arg.VigenteDesde,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const cursoVinculadoAGrado = `-- name: CursoVinculadoAGrado :one
+SELECT EXISTS (
+    SELECT 1
+    FROM cursos c
+    JOIN cursos_grados cg ON cg.curso_id = c.id
+    WHERE c.id = $1
+      AND c.activo
+      AND cg.grado_id = $2
+)
+`
+
+type CursoVinculadoAGradoParams struct {
+	ID      int64
+	GradoID int64
+}
+
+func (q *Queries) CursoVinculadoAGrado(ctx context.Context, arg CursoVinculadoAGradoParams) (bool, error) {
+	row := q.db.QueryRow(ctx, cursoVinculadoAGrado, arg.ID, arg.GradoID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const desactivarCurso = `-- name: DesactivarCurso :execrows
+UPDATE cursos
+SET activo = false
+WHERE id = $1
+  AND activo
+`
+
+func (q *Queries) DesactivarCurso(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.Exec(ctx, desactivarCurso, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const gradoDeSeccion = `-- name: GradoDeSeccion :one
+SELECT g.id
+FROM secciones s
+JOIN grados g ON g.id = s.grado_id
+WHERE s.id = $1
+`
+
+func (q *Queries) GradoDeSeccion(ctx context.Context, id int64) (int64, error) {
+	row := q.db.QueryRow(ctx, gradoDeSeccion, id)
+	var id_2 int64
+	err := row.Scan(&id_2)
+	return id_2, err
+}
+
+const horarioSeccionCelda = `-- name: HorarioSeccionCelda :one
+SELECT id,
+       seccion_id,
+       dia_semana,
+       bloque_numero,
+       curso_id,
+       vigente_desde
+FROM horario_seccion
+WHERE seccion_id = $1
+  AND dia_semana = $2
+  AND bloque_numero = $3
+  AND vigente_desde <= $4
+ORDER BY vigente_desde DESC
+LIMIT 1
+`
+
+type HorarioSeccionCeldaParams struct {
+	SeccionID    int64
+	DiaSemana    int16
+	BloqueNumero int32
+	VigenteDesde pgtype.Date
+}
+
+type HorarioSeccionCeldaRow struct {
+	ID           int64
+	SeccionID    int64
+	DiaSemana    int16
+	BloqueNumero int32
+	CursoID      pgtype.Int8
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) HorarioSeccionCelda(ctx context.Context, arg HorarioSeccionCeldaParams) (HorarioSeccionCeldaRow, error) {
+	row := q.db.QueryRow(ctx, horarioSeccionCelda,
+		arg.SeccionID,
+		arg.DiaSemana,
+		arg.BloqueNumero,
+		arg.VigenteDesde,
+	)
+	var i HorarioSeccionCeldaRow
+	err := row.Scan(
+		&i.ID,
+		&i.SeccionID,
+		&i.DiaSemana,
+		&i.BloqueNumero,
+		&i.CursoID,
+		&i.VigenteDesde,
+	)
+	return i, err
+}
+
+const horarioSeccionVigente = `-- name: HorarioSeccionVigente :many
+SELECT DISTINCT ON (dia_semana, bloque_numero)
+       id,
+       seccion_id,
+       dia_semana,
+       bloque_numero,
+       curso_id,
+       vigente_desde
+FROM horario_seccion
+WHERE seccion_id = $1
+  AND vigente_desde <= $2
+ORDER BY dia_semana, bloque_numero, vigente_desde DESC
+`
+
+type HorarioSeccionVigenteParams struct {
+	SeccionID    int64
+	VigenteDesde pgtype.Date
+}
+
+type HorarioSeccionVigenteRow struct {
+	ID           int64
+	SeccionID    int64
+	DiaSemana    int16
+	BloqueNumero int32
+	CursoID      pgtype.Int8
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) HorarioSeccionVigente(ctx context.Context, arg HorarioSeccionVigenteParams) ([]HorarioSeccionVigenteRow, error) {
+	rows, err := q.db.Query(ctx, horarioSeccionVigente, arg.SeccionID, arg.VigenteDesde)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []HorarioSeccionVigenteRow
+	for rows.Next() {
+		var i HorarioSeccionVigenteRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeccionID,
+			&i.DiaSemana,
+			&i.BloqueNumero,
+			&i.CursoID,
+			&i.VigenteDesde,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const horarioTurnoVigente = `-- name: HorarioTurnoVigente :one
+SELECT id,
+       turno,
+       to_char(hora_ingreso, 'HH24:MI') AS hora_ingreso,
+       tolerancia_minutos,
+       to_char(hora_limite_tardanza, 'HH24:MI') AS hora_limite_tardanza,
+       to_char(hora_cierre, 'HH24:MI') AS hora_cierre,
+       vigente_desde
+FROM horarios_turno
+WHERE turno = $1
+  AND vigente_desde <= $2
+ORDER BY vigente_desde DESC
+LIMIT 1
+`
+
+type HorarioTurnoVigenteParams struct {
+	Turno        string
+	VigenteDesde pgtype.Date
+}
+
+type HorarioTurnoVigenteRow struct {
+	ID                 int64
+	Turno              string
+	HoraIngreso        string
+	ToleranciaMinutos  int32
+	HoraLimiteTardanza string
+	HoraCierre         string
+	VigenteDesde       pgtype.Date
+}
+
+func (q *Queries) HorarioTurnoVigente(ctx context.Context, arg HorarioTurnoVigenteParams) (HorarioTurnoVigenteRow, error) {
+	row := q.db.QueryRow(ctx, horarioTurnoVigente, arg.Turno, arg.VigenteDesde)
+	var i HorarioTurnoVigenteRow
+	err := row.Scan(
+		&i.ID,
+		&i.Turno,
+		&i.HoraIngreso,
+		&i.ToleranciaMinutos,
+		&i.HoraLimiteTardanza,
+		&i.HoraCierre,
+		&i.VigenteDesde,
+	)
+	return i, err
+}
+
+const listarAniosEscolares = `-- name: ListarAniosEscolares :many
+SELECT id, nombre, fecha_inicio, fecha_fin, estado, cerrado_en
+FROM anios_escolares
+ORDER BY fecha_inicio DESC
+`
+
+func (q *Queries) ListarAniosEscolares(ctx context.Context) ([]AniosEscolare, error) {
+	rows, err := q.db.Query(ctx, listarAniosEscolares)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AniosEscolare
+	for rows.Next() {
+		var i AniosEscolare
+		if err := rows.Scan(
+			&i.ID,
+			&i.Nombre,
+			&i.FechaInicio,
+			&i.FechaFin,
+			&i.Estado,
+			&i.CerradoEn,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarBloquesTurno = `-- name: ListarBloquesTurno :many
+SELECT id,
+       turno,
+       numero,
+       to_char(hora_inicio, 'HH24:MI') AS hora_inicio,
+       to_char(hora_fin, 'HH24:MI') AS hora_fin,
+       vigente_desde
+FROM bloques_clase
+WHERE turno = $1
+ORDER BY numero, vigente_desde DESC
+`
+
+type ListarBloquesTurnoRow struct {
+	ID           int64
+	Turno        string
+	Numero       int32
+	HoraInicio   string
+	HoraFin      string
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) ListarBloquesTurno(ctx context.Context, turno string) ([]ListarBloquesTurnoRow, error) {
+	rows, err := q.db.Query(ctx, listarBloquesTurno, turno)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarBloquesTurnoRow
+	for rows.Next() {
+		var i ListarBloquesTurnoRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Turno,
+			&i.Numero,
+			&i.HoraInicio,
+			&i.HoraFin,
+			&i.VigenteDesde,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarCursosGradosPorAnio = `-- name: ListarCursosGradosPorAnio :many
+SELECT cg.curso_id, cg.grado_id
+FROM cursos_grados cg
+JOIN cursos c ON c.id = cg.curso_id
+WHERE c.anio_escolar_id = $1
+`
+
+func (q *Queries) ListarCursosGradosPorAnio(ctx context.Context, anioEscolarID int64) ([]CursosGrado, error) {
+	rows, err := q.db.Query(ctx, listarCursosGradosPorAnio, anioEscolarID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []CursosGrado
+	for rows.Next() {
+		var i CursosGrado
+		if err := rows.Scan(&i.CursoID, &i.GradoID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarCursosPorAnio = `-- name: ListarCursosPorAnio :many
+SELECT id, anio_escolar_id, nombre, activo, creado_en
+FROM cursos
+WHERE anio_escolar_id = $1
+ORDER BY nombre
+`
+
+func (q *Queries) ListarCursosPorAnio(ctx context.Context, anioEscolarID int64) ([]Curso, error) {
+	rows, err := q.db.Query(ctx, listarCursosPorAnio, anioEscolarID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Curso
+	for rows.Next() {
+		var i Curso
+		if err := rows.Scan(
+			&i.ID,
+			&i.AnioEscolarID,
+			&i.Nombre,
+			&i.Activo,
+			&i.CreadoEn,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarExcepcionesPorAnio = `-- name: ListarExcepcionesPorAnio :many
+SELECT id, anio_escolar_id, tipo, fecha_inicio, fecha_fin, motivo, creado_por, creado_en
+FROM excepciones_calendario
+WHERE anio_escolar_id = $1
+ORDER BY fecha_inicio DESC, id DESC
+`
+
+func (q *Queries) ListarExcepcionesPorAnio(ctx context.Context, anioEscolarID int64) ([]ExcepcionesCalendario, error) {
+	rows, err := q.db.Query(ctx, listarExcepcionesPorAnio, anioEscolarID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ExcepcionesCalendario
+	for rows.Next() {
+		var i ExcepcionesCalendario
+		if err := rows.Scan(
+			&i.ID,
+			&i.AnioEscolarID,
+			&i.Tipo,
+			&i.FechaInicio,
+			&i.FechaFin,
+			&i.Motivo,
+			&i.CreadoPor,
+			&i.CreadoEn,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarGradosDeExcepciones = `-- name: ListarGradosDeExcepciones :many
+SELECT eg.excepcion_id, eg.grado_id
+FROM excepciones_grados eg
+JOIN excepciones_calendario e ON e.id = eg.excepcion_id
+WHERE e.anio_escolar_id = $1
+`
+
+func (q *Queries) ListarGradosDeExcepciones(ctx context.Context, anioEscolarID int64) ([]ExcepcionesGrado, error) {
+	rows, err := q.db.Query(ctx, listarGradosDeExcepciones, anioEscolarID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ExcepcionesGrado
+	for rows.Next() {
+		var i ExcepcionesGrado
+		if err := rows.Scan(&i.ExcepcionID, &i.GradoID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarGradosPorAnio = `-- name: ListarGradosPorAnio :many
+SELECT id, anio_escolar_id, nombre
+FROM grados
+WHERE anio_escolar_id = $1
+ORDER BY nombre
+`
+
+func (q *Queries) ListarGradosPorAnio(ctx context.Context, anioEscolarID int64) ([]Grado, error) {
+	rows, err := q.db.Query(ctx, listarGradosPorAnio, anioEscolarID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Grado
+	for rows.Next() {
+		var i Grado
+		if err := rows.Scan(&i.ID, &i.AnioEscolarID, &i.Nombre); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarHorariosTurno = `-- name: ListarHorariosTurno :many
+SELECT id,
+       turno,
+       to_char(hora_ingreso, 'HH24:MI') AS hora_ingreso,
+       tolerancia_minutos,
+       to_char(hora_limite_tardanza, 'HH24:MI') AS hora_limite_tardanza,
+       to_char(hora_cierre, 'HH24:MI') AS hora_cierre,
+       vigente_desde
+FROM horarios_turno
+WHERE turno = $1
+ORDER BY vigente_desde DESC
+`
+
+type ListarHorariosTurnoRow struct {
+	ID                 int64
+	Turno              string
+	HoraIngreso        string
+	ToleranciaMinutos  int32
+	HoraLimiteTardanza string
+	HoraCierre         string
+	VigenteDesde       pgtype.Date
+}
+
+func (q *Queries) ListarHorariosTurno(ctx context.Context, turno string) ([]ListarHorariosTurnoRow, error) {
+	rows, err := q.db.Query(ctx, listarHorariosTurno, turno)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarHorariosTurnoRow
+	for rows.Next() {
+		var i ListarHorariosTurnoRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Turno,
+			&i.HoraIngreso,
+			&i.ToleranciaMinutos,
+			&i.HoraLimiteTardanza,
+			&i.HoraCierre,
+			&i.VigenteDesde,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listarSecciones = `-- name: ListarSecciones :many
 SELECT s.id,
        s.nombre,
-       s.turno,
+       COALESCE(t.turno, ''::text) AS turno,
        g.id AS grado_id,
        g.nombre AS grado,
        an.id AS anio_escolar_id,
@@ -190,6 +1076,14 @@ SELECT s.id,
 FROM secciones s
 JOIN grados g ON g.id = s.grado_id
 JOIN anios_escolares an ON an.id = g.anio_escolar_id
+LEFT JOIN LATERAL (
+    SELECT ts.turno
+    FROM turnos_seccion ts
+    WHERE ts.seccion_id = s.id
+      AND ts.vigente_desde <= GREATEST(CURRENT_DATE, an.fecha_inicio)
+    ORDER BY ts.vigente_desde DESC
+    LIMIT 1
+) t ON true
 ORDER BY an.nombre, g.nombre, s.nombre
 `
 
@@ -231,10 +1125,10 @@ func (q *Queries) ListarSecciones(ctx context.Context) ([]ListarSeccionesRow, er
 	return items, nil
 }
 
-const listarSeccionesVigentes = `-- name: ListarSeccionesVigentes :many
+const listarSeccionesPorAnio = `-- name: ListarSeccionesPorAnio :many
 SELECT s.id,
        s.nombre,
-       s.turno,
+       COALESCE(t.turno, ''::text) AS turno,
        g.id AS grado_id,
        g.nombre AS grado,
        an.id AS anio_escolar_id,
@@ -242,6 +1136,75 @@ SELECT s.id,
 FROM secciones s
 JOIN grados g ON g.id = s.grado_id
 JOIN anios_escolares an ON an.id = g.anio_escolar_id
+LEFT JOIN LATERAL (
+    SELECT ts.turno
+    FROM turnos_seccion ts
+    WHERE ts.seccion_id = s.id
+      AND ts.vigente_desde <= GREATEST(CURRENT_DATE, an.fecha_inicio)
+    ORDER BY ts.vigente_desde DESC
+    LIMIT 1
+) t ON true
+WHERE an.id = $1
+ORDER BY g.nombre, s.nombre
+`
+
+type ListarSeccionesPorAnioRow struct {
+	ID            int64
+	Nombre        string
+	Turno         string
+	GradoID       int64
+	Grado         string
+	AnioEscolarID int64
+	AnioEscolar   string
+}
+
+func (q *Queries) ListarSeccionesPorAnio(ctx context.Context, id int64) ([]ListarSeccionesPorAnioRow, error) {
+	rows, err := q.db.Query(ctx, listarSeccionesPorAnio, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarSeccionesPorAnioRow
+	for rows.Next() {
+		var i ListarSeccionesPorAnioRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Nombre,
+			&i.Turno,
+			&i.GradoID,
+			&i.Grado,
+			&i.AnioEscolarID,
+			&i.AnioEscolar,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarSeccionesVigentes = `-- name: ListarSeccionesVigentes :many
+SELECT s.id,
+       s.nombre,
+       COALESCE(t.turno, ''::text) AS turno,
+       g.id AS grado_id,
+       g.nombre AS grado,
+       an.id AS anio_escolar_id,
+       an.nombre AS anio_escolar
+FROM secciones s
+JOIN grados g ON g.id = s.grado_id
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+LEFT JOIN LATERAL (
+    SELECT ts.turno
+    FROM turnos_seccion ts
+    WHERE ts.seccion_id = s.id
+      AND ts.vigente_desde <= GREATEST(CURRENT_DATE, an.fecha_inicio)
+    ORDER BY ts.vigente_desde DESC
+    LIMIT 1
+) t ON true
 WHERE an.estado = 'activo'
 ORDER BY an.nombre DESC, g.nombre, s.nombre
 `
@@ -282,4 +1245,168 @@ func (q *Queries) ListarSeccionesVigentes(ctx context.Context) ([]ListarSeccione
 		return nil, err
 	}
 	return items, nil
+}
+
+const listarTurnosSeccion = `-- name: ListarTurnosSeccion :many
+SELECT id, seccion_id, turno, vigente_desde
+FROM turnos_seccion
+WHERE seccion_id = $1
+ORDER BY vigente_desde DESC
+`
+
+type ListarTurnosSeccionRow struct {
+	ID           int64
+	SeccionID    int64
+	Turno        string
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) ListarTurnosSeccion(ctx context.Context, seccionID int64) ([]ListarTurnosSeccionRow, error) {
+	rows, err := q.db.Query(ctx, listarTurnosSeccion, seccionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarTurnosSeccionRow
+	for rows.Next() {
+		var i ListarTurnosSeccionRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeccionID,
+			&i.Turno,
+			&i.VigenteDesde,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listarUmbralesPorAnio = `-- name: ListarUmbralesPorAnio :many
+SELECT id, anio_escolar_id, tipo, valor, vigente_desde
+FROM umbrales_alerta
+WHERE anio_escolar_id = $1
+ORDER BY tipo, vigente_desde DESC
+`
+
+type ListarUmbralesPorAnioRow struct {
+	ID            int64
+	AnioEscolarID int64
+	Tipo          string
+	Valor         int32
+	VigenteDesde  pgtype.Date
+}
+
+func (q *Queries) ListarUmbralesPorAnio(ctx context.Context, anioEscolarID int64) ([]ListarUmbralesPorAnioRow, error) {
+	rows, err := q.db.Query(ctx, listarUmbralesPorAnio, anioEscolarID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarUmbralesPorAnioRow
+	for rows.Next() {
+		var i ListarUmbralesPorAnioRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.AnioEscolarID,
+			&i.Tipo,
+			&i.Valor,
+			&i.VigenteDesde,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const turnoVigenteSeccion = `-- name: TurnoVigenteSeccion :one
+SELECT turno
+FROM turnos_seccion
+WHERE seccion_id = $1
+  AND vigente_desde <= $2
+ORDER BY vigente_desde DESC
+LIMIT 1
+`
+
+type TurnoVigenteSeccionParams struct {
+	SeccionID    int64
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) TurnoVigenteSeccion(ctx context.Context, arg TurnoVigenteSeccionParams) (string, error) {
+	row := q.db.QueryRow(ctx, turnoVigenteSeccion, arg.SeccionID, arg.VigenteDesde)
+	var turno string
+	err := row.Scan(&turno)
+	return turno, err
+}
+
+const umbralVigente = `-- name: UmbralVigente :one
+SELECT id, anio_escolar_id, tipo, valor, vigente_desde
+FROM umbrales_alerta
+WHERE anio_escolar_id = $1
+  AND tipo = $2
+  AND vigente_desde <= $3
+ORDER BY vigente_desde DESC
+LIMIT 1
+`
+
+type UmbralVigenteParams struct {
+	AnioEscolarID int64
+	Tipo          string
+	VigenteDesde  pgtype.Date
+}
+
+type UmbralVigenteRow struct {
+	ID            int64
+	AnioEscolarID int64
+	Tipo          string
+	Valor         int32
+	VigenteDesde  pgtype.Date
+}
+
+func (q *Queries) UmbralVigente(ctx context.Context, arg UmbralVigenteParams) (UmbralVigenteRow, error) {
+	row := q.db.QueryRow(ctx, umbralVigente, arg.AnioEscolarID, arg.Tipo, arg.VigenteDesde)
+	var i UmbralVigenteRow
+	err := row.Scan(
+		&i.ID,
+		&i.AnioEscolarID,
+		&i.Tipo,
+		&i.Valor,
+		&i.VigenteDesde,
+	)
+	return i, err
+}
+
+const upsertHorarioSeccion = `-- name: UpsertHorarioSeccion :exec
+INSERT INTO horario_seccion (seccion_id, dia_semana, bloque_numero, curso_id, vigente_desde)
+VALUES ($1, $2, $3, $4, $5)
+ON CONFLICT (seccion_id, dia_semana, bloque_numero, vigente_desde)
+DO UPDATE SET curso_id = EXCLUDED.curso_id
+`
+
+type UpsertHorarioSeccionParams struct {
+	SeccionID    int64
+	DiaSemana    int16
+	BloqueNumero int32
+	CursoID      pgtype.Int8
+	VigenteDesde pgtype.Date
+}
+
+func (q *Queries) UpsertHorarioSeccion(ctx context.Context, arg UpsertHorarioSeccionParams) error {
+	_, err := q.db.Exec(ctx, upsertHorarioSeccion,
+		arg.SeccionID,
+		arg.DiaSemana,
+		arg.BloqueNumero,
+		arg.CursoID,
+		arg.VigenteDesde,
+	)
+	return err
 }

@@ -18,6 +18,14 @@ import (
 // devuelve un pool conectado. El contenedor se elimina al terminar la prueba.
 func AbrirBaseDePruebas(t *testing.T) *pgxpool.Pool {
 	t.Helper()
+	pool, _ := AbrirBaseDePruebasConURL(t)
+	return pool
+}
+
+// AbrirBaseDePruebasConURL hace lo mismo que AbrirBaseDePruebas y además devuelve la cadena
+// de conexión, necesaria para probar las migraciones hacia arriba y hacia abajo.
+func AbrirBaseDePruebasConURL(t *testing.T) (*pgxpool.Pool, string) {
+	t.Helper()
 	ctx, cancelar := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancelar()
 
@@ -44,5 +52,5 @@ func AbrirBaseDePruebas(t *testing.T) *pgxpool.Pool {
 	pool, err := pgxpool.New(ctx, url)
 	require.NoError(t, err)
 	t.Cleanup(pool.Close)
-	return pool
+	return pool, url
 }

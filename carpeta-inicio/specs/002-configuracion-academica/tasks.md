@@ -44,45 +44,45 @@
 
 ### Migraciones
 
-- [ ] T008 [P] Crear `migraciones/0009_limitar_un_anio_activo.sql` con `cerrado_en timestamptz` y `CREATE UNIQUE INDEX un_anio_activo ON anios_escolares (estado) WHERE estado = 'activo'`
-- [ ] T009 [P] Crear `migraciones/0010_crear_tabla_turnos_seccion.sql` con `turnos_seccion (id, seccion_id FK, turno CHECK IN ('manana','tarde'), vigente_desde DATE, creado_en)`, `UNIQUE (seccion_id, vigente_desde)`; llenar con `vigente_desde = anios_escolares.fecha_inicio`; eliminar `secciones.turno`; el `Down` restaura la columna con el turno vigente
-- [ ] T010 [P] Crear `migraciones/0011_crear_tabla_horarios_turno.sql` con `horarios_turno (id, turno CHECK IN ('manana','tarde'), hora_ingreso TIME, tolerancia_minutos INTEGER CHECK >= 0, hora_limite_tardanza TIME, hora_cierre TIME, vigente_desde DATE, creado_en)`, `UNIQUE (turno, vigente_desde)`, `CHECK (hora_limite_tardanza > hora_ingreso)`, `CHECK (hora_cierre > hora_limite_tardanza)` y `CHECK (hora_ingreso + make_interval(mins => tolerancia_minutos) <= hora_limite_tardanza)`
-- [ ] T011 [P] Crear `migraciones/0012_crear_tablas_calendario.sql` con `excepciones_calendario (id, anio_escolar_id FK, tipo CHECK IN ('feriado','no_laborable','suspension'), fecha_inicio DATE, fecha_fin DATE, motivo, creado_por FK, creado_en)` con `CHECK (fecha_fin >= fecha_inicio)` y `excepciones_grados (excepcion_id FK, grado_id FK, PK compuesta)`
-- [ ] T012 [P] Crear `migraciones/0013_crear_tabla_umbrales_alerta.sql` con `umbrales_alerta (id, anio_escolar_id FK, tipo CHECK IN ('tardanzas','faltas'), valor INTEGER CHECK > 0, vigente_desde DATE, creado_en)` y `UNIQUE (anio_escolar_id, tipo, vigente_desde)`
-- [ ] T013 [P] Crear `migraciones/0014_crear_tablas_cursos.sql` con `cursos (id, anio_escolar_id FK, nombre, activo BOOLEAN DEFAULT true, creado_en)` e índice único `(anio_escolar_id, lower(nombre))`, y `cursos_grados (curso_id FK, grado_id FK, PK compuesta)`
-- [ ] T014 [P] Crear `migraciones/0015_crear_tabla_bloques_clase.sql` con `bloques_clase (id, turno CHECK IN ('manana','tarde'), numero INTEGER CHECK > 0, hora_inicio TIME, hora_fin TIME, vigente_desde DATE, creado_en)`, `UNIQUE (turno, numero, vigente_desde)` y `CHECK (hora_fin > hora_inicio)`
-- [ ] T015 [P] Crear `migraciones/0016_crear_tabla_horario_seccion.sql` con `horario_seccion (id, seccion_id FK, dia_semana SMALLINT CHECK BETWEEN 1 AND 5, bloque_numero INTEGER, curso_id FK NULL, vigente_desde DATE, creado_en)`, `UNIQUE (seccion_id, dia_semana, bloque_numero, vigente_desde)`
-- [ ] T016 [P] Crear `migraciones/0017_ampliar_entidades_auditoria.sql` que reemplaza el `CHECK` de `auditoria.entidad` agregando `anio_escolar`, `grado`, `seccion`, `turno`, `calendario`, `umbral`, `curso`, `bloque_clase` y `horario_seccion`
-- [ ] T017 Escribir la prueba de migraciones (subir y bajar todas las versiones) en `pruebas/integracion/migraciones_test.go`
+- [X] T008 [P] Crear `migraciones/0009_limitar_un_anio_activo.sql` con `cerrado_en timestamptz` y `CREATE UNIQUE INDEX un_anio_activo ON anios_escolares (estado) WHERE estado = 'activo'`
+- [X] T009 [P] Crear `migraciones/0010_crear_tabla_turnos_seccion.sql` con `turnos_seccion (id, seccion_id FK, turno CHECK IN ('manana','tarde'), vigente_desde DATE, creado_en)`, `UNIQUE (seccion_id, vigente_desde)`; llenar con `vigente_desde = anios_escolares.fecha_inicio`; eliminar `secciones.turno`; el `Down` restaura la columna con el turno vigente
+- [X] T010 [P] Crear `migraciones/0011_crear_tabla_horarios_turno.sql` con `horarios_turno (id, turno CHECK IN ('manana','tarde'), hora_ingreso TIME, tolerancia_minutos INTEGER CHECK >= 0, hora_limite_tardanza TIME, hora_cierre TIME, vigente_desde DATE, creado_en)`, `UNIQUE (turno, vigente_desde)`, `CHECK (hora_limite_tardanza > hora_ingreso)`, `CHECK (hora_cierre > hora_limite_tardanza)` y `CHECK (hora_ingreso + make_interval(mins => tolerancia_minutos) <= hora_limite_tardanza)`
+- [X] T011 [P] Crear `migraciones/0012_crear_tablas_calendario.sql` con `excepciones_calendario (id, anio_escolar_id FK, tipo CHECK IN ('feriado','no_laborable','suspension'), fecha_inicio DATE, fecha_fin DATE, motivo, creado_por FK, creado_en)` con `CHECK (fecha_fin >= fecha_inicio)` y `excepciones_grados (excepcion_id FK, grado_id FK, PK compuesta)`
+- [X] T012 [P] Crear `migraciones/0013_crear_tabla_umbrales_alerta.sql` con `umbrales_alerta (id, anio_escolar_id FK, tipo CHECK IN ('tardanzas','faltas'), valor INTEGER CHECK > 0, vigente_desde DATE, creado_en)` y `UNIQUE (anio_escolar_id, tipo, vigente_desde)`
+- [X] T013 [P] Crear `migraciones/0014_crear_tablas_cursos.sql` con `cursos (id, anio_escolar_id FK, nombre, activo BOOLEAN DEFAULT true, creado_en)` e índice único `(anio_escolar_id, lower(nombre))`, y `cursos_grados (curso_id FK, grado_id FK, PK compuesta)`
+- [X] T014 [P] Crear `migraciones/0015_crear_tabla_bloques_clase.sql` con `bloques_clase (id, turno CHECK IN ('manana','tarde'), numero INTEGER CHECK > 0, hora_inicio TIME, hora_fin TIME, vigente_desde DATE, creado_en)`, `UNIQUE (turno, numero, vigente_desde)` y `CHECK (hora_fin > hora_inicio)`
+- [X] T015 [P] Crear `migraciones/0016_crear_tabla_horario_seccion.sql` con `horario_seccion (id, seccion_id FK, dia_semana SMALLINT CHECK BETWEEN 1 AND 5, bloque_numero INTEGER, curso_id FK NULL, vigente_desde DATE, creado_en)`, `UNIQUE (seccion_id, dia_semana, bloque_numero, vigente_desde)`
+- [X] T016 [P] Crear `migraciones/0017_ampliar_entidades_auditoria.sql` que reemplaza el `CHECK` de `auditoria.entidad` agregando `anio_escolar`, `grado`, `seccion`, `turno`, `calendario`, `umbral`, `curso`, `bloque_clase` y `horario_seccion`
+- [X] T017 Escribir la prueba de migraciones (subir y bajar todas las versiones) en `pruebas/integracion/migraciones_test.go`
 
 ### Modelos y consultas
 
-- [ ] T018 [P] Implementar los modelos `AnioEscolar`, `Grado` y `Seccion` en `internal/academico/modelo.go` (cierra T035 de la feature 001; `Seccion` conserva `Turno`)
-- [ ] T019 [P] Agregar los modelos `HorarioTurno`, `ExcepcionCalendario`, `UmbralAlerta`, `Curso`, `BloqueClase`, `HorarioSeccion` y `ConfiguracionFecha` en `internal/academico/modelo.go`
-- [ ] T020 [P] Escribir las consultas sqlc de años, grados, secciones y turnos en `internal/academico/consultas/academico.sql`
-- [ ] T021 [P] Escribir las consultas sqlc de horarios, excepciones, umbrales, cursos, bloques y horario semanal en `internal/academico/consultas/academico.sql`
-- [ ] T022 Regenerar el código de sqlc con `sqlc generate` y compilar `internal/academico/generado/`
+- [X] T018 [P] Implementar los modelos `AnioEscolar`, `Grado` y `Seccion` en `internal/academico/modelo.go` (cierra T035 de la feature 001; `Seccion` conserva `Turno`)
+- [X] T019 [P] Agregar los modelos `HorarioTurno`, `ExcepcionCalendario`, `UmbralAlerta`, `Curso`, `BloqueClase`, `HorarioSeccion` y `ConfiguracionFecha` en `internal/academico/modelo.go`
+- [X] T020 [P] Escribir las consultas sqlc de años, grados, secciones y turnos en `internal/academico/consultas/academico.sql`
+- [X] T021 [P] Escribir las consultas sqlc de horarios, excepciones, umbrales, cursos, bloques y horario semanal en `internal/academico/consultas/academico.sql`
+- [X] T022 Regenerar el código de sqlc con `sqlc generate` y compilar `internal/academico/generado/`
 
 ### Repositorios
 
-- [ ] T023 [P] Implementar el repositorio de años, grados, secciones y turnos en `internal/academico/repositorio_configuracion.go`
-- [ ] T024 [P] Implementar el repositorio de horarios de turno, excepciones y umbrales en `internal/academico/repositorio_calendario.go`
-- [ ] T025 [P] Implementar el repositorio de cursos y vínculos con grados en `internal/academico/repositorio_cursos.go`
-- [ ] T026 [P] Implementar el repositorio de bloques y horario semanal en `internal/academico/repositorio_horarios.go`
-- [ ] T027 Actualizar `internal/academico/repositorio.go` para derivar el turno vigente en `ListarSecciones`, `ListarSeccionesVigentes` y `BuscarSeccionPorID` después de eliminar `secciones.turno`
+- [X] T023 [P] Implementar el repositorio de años, grados, secciones y turnos en `internal/academico/repositorio_configuracion.go`
+- [X] T024 [P] Implementar el repositorio de horarios de turno, excepciones y umbrales en `internal/academico/repositorio_calendario.go`
+- [X] T025 [P] Implementar el repositorio de cursos y vínculos con grados en `internal/academico/repositorio_cursos.go`
+- [X] T026 [P] Implementar el repositorio de bloques y horario semanal en `internal/academico/repositorio_horarios.go`
+- [X] T027 Actualizar `internal/academico/repositorio.go` para derivar el turno vigente en `ListarSecciones`, `ListarSeccionesVigentes` y `BuscarSeccionPorID` después de eliminar `secciones.turno`
 
 ### Validaciones puras
 
-- [ ] T028 [P] Escribir las pruebas unitarias de validación de horarios en `pruebas/unidad/validaciones_academico_test.go`: cierre posterior al límite, ingreso más tolerancia dentro del límite, sin cruzar la medianoche, superposición de mañana y tarde, vigencia no anterior a hoy
-- [ ] T029 [P] Escribir las pruebas unitarias de validación de bloques en `pruebas/unidad/validaciones_academico_test.go`: fin posterior a inicio, dentro del horario del turno, sin solapamiento, sin cruce de medianoche
-- [ ] T030 Implementar las funciones puras de validación en `internal/academico/validaciones.go`
+- [X] T028 [P] Escribir las pruebas unitarias de validación de horarios en `pruebas/unidad/validaciones_academico_test.go`: cierre posterior al límite, ingreso más tolerancia dentro del límite, sin cruzar la medianoche, superposición de mañana y tarde, vigencia no anterior a hoy
+- [X] T029 [P] Escribir las pruebas unitarias de validación de bloques en `pruebas/unidad/validaciones_academico_test.go`: fin posterior a inicio, dentro del horario del turno, sin solapamiento, sin cruce de medianoche
+- [X] T030 Implementar las funciones puras de validación en `internal/academico/validaciones.go`
 
 ### Integración transversal
 
-- [ ] T031 Implementar el registro de auditoría para las nuevas entidades en `internal/academico/servicio_auditoria.go`, usando la tabla `auditoria` existente
-- [ ] T032 Registrar las dependencias y rutas de configuración en `internal/plataforma/rutas/rutas.go` y `cmd/servidor/main.go`
-- [ ] T033 [P] Escribir la prueba de regresión de `academico.Seccion.Turno` con turno vigente en `pruebas/integracion/secciones_turno_test.go`
-- [ ] T034 [P] Escribir la prueba base de permisos de configuración (director puede GET; POST no permitidos responden 403) en `pruebas/manejadores/configuracion_permisos_test.go`
+- [X] T031 Implementar el registro de auditoría para las nuevas entidades en `internal/academico/servicio_auditoria.go`, usando la tabla `auditoria` existente
+- [X] T032 Registrar las dependencias y rutas de configuración en `internal/plataforma/rutas/rutas.go` y `cmd/servidor/main.go`
+- [X] T033 [P] Escribir la prueba de regresión de `academico.Seccion.Turno` con turno vigente en `pruebas/integracion/secciones_turno_test.go`
+- [X] T034 [P] Escribir la prueba base de permisos de configuración (director puede GET; POST no permitidos responden 403) en `pruebas/manejadores/configuracion_permisos_test.go`
 
 **Punto de control**: base lista; las historias pueden comenzar.
 

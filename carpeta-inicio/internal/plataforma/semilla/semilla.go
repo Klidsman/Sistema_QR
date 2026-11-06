@@ -78,6 +78,11 @@ func CrearAcademicoDemo(ctx context.Context, pool *pgxpool.Pool, opciones Opcion
 		return fmt.Errorf("preparando el año escolar: %w", err)
 	}
 
+	turno := opciones.Turno
+	if turno == "" {
+		turno = "manana"
+	}
+
 	for _, nombreGrado := range opciones.Grados {
 		gradoID, err := consultas.BuscarGradoPorNombre(ctx, academicogenerado.BuscarGradoPorNombreParams{
 			AnioEscolarID: anioID,
@@ -104,12 +109,19 @@ func CrearAcademicoDemo(ctx context.Context, pool *pgxpool.Pool, opciones Opcion
 			if !errors.Is(err, pgx.ErrNoRows) {
 				return fmt.Errorf("buscando la sección %s %s: %w", nombreGrado, nombreSeccion, err)
 			}
-			if _, err := consultas.CrearSeccion(ctx, academicogenerado.CrearSeccionParams{
+			seccionID, err := consultas.CrearSeccion(ctx, academicogenerado.CrearSeccionParams{
 				GradoID: gradoID,
 				Nombre:  nombreSeccion,
-				Turno:   opciones.Turno,
-			}); err != nil {
+			})
+			if err != nil {
 				return fmt.Errorf("creando la sección %s %s: %w", nombreGrado, nombreSeccion, err)
+			}
+			if _, err := consultas.CrearTurnoSeccion(ctx, academicogenerado.CrearTurnoSeccionParams{
+				SeccionID:    seccionID,
+				Turno:        turno,
+				VigenteDesde: pgtype.Date{Time: opciones.FechaInicio, Valid: true},
+			}); err != nil {
+				return fmt.Errorf("asignando el turno de la sección %s %s: %w", nombreGrado, nombreSeccion, err)
 			}
 		}
 	}

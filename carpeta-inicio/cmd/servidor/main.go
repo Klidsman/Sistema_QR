@@ -169,6 +169,12 @@ func servir(cfg configuracion.Configuracion) error {
 	ingreso := autenticacion.NuevoManejador(autenticacion.NuevoServicio(pool), sesiones, limite, registrador)
 
 	servicioAcademico := academico.NuevoServicio(pool)
+	servicioConfiguracion := academico.NuevoServicioConfiguracion(pool)
+	manejadorConfiguracion := academico.NuevoManejador(academico.DependenciasConfiguracion{
+		Configuracion: servicioConfiguracion,
+		Sesiones:      sesiones,
+		Registro:      registrador,
+	})
 	servicioAlumnos := alumnos.NuevoServicio(pool)
 	servicioImportacion := alumnos.NuevoServicioImportacion(pool, servicioAcademico, cfg.ImportacionMaxFilas)
 	manejadorAlumnos := alumnos.NuevoManejador(alumnos.Dependencias{
@@ -192,6 +198,7 @@ func servir(cfg configuracion.Configuracion) error {
 			Verificador:   pool,
 			Autenticacion: ingreso,
 			Alumnos:       manejadorAlumnos,
+			Academico:     manejadorConfiguracion,
 		}),
 		ReadHeaderTimeout: tiempoLecturaEncabezados,
 	}

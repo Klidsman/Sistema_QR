@@ -31,3 +31,21 @@ func Subir(urlBaseDatos string) error {
 	}
 	return nil
 }
+
+// Bajar revierte la última migración aplicada. Se usa en pruebas y en reversiones controladas.
+func Bajar(urlBaseDatos string) error {
+	db, err := sql.Open("pgx", urlBaseDatos)
+	if err != nil {
+		return fmt.Errorf("abriendo la base de datos para revertir: %w", err)
+	}
+	defer db.Close()
+
+	goose.SetBaseFS(archivos)
+	if err := goose.SetDialect("postgres"); err != nil {
+		return fmt.Errorf("configurando el dialecto de migraciones: %w", err)
+	}
+	if err := goose.Down(db, "."); err != nil {
+		return fmt.Errorf("revirtiendo migraciones: %w", err)
+	}
+	return nil
+}

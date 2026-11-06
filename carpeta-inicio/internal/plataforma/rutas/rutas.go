@@ -4,6 +4,7 @@ package rutas
 import (
 	"net/http"
 
+	"asistencia/internal/academico"
 	"asistencia/internal/alumnos"
 	"asistencia/internal/autenticacion"
 	"asistencia/internal/plataforma/intermediarios"
@@ -19,6 +20,7 @@ type Dependencias struct {
 	Verificador   salud.Verificador
 	Autenticacion *autenticacion.Manejador
 	Alumnos       *alumnos.Manejador
+	Academico     *academico.Manejador
 }
 
 // NuevoEnrutador crea el enrutador con sesiones, protección CSRF y las rutas de cada módulo.
@@ -34,6 +36,7 @@ func NuevoEnrutador(dependencias Dependencias) http.Handler {
 	})
 	dependencias.Autenticacion.Montar(enrutador)
 	dependencias.Alumnos.Montar(enrutador)
+	dependencias.Academico.Montar(enrutador)
 
 	return enrutador
 }
