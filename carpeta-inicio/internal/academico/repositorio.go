@@ -62,3 +62,24 @@ func (r *Repositorio) BuscarSeccionPorID(ctx context.Context, id int64) (Seccion
 		AnioEscolar:   fila.AnioEscolar,
 	}, nil
 }
+
+// ListarSeccionesVigentes devuelve las secciones del año escolar activo.
+func (r *Repositorio) ListarSeccionesVigentes(ctx context.Context) ([]Seccion, error) {
+	filas, err := r.consultas.ListarSeccionesVigentes(ctx)
+	if err != nil {
+		return nil, err
+	}
+	secciones := make([]Seccion, 0, len(filas))
+	for _, fila := range filas {
+		secciones = append(secciones, Seccion{
+			ID:            fila.ID,
+			Nombre:        fila.Nombre,
+			Turno:         fila.Turno,
+			GradoID:       fila.GradoID,
+			Grado:         fila.Grado,
+			AnioEscolarID: fila.AnioEscolarID,
+			AnioEscolar:   fila.AnioEscolar,
+		})
+	}
+	return secciones, nil
+}

@@ -149,6 +149,11 @@ func (q *qrFalso) ReemplazarQR(ctx context.Context, usuarioID, alumnoID int64, m
 
 func nuevoManejadorDePrueba(t *testing.T, servicio *alumnosFalso, qr *qrFalso) (*alumnos.Manejador, *scs.SessionManager) {
 	t.Helper()
+	return nuevoManejadorDePruebaConImportacion(t, servicio, qr, &importacionFalso{})
+}
+
+func nuevoManejadorDePruebaConImportacion(t *testing.T, servicio *alumnosFalso, qr *qrFalso, importacion *importacionFalso) (*alumnos.Manejador, *scs.SessionManager) {
+	t.Helper()
 	sesiones := scs.New()
 	manejador := alumnos.NuevoManejador(alumnos.Dependencias{
 		Alumnos: servicio,
@@ -160,6 +165,7 @@ func nuevoManejadorDePrueba(t *testing.T, servicio *alumnosFalso, qr *qrFalso) (
 		Sesiones:     sesiones,
 		Registro:     slog.New(slog.NewTextHandler(io.Discard, nil)),
 		FotoMaximaMB: 2,
+		Importacion:  importacion,
 	})
 	return manejador, sesiones
 }

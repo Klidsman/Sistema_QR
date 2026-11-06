@@ -134,6 +134,57 @@ func (r *Repositorio) buscarIdentificador(ctx context.Context, consultas *genera
 	return consultas.BuscarAlumnoPorIdentificador(ctx, identificador)
 }
 
+func (r *Repositorio) listarImportaciones(ctx context.Context) ([]Importacion, error) {
+	filas, err := r.consultas.ListarImportaciones(ctx)
+	if err != nil {
+		return nil, err
+	}
+	importaciones := make([]Importacion, 0, len(filas))
+	for _, fila := range filas {
+		importaciones = append(importaciones, importacionDesdeModelo(fila))
+	}
+	return importaciones, nil
+}
+
+func (r *Repositorio) buscarImportacion(ctx context.Context, id int64) (Importacion, error) {
+	fila, err := r.consultas.BuscarImportacionPorID(ctx, id)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Importacion{}, ErrImportacionNoEncontrada
+	}
+	if err != nil {
+		return Importacion{}, err
+	}
+	return importacionDesdeModelo(fila), nil
+}
+
+func (r *Repositorio) listarImportacionFilas(ctx context.Context, importacionID int64) ([]FilaRechazada, error) {
+	filas, err := r.consultas.ListarImportacionFilas(ctx, importacionID)
+	if err != nil {
+		return nil, err
+	}
+	rechazadas := make([]FilaRechazada, 0, len(filas))
+	for _, fila := range filas {
+		rechazadas = append(rechazadas, FilaRechazada{
+			NumeroFila:    int(fila.NumeroFila),
+			Identificador: fila.Identificador,
+			Motivo:        fila.Motivo,
+		})
+	}
+	return rechazadas, nil
+}
+
+func importacionDesdeModelo(fila generado.Importacione) Importacion {
+	return Importacion{
+		ID:              fila.ID,
+		UsuarioID:       fila.UsuarioID,
+		ArchivoNombre:   fila.ArchivoNombre,
+		FilasLeidas:     int(fila.FilasLeidas),
+		FilasCreadas:    int(fila.FilasCreadas),
+		FilasRechazadas: int(fila.FilasRechazadas),
+		CreadaEn:        fila.CreadaEn.Time,
+	}
+}
+
 func textoOpcional(valor string) pgtype.Text {
 	limpio := strings.TrimSpace(valor)
 	if limpio == "" {

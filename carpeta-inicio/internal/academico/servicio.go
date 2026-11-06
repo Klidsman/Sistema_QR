@@ -64,3 +64,12 @@ func (s *Servicio) BuscarSeccionPorID(ctx context.Context, id int64) (Seccion, e
 	}
 	return seccion, nil
 }
+
+// ListarSeccionesVigentes devuelve las secciones del año escolar activo.
+func (s *Servicio) ListarSeccionesVigentes(ctx context.Context) ([]Seccion, error) {
+	secciones, err := s.repositorio.ListarSeccionesVigentes(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("listando las secciones vigentes: %w", err)
+	}
+	return secciones, nil
+}

@@ -44,30 +44,41 @@ type ServicioQR interface {
 	ReemplazarQR(ctx context.Context, usuarioID, alumnoID int64, motivo string) (CredencialQR, error)
 }
 
+// Importador son las operaciones de importación que usa el manejador.
+type Importador interface {
+	Importar(ctx context.Context, usuarioID int64, archivoNombre string, contenido []byte) (Importacion, error)
+	ListarImportaciones(ctx context.Context) ([]Importacion, error)
+	ObtenerImportacion(ctx context.Context, id int64) (ImportacionDetalle, error)
+}
+
 // Dependencias reúne todo lo que el manejador de alumnos necesita.
 type Dependencias struct {
-	Alumnos       ServicioAlumnos
-	QR            ServicioQR
-	Secciones     academico.BuscadorSeccion
-	Almacen       almacenamiento.AlmacenFotos
-	Sesiones      *scs.SessionManager
-	Registro      *slog.Logger
-	FotoMaximaMB  int
-	CarnetAnchoMM int
-	CarnetAltoMM  int
+	Alumnos             ServicioAlumnos
+	QR                  ServicioQR
+	Importacion         Importador
+	Secciones           academico.BuscadorSeccion
+	Almacen             almacenamiento.AlmacenFotos
+	Sesiones            *scs.SessionManager
+	Registro            *slog.Logger
+	FotoMaximaMB        int
+	CarnetAnchoMM       int
+	CarnetAltoMM        int
+	ImportacionMaxFilas int
 }
 
 // Manejador atiende las pantallas y acciones de alumnos y de sus códigos QR.
 type Manejador struct {
-	alumnos       ServicioAlumnos
-	qr            ServicioQR
-	secciones     academico.BuscadorSeccion
-	almacen       almacenamiento.AlmacenFotos
-	sesiones      *scs.SessionManager
-	registro      *slog.Logger
-	fotoMaximaMB  int
-	carnetAnchoMM int
-	carnetAltoMM  int
+	alumnos             ServicioAlumnos
+	qr                  ServicioQR
+	importacion         Importador
+	secciones           academico.BuscadorSeccion
+	almacen             almacenamiento.AlmacenFotos
+	sesiones            *scs.SessionManager
+	registro            *slog.Logger
+	fotoMaximaMB        int
+	carnetAnchoMM       int
+	carnetAltoMM        int
+	importacionMaxFilas int
 }
 
 // NuevoManejador crea el manejador de alumnos.
@@ -80,16 +91,22 @@ func NuevoManejador(dependencias Dependencias) *Manejador {
 	if alto <= 0 {
 		alto = 54
 	}
+	maxFilas := dependencias.ImportacionMaxFilas
+	if maxFilas <= 0 {
+		maxFilas = maximoFilasImportacionPorDefecto
+	}
 	return &Manejador{
-		alumnos:       dependencias.Alumnos,
-		qr:            dependencias.QR,
-		secciones:     dependencias.Secciones,
-		almacen:       dependencias.Almacen,
-		sesiones:      dependencias.Sesiones,
-		registro:      dependencias.Registro,
-		fotoMaximaMB:  dependencias.FotoMaximaMB,
-		carnetAnchoMM: ancho,
-		carnetAltoMM:  alto,
+		alumnos:             dependencias.Alumnos,
+		qr:                  dependencias.QR,
+		importacion:         dependencias.Importacion,
+		secciones:           dependencias.Secciones,
+		almacen:             dependencias.Almacen,
+		sesiones:            dependencias.Sesiones,
+		registro:            dependencias.Registro,
+		fotoMaximaMB:        dependencias.FotoMaximaMB,
+		carnetAnchoMM:       ancho,
+		carnetAltoMM:        alto,
+		importacionMaxFilas: maxFilas,
 	}
 }
 
@@ -101,6 +118,8 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Get("/alumnos/{id}", m.ficha)
 		lectura.Get("/alumnos/{id}/foto", m.foto)
 		lectura.Get("/alumnos/{id}/qr/imagen", m.imagenQR)
+		lectura.Get("/alumnos/importaciones", m.listarImportaciones)
+		lectura.Get("/alumnos/importaciones/{id}", m.detalleImportacion)
 		lectura.Get("/carnets", m.seleccionCarnets)
 		lectura.Get("/carnets/lote", m.loteCarnets)
 	})
@@ -108,6 +127,8 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 	enrutador.Group(func(escritura chi.Router) {
 		escritura.Use(intermediarios.RequerirRol(m.sesiones, intermediarios.RolAdministrador))
 		escritura.Get("/alumnos/nuevo", m.nuevo)
+		escritura.Get("/alumnos/importar", m.mostrarImportacion)
+		escritura.Post("/alumnos/importar", m.procesarImportacion)
 		escritura.Post("/alumnos", m.crear)
 		escritura.Get("/alumnos/{id}/editar", m.editar)
 		escritura.Post("/alumnos/{id}", m.actualizar)
@@ -830,6 +851,8 @@ func mensajeCorrecto(codigo string) string {
 		return "El alumno cambió de sección y su historial quedó actualizado."
 	case "salida_registrada":
 		return "La salida quedó registrada y el QR del alumno fue invalidado."
+	case "importado":
+		return "La importación se procesó. Revise el reporte de filas rechazadas."
 	default:
 		return ""
 	}

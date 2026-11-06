@@ -1,0 +1,58 @@
+package vista
+
+import (
+	"fmt"
+
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Historial(usuario string, rol string, tokenCSRF string, importaciones []Importacion, mensaje string) {
+	@paginas.BaseSesion("Historial de importaciones", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/alumnos" class="text-sm font-medium text-blue-700">← Volver a alumnos</a>
+				<h1 class="mt-1 text-2xl font-semibold">Historial de importaciones</h1>
+			</div>
+			if rol == "administrador" {
+				<a href="/alumnos/importar" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Importar alumnos</a>
+			}
+		</div>
+
+		if mensaje != "" {
+			<p role="status" class="mt-4 rounded bg-green-100 p-3 text-green-800">{ mensaje }</p>
+		}
+
+		if len(importaciones) == 0 {
+			<p class="mt-6 rounded border border-dashed border-slate-300 p-6 text-center text-slate-500">Todavía no se importaron alumnos.</p>
+		} else {
+			<div class="mt-6 overflow-x-auto rounded border border-slate-200 bg-white">
+				<table class="w-full text-left text-sm">
+					<thead class="bg-slate-100 text-slate-700">
+						<tr>
+							<th class="p-3">Archivo</th>
+							<th class="p-3">Fecha</th>
+							<th class="p-3">Leídas</th>
+							<th class="p-3">Creadas</th>
+							<th class="p-3">Rechazadas</th>
+							<th class="p-3">Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, importacion := range importaciones {
+							<tr class="border-t border-slate-100">
+								<td class="p-3 font-medium">{ importacion.ArchivoNombre }</td>
+								<td class="p-3">{ importacion.CreadaEn }</td>
+								<td class="p-3">{ fmt.Sprintf("%d", importacion.FilasLeidas) }</td>
+								<td class="p-3">{ fmt.Sprintf("%d", importacion.FilasCreadas) }</td>
+								<td class="p-3">{ fmt.Sprintf("%d", importacion.FilasRechazadas) }</td>
+								<td class="p-3">
+									<a href={ fmt.Sprintf("/alumnos/importaciones/%d", importacion.ID) } class="rounded border border-slate-300 px-3 py-1 font-medium">Ver reporte</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	}
+}

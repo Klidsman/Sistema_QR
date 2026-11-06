@@ -1,0 +1,58 @@
+package vista
+
+import (
+	"strconv"
+
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Carga(usuario string, rol string, tokenCSRF string, maxFilas int, mensaje string, faltantes []string) {
+	@paginas.BaseSesion("Importar alumnos", usuario, rol, tokenCSRF) {
+		<div>
+			<a href="/alumnos" class="text-sm font-medium text-blue-700">← Volver a alumnos</a>
+			<h1 class="mt-1 text-2xl font-semibold">Importar alumnos</h1>
+			<p class="text-sm text-slate-600">Suba un archivo CSV o Excel (.xlsx) con la lista de alumnos del año escolar activo.</p>
+		</div>
+
+		if mensaje != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensaje }</p>
+		}
+		if len(faltantes) > 0 {
+			<div class="mt-4 rounded border border-red-200 bg-red-50 p-3 text-red-800">
+				<p class="font-medium">Columnas obligatorias faltantes:</p>
+				<ul class="mt-1 list-disc pl-5">
+					for _, columna := range faltantes {
+						<li>{ columna }</li>
+					}
+				</ul>
+			</div>
+		}
+
+		<form method="post" action="/alumnos/importar" enctype="multipart/form-data" class="mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4">
+			<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+			<label class="block">
+				<span class="text-sm font-medium">Archivo CSV o XLSX</span>
+				<input type="file" name="archivo" accept=".csv,.xlsx" required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+			</label>
+			<p class="text-sm text-slate-500">Tamaño máximo: 5 MB. Máximo de filas: { strconv.Itoa(maxFilas) }.</p>
+			<div>
+				<button type="submit" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Importar</button>
+			</div>
+		</form>
+
+		<section class="mt-6 rounded border border-slate-200 bg-white p-4 text-sm text-slate-600">
+			<h2 class="text-base font-semibold text-slate-900">Formato del archivo</h2>
+			<p class="mt-2">La primera fila debe contener los encabezados. Columnas obligatorias:</p>
+			<ul class="mt-1 list-disc pl-5">
+				<li><code>identificador</code> (también se acepta <code>dni</code>, <code>codigo</code> o <code>documento</code>)</li>
+				<li><code>nombres</code></li>
+				<li><code>apellidos</code></li>
+				<li><code>grado</code></li>
+				<li><code>seccion</code></li>
+			</ul>
+			<p class="mt-2">Columnas opcionales: <code>apoderado_nombre</code> y <code>apoderado_telefono</code>.</p>
+			<p class="mt-2">Las filas con problemas se rechazan una por una y no detienen el resto de la importación. Al finalizar verá el reporte con el motivo de cada rechazo.</p>
+			<p class="mt-2"><a href="/alumnos/importaciones" class="font-medium text-blue-700">Ver historial de importaciones</a></p>
+		</section>
+	}
+}

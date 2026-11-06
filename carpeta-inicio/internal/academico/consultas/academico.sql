@@ -63,3 +63,17 @@ FROM secciones s
 JOIN grados g ON g.id = s.grado_id
 JOIN anios_escolares an ON an.id = g.anio_escolar_id
 WHERE s.id = $1;
+
+-- name: ListarSeccionesVigentes :many
+SELECT s.id,
+       s.nombre,
+       s.turno,
+       g.id AS grado_id,
+       g.nombre AS grado,
+       an.id AS anio_escolar_id,
+       an.nombre AS anio_escolar
+FROM secciones s
+JOIN grados g ON g.id = s.grado_id
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+WHERE an.estado = 'activo'
+ORDER BY an.nombre DESC, g.nombre, s.nombre;

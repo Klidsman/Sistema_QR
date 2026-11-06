@@ -230,3 +230,56 @@ func (q *Queries) ListarSecciones(ctx context.Context) ([]ListarSeccionesRow, er
 	}
 	return items, nil
 }
+
+const listarSeccionesVigentes = `-- name: ListarSeccionesVigentes :many
+SELECT s.id,
+       s.nombre,
+       s.turno,
+       g.id AS grado_id,
+       g.nombre AS grado,
+       an.id AS anio_escolar_id,
+       an.nombre AS anio_escolar
+FROM secciones s
+JOIN grados g ON g.id = s.grado_id
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+WHERE an.estado = 'activo'
+ORDER BY an.nombre DESC, g.nombre, s.nombre
+`
+
+type ListarSeccionesVigentesRow struct {
+	ID            int64
+	Nombre        string
+	Turno         string
+	GradoID       int64
+	Grado         string
+	AnioEscolarID int64
+	AnioEscolar   string
+}
+
+func (q *Queries) ListarSeccionesVigentes(ctx context.Context) ([]ListarSeccionesVigentesRow, error) {
+	rows, err := q.db.Query(ctx, listarSeccionesVigentes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListarSeccionesVigentesRow
+	for rows.Next() {
+		var i ListarSeccionesVigentesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Nombre,
+			&i.Turno,
+			&i.GradoID,
+			&i.Grado,
+			&i.AnioEscolarID,
+			&i.AnioEscolar,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

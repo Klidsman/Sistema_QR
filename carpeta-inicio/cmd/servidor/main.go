@@ -170,16 +170,19 @@ func servir(cfg configuracion.Configuracion) error {
 
 	servicioAcademico := academico.NuevoServicio(pool)
 	servicioAlumnos := alumnos.NuevoServicio(pool)
+	servicioImportacion := alumnos.NuevoServicioImportacion(pool, servicioAcademico, cfg.ImportacionMaxFilas)
 	manejadorAlumnos := alumnos.NuevoManejador(alumnos.Dependencias{
-		Alumnos:       servicioAlumnos,
-		QR:            servicioAlumnos,
-		Secciones:     servicioAcademico,
-		Almacen:       abrirAlmacen(cfg.Almacenamiento),
-		Sesiones:      sesiones,
-		Registro:      registrador,
-		FotoMaximaMB:  cfg.FotoTamanioMaximoMB,
-		CarnetAnchoMM: cfg.CarnetAnchoMM,
-		CarnetAltoMM:  cfg.CarnetAltoMM,
+		Alumnos:             servicioAlumnos,
+		QR:                  servicioAlumnos,
+		Importacion:         servicioImportacion,
+		Secciones:           servicioAcademico,
+		Almacen:             abrirAlmacen(cfg.Almacenamiento),
+		Sesiones:            sesiones,
+		Registro:            registrador,
+		FotoMaximaMB:        cfg.FotoTamanioMaximoMB,
+		CarnetAnchoMM:       cfg.CarnetAnchoMM,
+		CarnetAltoMM:        cfg.CarnetAltoMM,
+		ImportacionMaxFilas: cfg.ImportacionMaxFilas,
 	})
 
 	servidor := &http.Server{

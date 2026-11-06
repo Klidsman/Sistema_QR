@@ -1,0 +1,60 @@
+package vista
+
+import (
+	"fmt"
+
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Detalle(usuario string, rol string, tokenCSRF string, detalle DetalleImportacion) {
+	@paginas.BaseSesion("Reporte de importación", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<div>
+				<a href="/alumnos/importaciones" class="text-sm font-medium text-blue-700">← Volver al historial</a>
+				<h1 class="mt-1 text-2xl font-semibold">Reporte de importación</h1>
+				<p class="text-sm text-slate-600">{ detalle.Importacion.ArchivoNombre } · { detalle.Importacion.CreadaEn }</p>
+			</div>
+			<a href="/alumnos" class="rounded border border-slate-300 px-4 py-2 font-medium text-slate-700">Ver alumnos</a>
+		</div>
+
+		<div class="mt-6 grid gap-3 sm:grid-cols-3">
+			<div class="rounded border border-slate-200 bg-white p-4">
+				<p class="text-sm text-slate-500">Filas leídas</p>
+				<p class="text-2xl font-semibold">{ fmt.Sprintf("%d", detalle.Importacion.FilasLeidas) }</p>
+			</div>
+			<div class="rounded border border-green-200 bg-green-50 p-4">
+				<p class="text-sm text-green-700">Alumnos creados</p>
+				<p class="text-2xl font-semibold text-green-800">{ fmt.Sprintf("%d", detalle.Importacion.FilasCreadas) }</p>
+			</div>
+			<div class="rounded border border-red-200 bg-red-50 p-4">
+				<p class="text-sm text-red-700">Filas rechazadas</p>
+				<p class="text-2xl font-semibold text-red-800">{ fmt.Sprintf("%d", detalle.Importacion.FilasRechazadas) }</p>
+			</div>
+		</div>
+
+		if detalle.TotalRechazadas() == 0 {
+			<p class="mt-6 rounded bg-green-100 p-3 text-green-800">Todas las filas se importaron correctamente.</p>
+		} else {
+			<div class="mt-6 overflow-x-auto rounded border border-slate-200 bg-white">
+				<table class="w-full text-left text-sm">
+					<thead class="bg-slate-100 text-slate-700">
+						<tr>
+							<th class="p-3">Fila</th>
+							<th class="p-3">Identificador</th>
+							<th class="p-3">Motivo</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, fila := range detalle.Rechazadas {
+							<tr class="border-t border-slate-100">
+								<td class="p-3">{ fmt.Sprintf("%d", fila.NumeroFila) }</td>
+								<td class="p-3 font-medium">{ fila.Identificador }</td>
+								<td class="p-3">{ fila.Motivo }</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	}
+}

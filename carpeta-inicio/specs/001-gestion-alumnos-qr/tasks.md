@@ -223,23 +223,23 @@ su registro se conserva.
 
 ### Pruebas de la historia 4
 
-- [ ] T088 [P] [US4] Escribir prueba unitaria de detección de duplicados dentro del archivo y de motivos de rechazo en `pruebas/unidad/importacion_test.go`
-- [ ] T089 [P] [US4] Escribir prueba unitaria de lectura de CSV con BOM y separador punto y coma en `pruebas/unidad/importacion_csv_test.go`
-- [ ] T090 [P] [US4] Escribir prueba de integración de importación con PostgreSQL real en `pruebas/integracion/importacion_test.go`
-- [ ] T091 [P] [US4] Escribir prueba de manejador de carga, límite de filas y reporte en `pruebas/manejadores/importacion_manejador_test.go`
+- [X] T088 [P] [US4] Escribir prueba unitaria de detección de duplicados dentro del archivo y de motivos de rechazo en `pruebas/unidad/importacion_test.go`
+- [X] T089 [P] [US4] Escribir prueba unitaria de lectura de CSV con BOM y separador punto y coma en `pruebas/unidad/importacion_csv_test.go`
+- [X] T090 [P] [US4] Escribir prueba de integración de importación con PostgreSQL real en `pruebas/integracion/importacion_test.go`
+- [X] T091 [P] [US4] Escribir prueba de manejador de carga, límite de filas y reporte en `pruebas/manejadores/importacion_manejador_test.go`
 
 ### Implementación de la historia 4
 
-- [ ] T092 [P] [US4] Crear migración `0006_crear_tablas_importacion.sql` en `migraciones/0006_crear_tablas_importacion.sql`
-- [ ] T093 [P] [US4] Implementar el modelo de importación y de fila rechazada en `internal/alumnos/modelo_importacion.go`
-- [ ] T094 [US4] Implementar lectura de CSV (coma o punto y coma, BOM) en `internal/alumnos/importacion_csv.go`
-- [ ] T095 [US4] Implementar lectura de XLSX con excelize, primera hoja, en `internal/alumnos/importacion_xlsx.go`
-- [ ] T096 [US4] Implementar validación por fila y detección de duplicados dentro del archivo en `internal/alumnos/importacion.go`
-- [ ] T097 [US4] Implementar consultas sqlc de importaciones en `internal/alumnos/consultas/importaciones.sql`
-- [ ] T098 [US4] Implementar el servicio de importación con inserción por fila y reporte en `internal/alumnos/servicio_importacion.go`
-- [ ] T099 [US4] Implementar los manejadores de carga, historial y detalle en `internal/alumnos/manejador_importacion.go`
-- [ ] T100 [US4] Crear las plantillas de carga, historial y detalle con filas rechazadas en `web/plantillas/importacion/`
-- [ ] T101 [US4] Registrar la auditoría de la importación en `internal/alumnos/servicio_importacion.go`
+- [X] T092 [P] [US4] Crear migración `0006_crear_tablas_importacion.sql` en `migraciones/0006_crear_tablas_importacion.sql`
+- [X] T093 [P] [US4] Implementar el modelo de importación y de fila rechazada en `internal/alumnos/modelo_importacion.go`
+- [X] T094 [US4] Implementar lectura de CSV (coma o punto y coma, BOM) en `internal/alumnos/importacion_csv.go`
+- [X] T095 [US4] Implementar lectura de XLSX con excelize, primera hoja, en `internal/alumnos/importacion_xlsx.go`
+- [X] T096 [US4] Implementar validación por fila y detección de duplicados dentro del archivo en `internal/alumnos/importacion.go`
+- [X] T097 [US4] Implementar consultas sqlc de importaciones en `internal/alumnos/consultas/importaciones.sql`
+- [X] T098 [US4] Implementar el servicio de importación con inserción por fila y reporte en `internal/alumnos/servicio_importacion.go`
+- [X] T099 [US4] Implementar los manejadores de carga, historial y detalle en `internal/alumnos/manejador_importacion.go`
+- [X] T100 [US4] Crear las plantillas de carga, historial y detalle con filas rechazadas en `web/plantillas/importacion/`
+- [X] T101 [US4] Registrar la auditoría de la importación en `internal/alumnos/servicio_importacion.go`
 
 **Punto de control**: la historia 4 funciona de forma independiente.
 
