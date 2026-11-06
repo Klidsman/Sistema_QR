@@ -1,0 +1,7 @@
+.env
+.env.local
+node_modules/
+tmp/
+datos/
+web/estaticos/js/htmx.min.js
+web/estaticos/css/app.css

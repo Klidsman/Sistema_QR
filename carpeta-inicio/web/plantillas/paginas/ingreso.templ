@@ -1,0 +1,24 @@
+package paginas
+
+templ Ingreso(tokenCSRF string, mensaje string) {
+	@Base("Ingreso") {
+		<main class="mx-auto w-full max-w-sm p-6 sm:mt-12">
+			<h1 class="text-2xl font-semibold">Ingreso al sistema</h1>
+			if mensaje != "" {
+				<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensaje }</p>
+			}
+			<form method="post" action="/ingreso" class="mt-6 space-y-4">
+				<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+				<label class="block">
+					<span class="text-sm font-medium">Correo</span>
+					<input type="email" name="correo" required autocomplete="username" class="mt-1 w-full rounded border border-slate-300 p-3 text-base"/>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium">Contraseña</span>
+					<input type="password" name="contrasenia" required autocomplete="current-password" class="mt-1 w-full rounded border border-slate-300 p-3 text-base"/>
+				</label>
+				<button type="submit" class="w-full rounded bg-blue-700 p-3 text-base font-semibold text-white">Ingresar</button>
+			</form>
+		</main>
+	}
+}

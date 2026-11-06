@@ -1,0 +1,47 @@
+package paginas
+
+templ Base(titulo string) {
+	<!DOCTYPE html>
+	<html lang="es">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>{ titulo } · Asistencia</title>
+			<link rel="stylesheet" href="/estaticos/css/app.css"/>
+			<script src="/estaticos/js/htmx.min.js" defer></script>
+		</head>
+		<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+			{ children... }
+		</body>
+	</html>
+}
+
+templ BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) {
+	<!DOCTYPE html>
+	<html lang="es">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>{ titulo } · Asistencia</title>
+			<link rel="stylesheet" href="/estaticos/css/app.css"/>
+			<script src="/estaticos/js/htmx.min.js" defer></script>
+		</head>
+		<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+			<header class="border-b border-slate-200 bg-white">
+				<div class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 p-4">
+					<a href="/alumnos" class="text-lg font-semibold text-blue-800">Asistencia</a>
+					<div class="flex items-center gap-4 text-sm">
+						<span class="text-slate-600">{ nombre } · { rol }</span>
+						<form method="post" action="/salir">
+							<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+							<button type="submit" class="rounded border border-slate-300 px-3 py-1 font-medium text-slate-700">Salir</button>
+						</form>
+					</div>
+				</div>
+			</header>
+			<main class="mx-auto w-full max-w-6xl p-4 sm:p-6">
+				{ children... }
+			</main>
+		</body>
+	</html>
+}

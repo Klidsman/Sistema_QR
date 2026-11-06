@@ -1,0 +1,42 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "internal/autenticacion/consultas"
+    schema: "migraciones"
+    gen:
+      go:
+        package: "generado"
+        out: "internal/autenticacion/generado"
+        sql_package: "pgx/v5"
+  - engine: "postgresql"
+    queries: "internal/academico/consultas"
+    schema: "migraciones"
+    gen:
+      go:
+        package: "generado"
+        out: "internal/academico/generado"
+        sql_package: "pgx/v5"
+  - engine: "postgresql"
+    queries: "internal/plataforma/auditoria/consultas"
+    schema: "migraciones"
+    gen:
+      go:
+        package: "generado"
+        out: "internal/plataforma/auditoria/generado"
+        sql_package: "pgx/v5"
+  - engine: "postgresql"
+    queries: "internal/plataforma/intermediarios/consultas"
+    schema: "migraciones"
+    gen:
+      go:
+        package: "generado"
+        out: "internal/plataforma/intermediarios/generado"
+        sql_package: "pgx/v5"
+  - engine: "postgresql"
+    queries: "internal/alumnos/consultas"
+    schema: "migraciones"
+    gen:
+      go:
+        package: "generado"
+        out: "internal/alumnos/generado"
+        sql_package: "pgx/v5"

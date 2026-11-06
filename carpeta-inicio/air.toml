@@ -1,0 +1,10 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/servidor ./cmd/servidor"
+  bin = "./tmp/servidor"
+  include_ext = ["go", "templ", "sql"]
+  exclude_dir = ["tmp", "datos", "pruebas/e2e/node_modules"]
+  exclude_regex = ["_test.go", "_templ.go"]
+  delay = 500
