@@ -185,11 +185,16 @@ LEFT JOIN LATERAL (
 WHERE an.estado = 'activo'
 ORDER BY an.nombre DESC, g.nombre, s.nombre;
 
--- name: CrearHorarioTurno :one
+-- name: GuardarHorarioTurno :one
 INSERT INTO horarios_turno (
     turno, hora_ingreso, tolerancia_minutos, hora_limite_tardanza, hora_cierre, vigente_desde
 )
 VALUES ($1, $2, $3, $4, $5, $6)
+ON CONFLICT (turno, vigente_desde) DO UPDATE SET
+    hora_ingreso = EXCLUDED.hora_ingreso,
+    tolerancia_minutos = EXCLUDED.tolerancia_minutos,
+    hora_limite_tardanza = EXCLUDED.hora_limite_tardanza,
+    hora_cierre = EXCLUDED.hora_cierre
 RETURNING id;
 
 -- name: HorarioTurnoVigente :one

@@ -28,6 +28,7 @@ var (
 	ErrGradoNoEncontrado   = errors.New("el grado no existe")
 	ErrGradoExistente      = errors.New("ya existe un grado con ese nombre en el año")
 	ErrSeccionExistente    = errors.New("ya existe una sección con ese nombre en el grado")
+	ErrHorarioNoEncontrado = errors.New("no hay un horario vigente para ese turno en la fecha")
 )
 
 // Reloj devuelve la fecha y hora actuales. Se inyecta en los servicios y en las pruebas.
@@ -413,6 +414,124 @@ func (s *ServicioConfiguracion) CambiarTurno(ctx context.Context, usuarioID, sec
 			},
 		})
 	})
+}
+
+// ConfigurarHorario registra un horario de turno con su vigencia y lo audita.
+func (s *ServicioConfiguracion) ConfigurarHorario(ctx context.Context, usuarioID int64, horario HorarioTurno) error {
+	if err := ValidarHorarioConVigencia(horario, s.reloj()); err != nil {
+		return err
+	}
+
+	return s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
+		if _, err := db.Exec(ctx, "SELECT pg_advisory_xact_lock(hashtext('horarios_turno'))"); err != nil {
+			return fmt.Errorf("bloqueando la configuración de horarios: %w", err)
+		}
+
+		anio, err := consultas.BuscarAnioActivo(ctx)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrAnioNoEncontrado
+		}
+		if err != nil {
+			return fmt.Errorf("buscando el año escolar activo: %w", err)
+		}
+		if anio.Estado == EstadoAnioCerrado {
+			return ErrAnioCerrado
+		}
+
+		anterior, err := consultas.HorarioTurnoVigente(ctx, generado.HorarioTurnoVigenteParams{
+			Turno:        horario.Turno,
+			VigenteDesde: parametroFecha(horario.VigenteDesde),
+		})
+		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+			return fmt.Errorf("buscando el horario anterior: %w", err)
+		}
+		valorAnterior := any(nil)
+		if err == nil {
+			anteriorConvertido, err := aHorarioTurno(anterior)
+			if err != nil {
+				return err
+			}
+			valorAnterior = mapaHorario(anteriorConvertido)
+		}
+
+		otroTurno := TurnoTarde
+		if horario.Turno == TurnoTarde {
+			otroTurno = TurnoManana
+		}
+		otroHorario, err := consultas.HorarioTurnoVigente(ctx, generado.HorarioTurnoVigenteParams{
+			Turno:        otroTurno,
+			VigenteDesde: parametroFecha(horario.VigenteDesde),
+		})
+		if err == nil {
+			otroConvertido, err := aHorarioTurno(otroHorario)
+			if err != nil {
+				return err
+			}
+			if err := ValidarSuperposicionHorarios(horario, otroConvertido); err != nil {
+				return err
+			}
+		} else if !errors.Is(err, pgx.ErrNoRows) {
+			return fmt.Errorf("buscando el horario del otro turno: %w", err)
+		}
+
+		if _, err := consultas.GuardarHorarioTurno(ctx, generado.GuardarHorarioTurnoParams{
+			Turno:              horario.Turno,
+			HoraIngreso:        parametroHora(horario.HoraIngreso),
+			ToleranciaMinutos:  int32(horario.ToleranciaMinutos),
+			HoraLimiteTardanza: parametroHora(horario.HoraLimiteTardanza),
+			HoraCierre:         parametroHora(horario.HoraCierre),
+			VigenteDesde:       parametroFecha(horario.VigenteDesde),
+		}); err != nil {
+			return fmt.Errorf("guardando el horario del turno: %w", err)
+		}
+
+		return auditoria.Registrar(ctx, db, auditoria.Evento{
+			UsuarioID:     usuarioID,
+			Entidad:       EntidadTurno,
+			EntidadID:     anio.ID,
+			Accion:        AccionConfigurarHorario,
+			ValorAnterior: valorAnterior,
+			ValorNuevo:    mapaHorario(horario),
+		})
+	})
+}
+
+// HorarioVigente devuelve el horario de un turno en la fecha indicada.
+func (s *ServicioConfiguracion) HorarioVigente(ctx context.Context, turno string, fecha time.Time) (HorarioTurno, error) {
+	if err := ValidarTurno(turno); err != nil {
+		return HorarioTurno{}, err
+	}
+	horario, err := s.repositorio.HorarioTurnoVigente(ctx, turno, fecha)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return HorarioTurno{}, ErrHorarioNoEncontrado
+	}
+	if err != nil {
+		return HorarioTurno{}, fmt.Errorf("buscando el horario del turno: %w", err)
+	}
+	return horario, nil
+}
+
+// ListarHorarios devuelve la historia de horarios de un turno.
+func (s *ServicioConfiguracion) ListarHorarios(ctx context.Context, turno string) ([]HorarioTurno, error) {
+	if err := ValidarTurno(turno); err != nil {
+		return nil, err
+	}
+	horarios, err := s.repositorio.ListarHorariosTurno(ctx, turno)
+	if err != nil {
+		return nil, fmt.Errorf("listando los horarios del turno: %w", err)
+	}
+	return horarios, nil
+}
+
+func mapaHorario(horario HorarioTurno) map[string]any {
+	return map[string]any{
+		"turno":                horario.Turno,
+		"hora_ingreso":         fechas.FormatearHora(horario.HoraIngreso),
+		"tolerancia_minutos":   horario.ToleranciaMinutos,
+		"hora_limite_tardanza": fechas.FormatearHora(horario.HoraLimiteTardanza),
+		"hora_cierre":          fechas.FormatearHora(horario.HoraCierre),
+		"vigente_desde":        fechas.FormatearISO(horario.VigenteDesde),
+	}
 }
 
 func esViolacionUnica(err error) bool {

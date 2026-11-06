@@ -24,3 +24,13 @@ type SeccionVista struct {
 	Nombre string
 	Turno  string
 }
+
+// HorarioVista es un horario de turno preparado para mostrarse en la interfaz.
+type HorarioVista struct {
+	Turno              string
+	HoraIngreso        string
+	ToleranciaMinutos  int
+	HoraLimiteTardanza string
+	HoraCierre         string
+	VigenteDesde       time.Time
+}

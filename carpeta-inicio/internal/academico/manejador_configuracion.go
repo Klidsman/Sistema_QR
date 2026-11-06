@@ -26,6 +26,9 @@ type ServicioAcademico interface {
 	ListarGrados(ctx context.Context, anioID int64) ([]Grado, error)
 	ListarSecciones(ctx context.Context, anioID int64) ([]Seccion, error)
 	ListarTurnosSeccion(ctx context.Context, seccionID int64) ([]TurnoSeccion, error)
+	HorarioVigente(ctx context.Context, turno string, fecha time.Time) (HorarioTurno, error)
+	ListarHorarios(ctx context.Context, turno string) ([]HorarioTurno, error)
+	ConfigurarHorario(ctx context.Context, usuarioID int64, horario HorarioTurno) error
 	CrearAnio(ctx context.Context, usuarioID int64, datos DatosAnio) (int64, error)
 	CerrarAnio(ctx context.Context, usuarioID, anioID int64) error
 	CrearGrado(ctx context.Context, usuarioID int64, datos DatosGrado) (int64, error)
@@ -65,6 +68,13 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Get("/configuracion/anio", m.anio)
 		lectura.Get("/configuracion/grados", m.grados)
 		lectura.Get("/configuracion/secciones", m.secciones)
+		lectura.Get("/configuracion/turnos", m.turnos)
+	})
+
+	enrutador.Group(func(edicionTurnos chi.Router) {
+		edicionTurnos.Use(intermediarios.RequerirRolConEscritura(m.sesiones,
+			intermediarios.RolAdministrador, intermediarios.RolDirector))
+		edicionTurnos.Post("/configuracion/turnos/{turno}", m.configurarHorario)
 	})
 
 	enrutador.Group(func(escritura chi.Router) {
@@ -197,6 +207,147 @@ func (m *Manejador) cambiarTurno(respuesta http.ResponseWriter, peticion *http.R
 		return
 	}
 	http.Redirect(respuesta, peticion, "/configuracion/secciones?ok=turno", http.StatusSeeOther)
+}
+
+func (m *Manejador) turnos(respuesta http.ResponseWriter, peticion *http.Request) {
+	m.renderizarTurnos(respuesta, peticion, http.StatusOK, "", peticion.URL.Query().Get("ok"))
+}
+
+func (m *Manejador) configurarHorario(respuesta http.ResponseWriter, peticion *http.Request) {
+	turno := chi.URLParam(peticion, "turno")
+	horario, err := horarioDeFormulario(peticion, turno)
+	if err != nil {
+		m.renderizarTurnos(respuesta, peticion, http.StatusUnprocessableEntity, mensajeDeError(err), "")
+		return
+	}
+	if err := m.configuracion.ConfigurarHorario(peticion.Context(), m.usuarioID(peticion.Context()), horario); err != nil {
+		m.renderizarTurnos(respuesta, peticion, http.StatusUnprocessableEntity, mensajeDeError(err), "")
+		return
+	}
+	http.Redirect(respuesta, peticion, "/configuracion/turnos?ok=horario", http.StatusSeeOther)
+}
+
+func (m *Manejador) renderizarTurnos(respuesta http.ResponseWriter, peticion *http.Request, estado int, mensajeError, codigoCorrecto string) {
+	ctx := peticion.Context()
+	activo, err := m.configuracion.AnioActivo(ctx)
+	if err != nil {
+		m.registro.Error("no se pudo buscar el año activo", "error", err)
+		http.Error(respuesta, "No se pudo cargar la configuración", http.StatusInternalServerError)
+		return
+	}
+
+	hoy := fechas.Hoy()
+	var manana, tarde *HorarioTurno
+	var historial []HorarioTurno
+	if activo != nil {
+		manana, err = m.horarioVigente(ctx, TurnoManana, hoy)
+		if err != nil {
+			m.registro.Error("no se pudo cargar el horario de mañana", "error", err)
+			http.Error(respuesta, "No se pudo cargar la configuración", http.StatusInternalServerError)
+			return
+		}
+		tarde, err = m.horarioVigente(ctx, TurnoTarde, hoy)
+		if err != nil {
+			m.registro.Error("no se pudo cargar el horario de tarde", "error", err)
+			http.Error(respuesta, "No se pudo cargar la configuración", http.StatusInternalServerError)
+			return
+		}
+		for _, turno := range Turnos() {
+			horarios, err := m.configuracion.ListarHorarios(ctx, turno)
+			if err != nil {
+				m.registro.Error("no se pudo listar el historial de horarios", "error", err)
+				http.Error(respuesta, "No se pudo cargar la configuración", http.StatusInternalServerError)
+				return
+			}
+			historial = append(historial, horarios...)
+		}
+	}
+
+	m.renderizar(respuesta, peticion, estado, vista.Turnos(
+		m.nombreUsuario(ctx),
+		intermediarios.RolUsuario(ctx),
+		m.tokenCSRF(ctx),
+		aAnioVista(activo),
+		aHorarioVista(manana),
+		aHorarioVista(tarde),
+		aHorariosVista(historial),
+		mensajeCorrectoHorario(codigoCorrecto),
+		mensajeError,
+	))
+}
+
+func (m *Manejador) horarioVigente(ctx context.Context, turno string, fecha time.Time) (*HorarioTurno, error) {
+	horario, err := m.configuracion.HorarioVigente(ctx, turno, fecha)
+	if errors.Is(err, ErrHorarioNoEncontrado) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &horario, nil
+}
+
+func horarioDeFormulario(peticion *http.Request, turno string) (HorarioTurno, error) {
+	if err := ValidarTurno(turno); err != nil {
+		return HorarioTurno{}, err
+	}
+	ingreso, err := fechas.ParsearHora(peticion.PostFormValue("hora_ingreso"))
+	if err != nil {
+		return HorarioTurno{}, err
+	}
+	tolerancia, err := strconv.Atoi(strings.TrimSpace(peticion.PostFormValue("tolerancia_minutos")))
+	if err != nil {
+		return HorarioTurno{}, ErrToleranciaInvalida
+	}
+	limite, err := fechas.ParsearHora(peticion.PostFormValue("hora_limite_tardanza"))
+	if err != nil {
+		return HorarioTurno{}, err
+	}
+	cierre, err := fechas.ParsearHora(peticion.PostFormValue("hora_cierre"))
+	if err != nil {
+		return HorarioTurno{}, err
+	}
+	vigenteDesde, err := fechas.ParsearDia(peticion.PostFormValue("vigente_desde"))
+	if err != nil {
+		return HorarioTurno{}, err
+	}
+	return HorarioTurno{
+		Turno:              turno,
+		HoraIngreso:        ingreso,
+		ToleranciaMinutos:  tolerancia,
+		HoraLimiteTardanza: limite,
+		HoraCierre:         cierre,
+		VigenteDesde:       vigenteDesde,
+	}, nil
+}
+
+func mensajeCorrectoHorario(codigo string) string {
+	if codigo == "horario" {
+		return "El horario del turno se guardó correctamente."
+	}
+	return ""
+}
+
+func aHorarioVista(horario *HorarioTurno) *vista.HorarioVista {
+	if horario == nil {
+		return nil
+	}
+	return &vista.HorarioVista{
+		Turno:              horario.Turno,
+		HoraIngreso:        fechas.FormatearHora(horario.HoraIngreso),
+		ToleranciaMinutos:  horario.ToleranciaMinutos,
+		HoraLimiteTardanza: fechas.FormatearHora(horario.HoraLimiteTardanza),
+		HoraCierre:         fechas.FormatearHora(horario.HoraCierre),
+		VigenteDesde:       horario.VigenteDesde,
+	}
+}
+
+func aHorariosVista(horarios []HorarioTurno) []vista.HorarioVista {
+	resultado := make([]vista.HorarioVista, 0, len(horarios))
+	for i := range horarios {
+		resultado = append(resultado, *aHorarioVista(&horarios[i]))
+	}
+	return resultado
 }
 
 func (m *Manejador) renderizarAnio(respuesta http.ResponseWriter, peticion *http.Request, estado int, mensajeError, codigoCorrecto, nombre string) {
@@ -380,6 +531,20 @@ func mensajeDeError(err error) string {
 		return "El nombre de la sección debe tener entre 1 y 10 caracteres."
 	case errors.Is(err, ErrTurnoInvalido):
 		return "El turno debe ser mañana o tarde."
+	case errors.Is(err, ErrHorarioNoEncontrado):
+		return "No hay un horario vigente para ese turno en la fecha."
+	case errors.Is(err, ErrToleranciaInvalida):
+		return "La tolerancia debe estar entre 0 y 120 minutos."
+	case errors.Is(err, ErrCierreNoPosterior):
+		return "La hora de cierre debe ser posterior a la hora límite de tardanza."
+	case errors.Is(err, ErrToleranciaExcedida):
+		return "La hora de ingreso más la tolerancia no puede superar la hora límite de tardanza."
+	case errors.Is(err, ErrHorarioFueraDeOrden):
+		return "Las horas del turno deben ir de ingreso a límite de tardanza y a cierre."
+	case errors.Is(err, ErrCruzaMedianoche):
+		return "Los horarios deben estar dentro del mismo día."
+	case errors.Is(err, ErrHorariosSuperpuestos):
+		return "Los horarios de mañana y tarde se superponen."
 	default:
 		return "No se pudo guardar el cambio. Revise los datos e intente de nuevo."
 	}

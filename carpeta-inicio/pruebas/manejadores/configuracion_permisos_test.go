@@ -18,15 +18,18 @@ import (
 )
 
 type configuracionFalsa struct {
-	resumen      academico.ResumenConfiguracion
-	err          error
-	grados       []academico.Grado
-	secciones    []academico.Seccion
-	crearAnio    func(academico.DatosAnio) (int64, error)
-	crearGrado   func(academico.DatosGrado) (int64, error)
-	crearSeccion func(academico.DatosSeccion) (int64, error)
-	cambiarTurno func(int64, string, time.Time) error
-	cerrarAnio   func() error
+	resumen           academico.ResumenConfiguracion
+	err               error
+	grados            []academico.Grado
+	secciones         []academico.Seccion
+	crearAnio         func(academico.DatosAnio) (int64, error)
+	crearGrado        func(academico.DatosGrado) (int64, error)
+	crearSeccion      func(academico.DatosSeccion) (int64, error)
+	cambiarTurno      func(int64, string, time.Time) error
+	cerrarAnio        func() error
+	horarios          map[string]academico.HorarioTurno
+	historial         map[string][]academico.HorarioTurno
+	configurarHorario func(academico.HorarioTurno) error
 }
 
 func (c configuracionFalsa) Resumen(_ context.Context) (academico.ResumenConfiguracion, error) {
@@ -51,6 +54,24 @@ func (c configuracionFalsa) ListarSecciones(_ context.Context, _ int64) ([]acade
 
 func (c configuracionFalsa) ListarTurnosSeccion(_ context.Context, _ int64) ([]academico.TurnoSeccion, error) {
 	return nil, c.err
+}
+
+func (c configuracionFalsa) HorarioVigente(_ context.Context, turno string, _ time.Time) (academico.HorarioTurno, error) {
+	if horario, existe := c.horarios[turno]; existe {
+		return horario, nil
+	}
+	return academico.HorarioTurno{}, academico.ErrHorarioNoEncontrado
+}
+
+func (c configuracionFalsa) ListarHorarios(_ context.Context, turno string) ([]academico.HorarioTurno, error) {
+	return c.historial[turno], c.err
+}
+
+func (c configuracionFalsa) ConfigurarHorario(_ context.Context, _ int64, horario academico.HorarioTurno) error {
+	if c.configurarHorario != nil {
+		return c.configurarHorario(horario)
+	}
+	return c.err
 }
 
 func (c configuracionFalsa) CrearAnio(_ context.Context, _ int64, datos academico.DatosAnio) (int64, error) {

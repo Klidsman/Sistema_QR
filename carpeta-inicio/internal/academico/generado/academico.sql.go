@@ -532,37 +532,6 @@ func (q *Queries) CrearGrado(ctx context.Context, arg CrearGradoParams) (int64, 
 	return id, err
 }
 
-const crearHorarioTurno = `-- name: CrearHorarioTurno :one
-INSERT INTO horarios_turno (
-    turno, hora_ingreso, tolerancia_minutos, hora_limite_tardanza, hora_cierre, vigente_desde
-)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id
-`
-
-type CrearHorarioTurnoParams struct {
-	Turno              string
-	HoraIngreso        pgtype.Time
-	ToleranciaMinutos  int32
-	HoraLimiteTardanza pgtype.Time
-	HoraCierre         pgtype.Time
-	VigenteDesde       pgtype.Date
-}
-
-func (q *Queries) CrearHorarioTurno(ctx context.Context, arg CrearHorarioTurnoParams) (int64, error) {
-	row := q.db.QueryRow(ctx, crearHorarioTurno,
-		arg.Turno,
-		arg.HoraIngreso,
-		arg.ToleranciaMinutos,
-		arg.HoraLimiteTardanza,
-		arg.HoraCierre,
-		arg.VigenteDesde,
-	)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
-}
-
 const crearSeccion = `-- name: CrearSeccion :one
 INSERT INTO secciones (grado_id, nombre)
 VALUES ($1, $2)
@@ -676,6 +645,42 @@ func (q *Queries) GradoDeSeccion(ctx context.Context, id int64) (int64, error) {
 	var id_2 int64
 	err := row.Scan(&id_2)
 	return id_2, err
+}
+
+const guardarHorarioTurno = `-- name: GuardarHorarioTurno :one
+INSERT INTO horarios_turno (
+    turno, hora_ingreso, tolerancia_minutos, hora_limite_tardanza, hora_cierre, vigente_desde
+)
+VALUES ($1, $2, $3, $4, $5, $6)
+ON CONFLICT (turno, vigente_desde) DO UPDATE SET
+    hora_ingreso = EXCLUDED.hora_ingreso,
+    tolerancia_minutos = EXCLUDED.tolerancia_minutos,
+    hora_limite_tardanza = EXCLUDED.hora_limite_tardanza,
+    hora_cierre = EXCLUDED.hora_cierre
+RETURNING id
+`
+
+type GuardarHorarioTurnoParams struct {
+	Turno              string
+	HoraIngreso        pgtype.Time
+	ToleranciaMinutos  int32
+	HoraLimiteTardanza pgtype.Time
+	HoraCierre         pgtype.Time
+	VigenteDesde       pgtype.Date
+}
+
+func (q *Queries) GuardarHorarioTurno(ctx context.Context, arg GuardarHorarioTurnoParams) (int64, error) {
+	row := q.db.QueryRow(ctx, guardarHorarioTurno,
+		arg.Turno,
+		arg.HoraIngreso,
+		arg.ToleranciaMinutos,
+		arg.HoraLimiteTardanza,
+		arg.HoraCierre,
+		arg.VigenteDesde,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const horarioSeccionCelda = `-- name: HorarioSeccionCelda :one

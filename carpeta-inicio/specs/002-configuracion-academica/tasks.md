@@ -120,18 +120,18 @@
 
 ### Pruebas
 
-- [ ] T043 [P] [US2] Escribir pruebas unitarias de configuración de horarios en `pruebas/unidad/horarios_turno_test.go`, incluida la fecha de vigencia anterior a hoy
-- [ ] T044 [P] [US2] Escribir pruebas de integración de versionado y consulta por fecha de `horarios_turno` en `pruebas/integracion/horarios_turno_test.go`
+- [X] T043 [P] [US2] Escribir pruebas unitarias de configuración de horarios en `pruebas/unidad/horarios_turno_test.go`, incluida la fecha de vigencia anterior a hoy
+- [X] T044 [P] [US2] Escribir pruebas de integración de versionado y consulta por fecha de `horarios_turno` en `pruebas/integracion/horarios_turno_test.go`
 
 ### Implementación
 
-- [ ] T045 [US2] Implementar `ConfigurarHorario`, `HorarioVigente` y `ListarHorarios` en `internal/academico/servicio_configuracion.go`, con validación de superposición entre turnos y bloqueo `pg_advisory_xact_lock`
-- [ ] T046 [US2] Implementar el manejador `GET /configuracion/turnos` y `POST /configuracion/turnos/{turno}` en `internal/academico/manejador_configuracion.go`
-- [ ] T047 [US2] Crear la plantilla `turnos.templ` en `web/plantillas/configuracion/` con valores vigentes, versión programada e historia
-- [ ] T048 [US2] Permitir el `POST` de turnos al director y mantener el resto de escrituras solo para administrador en `internal/plataforma/intermediarios/roles.go`
-- [ ] T049 [US2] Registrar la auditoría de `configurar_horario` con valor anterior, valor nuevo y `vigente_desde`
-- [ ] T050 [US2] Escribir las pruebas de manejadores de US2 en `pruebas/manejadores/configuracion_turnos_test.go`: validaciones 422, director 200, administrador 200
-- [ ] T051 [US2] Escribir la prueba E2E de US2 en `pruebas/e2e/configuracion_turnos_test.spec.ts`
+- [X] T045 [US2] Implementar `ConfigurarHorario`, `HorarioVigente` y `ListarHorarios` en `internal/academico/servicio_configuracion.go`, con validación de superposición entre turnos y bloqueo `pg_advisory_xact_lock`
+- [X] T046 [US2] Implementar el manejador `GET /configuracion/turnos` y `POST /configuracion/turnos/{turno}` en `internal/academico/manejador_configuracion.go`
+- [X] T047 [US2] Crear la plantilla `turnos.templ` en `web/plantillas/configuracion/` con valores vigentes, versión programada e historia
+- [X] T048 [US2] Permitir el `POST` de turnos al director y mantener el resto de escrituras solo para administrador en `internal/plataforma/intermediarios/roles.go`
+- [X] T049 [US2] Registrar la auditoría de `configurar_horario` con valor anterior, valor nuevo y `vigente_desde`
+- [X] T050 [US2] Escribir las pruebas de manejadores de US2 en `pruebas/manejadores/configuracion_turnos_test.go`: validaciones 422, director 200, administrador 200
+- [X] T051 [US2] Escribir la prueba E2E de US2 en `pruebas/e2e/configuracion_turnos_test.spec.ts`
 
 **Punto de control**: horarios versionados con permisos correctos.
 

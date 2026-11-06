@@ -7,9 +7,9 @@ import (
 	"asistencia/internal/academico/generado"
 )
 
-// CrearHorarioTurno registra una versión del horario de un turno.
-func (r *RepositorioConfiguracion) CrearHorarioTurno(ctx context.Context, horario HorarioTurno) (int64, error) {
-	return r.consultas.CrearHorarioTurno(ctx, generado.CrearHorarioTurnoParams{
+// GuardarHorarioTurno registra o reemplaza la versión del horario de un turno.
+func (r *RepositorioConfiguracion) GuardarHorarioTurno(ctx context.Context, horario HorarioTurno) (int64, error) {
+	return r.consultas.GuardarHorarioTurno(ctx, generado.GuardarHorarioTurnoParams{
 		Turno:              horario.Turno,
 		HoraIngreso:        parametroHora(horario.HoraIngreso),
 		ToleranciaMinutos:  int32(horario.ToleranciaMinutos),

@@ -69,6 +69,16 @@ func RolUsuario(ctx context.Context) string {
 // RequerirRol exige una sesión iniciada con uno de los roles indicados.
 // El director solo puede usar métodos de lectura, sin importar la ruta.
 func RequerirRol(sesiones *scs.SessionManager, roles ...string) func(http.Handler) http.Handler {
+	return requerirRol(sesiones, false, roles...)
+}
+
+// RequerirRolConEscritura permite al director usar métodos que cambian estado.
+// Solo debe aplicarse a las rutas que la especificación autoriza expresamente.
+func RequerirRolConEscritura(sesiones *scs.SessionManager, roles ...string) func(http.Handler) http.Handler {
+	return requerirRol(sesiones, true, roles...)
+}
+
+func requerirRol(sesiones *scs.SessionManager, permitirEscrituraDirector bool, roles ...string) func(http.Handler) http.Handler {
 	permitidos := make(map[string]bool, len(roles))
 	for _, rol := range roles {
 		permitidos[rol] = true
@@ -88,7 +98,7 @@ func RequerirRol(sesiones *scs.SessionManager, roles ...string) func(http.Handle
 				http.Error(respuesta, "No tiene permiso para esta acción", http.StatusForbidden)
 				return
 			}
-			if rol == RolDirector && !metodoSeguro(peticion.Method) {
+			if rol == RolDirector && !permitirEscrituraDirector && !metodoSeguro(peticion.Method) {
 				http.Error(respuesta, "No tiene permiso para esta acción", http.StatusForbidden)
 				return
 			}

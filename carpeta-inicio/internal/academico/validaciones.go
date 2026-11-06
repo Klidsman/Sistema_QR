@@ -102,6 +102,14 @@ func ValidarHorarioTurno(horario HorarioTurno) error {
 	return nil
 }
 
+// ValidarHorarioConVigencia aplica las reglas del horario y de la fecha de vigencia.
+func ValidarHorarioConVigencia(horario HorarioTurno, hoy time.Time) error {
+	if err := ValidarHorarioTurno(horario); err != nil {
+		return err
+	}
+	return ValidarVigencia(horario.VigenteDesde, hoy)
+}
+
 // ValidarSuperposicionHorarios rechaza dos turnos cuyas ventanas de tiempo se cruzan.
 func ValidarSuperposicionHorarios(primero, segundo HorarioTurno) error {
 	empiezaAntes := fechas.CompararHoras(primero.HoraIngreso, segundo.HoraCierre) < 0
