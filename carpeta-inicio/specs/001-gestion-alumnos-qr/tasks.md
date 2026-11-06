@@ -32,14 +32,14 @@ entregar cada historia por separado.
 
 **Propósito**: estructura base, herramientas y entorno local.
 
-- [ ] T001 Crear `go.mod` con el módulo del proyecto y la versión estable de Go en `go.mod`
-- [ ] T002 Crear la estructura de carpetas de `cmd/servidor`, `internal/`, `migraciones/`, `web/`, `pruebas/` y `docs/`
-- [ ] T003 [P] Crear `Makefile` con los objetivos `ejecutar`, `migrar`, `probar`, `lint` y `e2e` en `Makefile`
-- [ ] T004 [P] Crear `.env.ejemplo` con `BASE_DATOS_URL`, `PUERTO`, `CLAVE_SESION`, `CARNET_ANCHO_MM`, `CARNET_ALTO_MM`, `FOTO_TAMANIO_MAXIMO_MB`, `IMPORTACION_MAX_FILAS` y `ALMACENAMIENTO_TIPO` en `.env.ejemplo`
-- [ ] T005 [P] Crear `docker-compose.yml` con el servicio PostgreSQL para desarrollo en `docker-compose.yml`
-- [ ] T006 [P] Configurar golangci-lint en `.golangci.yml`
-- [ ] T007 [P] Crear `docs/glosario.md` con los términos de la constitución (alumno, seccion, grado, marcacion, token_qr, rol, etc.)
-- [ ] T008 Crear `air.toml` para la recarga en desarrollo en `air.toml`
+- [X] T001 Crear `go.mod` con el módulo del proyecto y la versión estable de Go en `go.mod`
+- [X] T002 Crear la estructura de carpetas de `cmd/servidor`, `internal/`, `migraciones/`, `web/`, `pruebas/` y `docs/`
+- [X] T003 [P] Crear `Makefile` con los objetivos `ejecutar`, `migrar`, `probar`, `lint` y `e2e` en `Makefile`
+- [X] T004 [P] Crear `.env.ejemplo` con `BASE_DATOS_URL`, `PUERTO`, `CLAVE_SESION`, `CARNET_ANCHO_MM`, `CARNET_ALTO_MM`, `FOTO_TAMANIO_MAXIMO_MB`, `IMPORTACION_MAX_FILAS` y `ALMACENAMIENTO_TIPO` en `.env.ejemplo`
+- [X] T005 [P] Crear `docker-compose.yml` con el servicio PostgreSQL para desarrollo en `docker-compose.yml`
+- [X] T006 [P] Configurar golangci-lint en `.golangci.yml`
+- [X] T007 [P] Crear `docs/glosario.md` con los términos de la constitución (alumno, seccion, grado, marcacion, token_qr, rol, etc.)
+- [X] T008 Crear `air.toml` para la recarga en desarrollo en `air.toml`
 
 ---
 
@@ -49,18 +49,18 @@ entregar cada historia por separado.
 
 ### Configuración, base de datos y registro
 
-- [ ] T009 [P] Escribir prueba unitaria de validación de configuración (variables obligatorias, valores fuera de rango) en `pruebas/unidad/configuracion_test.go`
-- [ ] T010 Implementar carga y validación de configuración al iniciar en `internal/plataforma/configuracion/configuracion.go`
-- [ ] T011 Implementar conexión y pool de PostgreSQL con pgx en `internal/plataforma/basedatos/conexion.go`
-- [ ] T012 [P] Implementar registro estructurado con slog y mensajes en español en `internal/plataforma/registro/registro.go`
-- [ ] T013 Implementar endpoint `/salud` que verifica la aplicación y la base de datos en `internal/plataforma/salud/manejador.go`
+- [X] T009 [P] Escribir prueba unitaria de validación de configuración (variables obligatorias, valores fuera de rango) en `pruebas/unidad/configuracion_test.go`
+- [X] T010 Implementar carga y validación de configuración al iniciar en `internal/plataforma/configuracion/configuracion.go`
+- [X] T011 Implementar conexión y pool de PostgreSQL con pgx en `internal/plataforma/basedatos/conexion.go`
+- [X] T012 [P] Implementar registro estructurado con slog y mensajes en español en `internal/plataforma/registro/registro.go`
+- [X] T013 Implementar endpoint `/salud` que verifica la aplicación y la base de datos en `internal/plataforma/salud/manejador.go`
 
 ### Migraciones base
 
-- [ ] T014 Crear migración `0001_crear_tabla_usuarios.sql` en `migraciones/0001_crear_tabla_usuarios.sql`
-- [ ] T015 Crear migración `0002_crear_tablas_academicas.sql` con `anios_escolares`, `grados` y `secciones` en `migraciones/0002_crear_tablas_academicas.sql`
-- [ ] T016 Crear migración `0007_crear_tabla_auditoria.sql` con la tabla y el disparador que bloquea `UPDATE` y `DELETE` en `migraciones/0007_crear_tabla_auditoria.sql`
-- [ ] T017 Configurar sqlc con consultas en español en `sqlc.yaml` y `internal/plataforma/basedatos/consultas/`
+- [X] T014 Crear migración `0001_crear_tabla_usuarios.sql` en `migraciones/0001_crear_tabla_usuarios.sql`
+- [X] T015 Crear migración `0002_crear_tablas_academicas.sql` con `anios_escolares`, `grados` y `secciones` en `migraciones/0002_crear_tablas_academicas.sql`
+- [X] T016 Crear migración `0007_crear_tabla_auditoria.sql` con la tabla y el disparador que bloquea `UPDATE` y `DELETE` en `migraciones/0007_crear_tabla_auditoria.sql`
+- [X] T017 Configurar sqlc con consultas en español en `sqlc.yaml` y `internal/plataforma/basedatos/consultas/`
 
 ### Auditoría y almacenamiento
 
