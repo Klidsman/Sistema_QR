@@ -170,7 +170,7 @@ func ValidarUmbral(tipo string, valor int) error {
 	if !TipoUmbralValido(tipo) {
 		return ErrTipoInvalido
 	}
-	if valor <= 0 {
+	if valor <= 0 || valor > 100 {
 		return ErrValorUmbralInvalido
 	}
 	return nil

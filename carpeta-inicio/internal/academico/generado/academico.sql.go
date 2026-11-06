@@ -562,31 +562,6 @@ func (q *Queries) CrearTurnoSeccion(ctx context.Context, arg CrearTurnoSeccionPa
 	return id, err
 }
 
-const crearUmbralAlerta = `-- name: CrearUmbralAlerta :one
-INSERT INTO umbrales_alerta (anio_escolar_id, tipo, valor, vigente_desde)
-VALUES ($1, $2, $3, $4)
-RETURNING id
-`
-
-type CrearUmbralAlertaParams struct {
-	AnioEscolarID int64
-	Tipo          string
-	Valor         int32
-	VigenteDesde  pgtype.Date
-}
-
-func (q *Queries) CrearUmbralAlerta(ctx context.Context, arg CrearUmbralAlertaParams) (int64, error) {
-	row := q.db.QueryRow(ctx, crearUmbralAlerta,
-		arg.AnioEscolarID,
-		arg.Tipo,
-		arg.Valor,
-		arg.VigenteDesde,
-	)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
-}
-
 const cursoVinculadoAGrado = `-- name: CursoVinculadoAGrado :one
 SELECT EXISTS (
     SELECT 1
@@ -757,6 +732,32 @@ func (q *Queries) GuardarHorarioTurno(ctx context.Context, arg GuardarHorarioTur
 		arg.ToleranciaMinutos,
 		arg.HoraLimiteTardanza,
 		arg.HoraCierre,
+		arg.VigenteDesde,
+	)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
+}
+
+const guardarUmbralAlerta = `-- name: GuardarUmbralAlerta :one
+INSERT INTO umbrales_alerta (anio_escolar_id, tipo, valor, vigente_desde)
+VALUES ($1, $2, $3, $4)
+ON CONFLICT (anio_escolar_id, tipo, vigente_desde) DO UPDATE SET valor = EXCLUDED.valor
+RETURNING id
+`
+
+type GuardarUmbralAlertaParams struct {
+	AnioEscolarID int64
+	Tipo          string
+	Valor         int32
+	VigenteDesde  pgtype.Date
+}
+
+func (q *Queries) GuardarUmbralAlerta(ctx context.Context, arg GuardarUmbralAlertaParams) (int64, error) {
+	row := q.db.QueryRow(ctx, guardarUmbralAlerta,
+		arg.AnioEscolarID,
+		arg.Tipo,
+		arg.Valor,
 		arg.VigenteDesde,
 	)
 	var id int64

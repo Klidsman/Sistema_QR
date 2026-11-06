@@ -39,6 +39,9 @@ type ServicioAcademico interface {
 	GuardarCeldas(ctx context.Context, usuarioID, seccionID int64, fecha time.Time, cambios []CambioCelda, confirmar bool) error
 	ListarExcepciones(ctx context.Context, anioID int64) ([]ExcepcionCalendario, error)
 	RegistrarExcepcion(ctx context.Context, usuarioID int64, datos DatosExcepcion, confirmar bool) (int64, error)
+	UmbralesVigentes(ctx context.Context, anioID int64, fecha time.Time) ([]UmbralAlerta, error)
+	ListarUmbrales(ctx context.Context, anioID int64) ([]UmbralAlerta, error)
+	ConfigurarUmbral(ctx context.Context, usuarioID int64, umbral UmbralAlerta) error
 	CrearAnio(ctx context.Context, usuarioID int64, datos DatosAnio) (int64, error)
 	CerrarAnio(ctx context.Context, usuarioID, anioID int64) error
 	CrearGrado(ctx context.Context, usuarioID int64, datos DatosGrado) (int64, error)
@@ -83,6 +86,7 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		lectura.Get("/configuracion/cursos", m.cursos)
 		lectura.Get("/configuracion/horarios", m.horarios)
 		lectura.Get("/configuracion/calendario", m.calendario)
+		lectura.Get("/configuracion/umbrales", m.umbrales)
 	})
 
 	enrutador.Group(func(edicionCompartida chi.Router) {
@@ -104,6 +108,7 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Post("/configuracion/cursos/{id}/desactivacion", m.desactivarCurso)
 		escritura.Post("/configuracion/horarios", m.guardarHorario)
 		escritura.Post("/configuracion/calendario", m.registrarExcepcion)
+		escritura.Post("/configuracion/umbrales", m.configurarUmbral)
 	})
 }
 
@@ -742,6 +747,10 @@ func mensajeDeError(err error) string {
 		return "La celda ya tiene un curso asignado. Confirme el reemplazo para continuar."
 	case errors.Is(err, ErrExcepcionSolapada):
 		return "La excepción se superpone con otra del mismo alcance. Confirme para guardarla de todos modos."
+	case errors.Is(err, ErrValorUmbralInvalido):
+		return "El valor del umbral debe ser un entero entre 1 y 100."
+	case errors.Is(err, ErrTipoInvalido):
+		return "El tipo indicado no es válido."
 	default:
 		return "No se pudo guardar el cambio. Revise los datos e intente de nuevo."
 	}

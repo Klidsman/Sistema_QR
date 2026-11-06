@@ -221,17 +221,17 @@
 
 ### Pruebas
 
-- [ ] T080 [P] [US4] Escribir pruebas unitarias de umbrales en `pruebas/unidad/umbrales_test.go`
-- [ ] T081 [P] [US4] Escribir pruebas de integración de versionado de umbrales en `pruebas/integracion/umbrales_test.go`
+- [X] T080 [P] [US4] Escribir pruebas unitarias de umbrales en `pruebas/unidad/umbrales_test.go`
+- [X] T081 [P] [US4] Escribir pruebas de integración de versionado de umbrales en `pruebas/integracion/umbrales_test.go`
 
 ### Implementación
 
-- [ ] T082 [US4] Implementar `ConfigurarUmbral` y `UmbralesVigentes` en `internal/academico/servicio_calendario.go`
-- [ ] T083 [US4] Implementar las rutas `GET` y `POST /configuracion/umbrales` en `internal/academico/manejador_calendario.go`
-- [ ] T084 [US4] Crear la plantilla `umbrales.templ` en `web/plantillas/configuracion/`
-- [ ] T085 [US4] Registrar la auditoría de `configurar_umbral`
-- [ ] T086 [US4] Escribir las pruebas de manejadores de US4 en `pruebas/manejadores/configuracion_umbrales_test.go`
-- [ ] T087 [US4] Escribir la prueba E2E de US4 en `pruebas/e2e/configuracion_umbrales_test.spec.ts`
+- [X] T082 [US4] Implementar `ConfigurarUmbral` y `UmbralesVigentes` en `internal/academico/servicio_calendario.go`
+- [X] T083 [US4] Implementar las rutas `GET` y `POST /configuracion/umbrales` en `internal/academico/manejador_calendario.go`
+- [X] T084 [US4] Crear la plantilla `umbrales.templ` en `web/plantillas/configuracion/`
+- [X] T085 [US4] Registrar la auditoría de `configurar_umbral`
+- [X] T086 [US4] Escribir las pruebas de manejadores de US4 en `pruebas/manejadores/configuracion_umbrales_test.go`
+- [X] T087 [US4] Escribir la prueba E2E de US4 en `pruebas/e2e/configuracion_umbrales_test.spec.ts`
 
 **Punto de control**: umbrales con vigencia e historia.
 

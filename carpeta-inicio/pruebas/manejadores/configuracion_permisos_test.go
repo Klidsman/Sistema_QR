@@ -40,6 +40,9 @@ type configuracionFalsa struct {
 	guardarCeldas      func(int64, time.Time, []academico.CambioCelda, bool) error
 	excepciones        []academico.ExcepcionCalendario
 	registrarExcepcion func(academico.DatosExcepcion, bool) (int64, error)
+	umbralesVigentes   []academico.UmbralAlerta
+	historialUmbrales  []academico.UmbralAlerta
+	configurarUmbral   func(academico.UmbralAlerta) error
 }
 
 func (c configuracionFalsa) Resumen(_ context.Context) (academico.ResumenConfiguracion, error) {
@@ -140,6 +143,21 @@ func (c configuracionFalsa) RegistrarExcepcion(_ context.Context, _ int64, datos
 		return c.registrarExcepcion(datos, confirmar)
 	}
 	return 1, c.err
+}
+
+func (c configuracionFalsa) UmbralesVigentes(_ context.Context, _ int64, _ time.Time) ([]academico.UmbralAlerta, error) {
+	return c.umbralesVigentes, c.err
+}
+
+func (c configuracionFalsa) ListarUmbrales(_ context.Context, _ int64) ([]academico.UmbralAlerta, error) {
+	return c.historialUmbrales, c.err
+}
+
+func (c configuracionFalsa) ConfigurarUmbral(_ context.Context, _ int64, umbral academico.UmbralAlerta) error {
+	if c.configurarUmbral != nil {
+		return c.configurarUmbral(umbral)
+	}
+	return c.err
 }
 
 func (c configuracionFalsa) CrearAnio(_ context.Context, _ int64, datos academico.DatosAnio) (int64, error) {

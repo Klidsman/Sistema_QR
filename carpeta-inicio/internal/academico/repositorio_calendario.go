@@ -134,9 +134,9 @@ func (r *RepositorioConfiguracion) ExcepcionesDeSeccion(ctx context.Context, sec
 	return excepciones, nil
 }
 
-// CrearUmbral registra una versión del umbral de alerta.
-func (r *RepositorioConfiguracion) CrearUmbral(ctx context.Context, umbral UmbralAlerta) (int64, error) {
-	return r.consultas.CrearUmbralAlerta(ctx, generado.CrearUmbralAlertaParams{
+// GuardarUmbral registra o reemplaza una versión del umbral de alerta.
+func (r *RepositorioConfiguracion) GuardarUmbral(ctx context.Context, umbral UmbralAlerta) (int64, error) {
+	return r.consultas.GuardarUmbralAlerta(ctx, generado.GuardarUmbralAlertaParams{
 		AnioEscolarID: umbral.AnioEscolarID,
 		Tipo:          umbral.Tipo,
 		Valor:         int32(umbral.Valor),

@@ -44,6 +44,20 @@ type FormularioExcepcion struct {
 	Grados      []int64
 }
 
+// UmbralVista es un umbral de alerta preparado para mostrarse.
+type UmbralVista struct {
+	Tipo         string
+	Valor        int
+	VigenteDesde time.Time
+}
+
+// FormularioUmbral conserva los datos del formulario de umbrales.
+type FormularioUmbral struct {
+	Tipo   string
+	Valor  string
+	Fecha  string
+}
+
 // CursoVista es un curso preparado para mostrarse en la interfaz.
 type CursoVista struct {
 	ID     int64

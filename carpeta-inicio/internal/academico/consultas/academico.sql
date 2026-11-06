@@ -271,9 +271,10 @@ WHERE e.anio_escolar_id = an.id
   )
 ORDER BY e.fecha_inicio, e.id;
 
--- name: CrearUmbralAlerta :one
+-- name: GuardarUmbralAlerta :one
 INSERT INTO umbrales_alerta (anio_escolar_id, tipo, valor, vigente_desde)
 VALUES ($1, $2, $3, $4)
+ON CONFLICT (anio_escolar_id, tipo, vigente_desde) DO UPDATE SET valor = EXCLUDED.valor
 RETURNING id;
 
 -- name: UmbralVigente :one

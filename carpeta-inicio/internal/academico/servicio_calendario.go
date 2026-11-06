@@ -151,6 +151,87 @@ func (s *ServicioConfiguracion) DetectarSolapamiento(ctx context.Context, anioID
 	return excepcionesSolapadas(existentes, excepcion), nil
 }
 
+// ConfigurarUmbral registra una versión del umbral de alerta y la audita.
+func (s *ServicioConfiguracion) ConfigurarUmbral(ctx context.Context, usuarioID int64, umbral UmbralAlerta) error {
+	if err := ValidarUmbral(umbral.Tipo, umbral.Valor); err != nil {
+		return err
+	}
+	if err := ValidarVigencia(umbral.VigenteDesde, s.reloj()); err != nil {
+		return err
+	}
+
+	return s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
+		anio, err := consultas.BuscarAnioEscolarPorID(ctx, umbral.AnioEscolarID)
+		if errors.Is(err, pgx.ErrNoRows) {
+			return ErrAnioNoEncontrado
+		}
+		if err != nil {
+			return fmt.Errorf("buscando el año escolar: %w", err)
+		}
+		if anio.Estado == EstadoAnioCerrado {
+			return ErrAnioCerrado
+		}
+
+		anterior := any(nil)
+		filaAnterior, err := consultas.UmbralVigente(ctx, generado.UmbralVigenteParams{
+			AnioEscolarID: umbral.AnioEscolarID,
+			Tipo:          umbral.Tipo,
+			VigenteDesde:  parametroFecha(umbral.VigenteDesde),
+		})
+		if err == nil {
+			anterior = map[string]any{"valor": int(filaAnterior.Valor)}
+		} else if !errors.Is(err, pgx.ErrNoRows) {
+			return fmt.Errorf("buscando el umbral anterior: %w", err)
+		}
+
+		if _, err := consultas.GuardarUmbralAlerta(ctx, generado.GuardarUmbralAlertaParams{
+			AnioEscolarID: umbral.AnioEscolarID,
+			Tipo:          umbral.Tipo,
+			Valor:         int32(umbral.Valor),
+			VigenteDesde:  parametroFecha(umbral.VigenteDesde),
+		}); err != nil {
+			return fmt.Errorf("guardando el umbral de alerta: %w", err)
+		}
+		return auditoria.Registrar(ctx, db, auditoria.Evento{
+			UsuarioID:     usuarioID,
+			Entidad:       EntidadUmbral,
+			EntidadID:     umbral.AnioEscolarID,
+			Accion:        AccionConfigurarUmbral,
+			ValorAnterior: anterior,
+			ValorNuevo: map[string]any{
+				"tipo":          umbral.Tipo,
+				"valor":         umbral.Valor,
+				"vigente_desde": fechas.FormatearISO(umbral.VigenteDesde),
+			},
+		})
+	})
+}
+
+// UmbralesVigentes devuelve los umbrales de tardanzas y faltas vigentes en la fecha.
+func (s *ServicioConfiguracion) UmbralesVigentes(ctx context.Context, anioID int64, fecha time.Time) ([]UmbralAlerta, error) {
+	umbrales := make([]UmbralAlerta, 0, len(TiposUmbral()))
+	for _, tipo := range TiposUmbral() {
+		umbral, err := s.repositorio.UmbralVigente(ctx, anioID, tipo, fecha)
+		if errors.Is(err, pgx.ErrNoRows) {
+			continue
+		}
+		if err != nil {
+			return nil, fmt.Errorf("buscando el umbral vigente: %w", err)
+		}
+		umbrales = append(umbrales, umbral)
+	}
+	return umbrales, nil
+}
+
+// ListarUmbrales devuelve la historia de umbrales del año.
+func (s *ServicioConfiguracion) ListarUmbrales(ctx context.Context, anioID int64) ([]UmbralAlerta, error) {
+	umbrales, err := s.repositorio.ListarUmbralesPorAnio(ctx, anioID)
+	if err != nil {
+		return nil, fmt.Errorf("listando los umbrales del año: %w", err)
+	}
+	return umbrales, nil
+}
+
 // ListarExcepciones devuelve todas las excepciones del año.
 func (s *ServicioConfiguracion) ListarExcepciones(ctx context.Context, anioID int64) ([]ExcepcionCalendario, error) {
 	excepciones, err := s.repositorio.ListarExcepcionesPorAnio(ctx, anioID)
