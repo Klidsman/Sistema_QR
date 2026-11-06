@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"asistencia/internal/plataforma/intermediarios"
 
@@ -50,6 +51,32 @@ func TestProteccionCSRF_AceptaTokenEnFormularioMultipart(t *testing.T) {
 
 	assert.True(t, llamado)
 	assert.Equal(t, http.StatusOK, respuesta.Code)
+}
+
+func TestSesion_CookiesSonSeguras(t *testing.T) {
+	sesiones := intermediarios.NuevaSesion(nil, 8*time.Hour)
+
+	assert.Equal(t, "sesion_asistencia", sesiones.Cookie.Name)
+	assert.True(t, sesiones.Cookie.HttpOnly)
+	assert.True(t, sesiones.Cookie.Secure)
+	assert.Equal(t, http.SameSiteStrictMode, sesiones.Cookie.SameSite)
+	assert.Equal(t, 8*time.Hour, sesiones.Lifetime)
+}
+
+func TestProteccionCSRF_RechazaSolicitudSinToken(t *testing.T) {
+	sesiones, ctx := sesionConTokenCSRF(t)
+	manejador := intermediarios.ProteccionCSRF(sesiones)(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		rw.WriteHeader(http.StatusOK)
+	}))
+
+	peticion := httptest.NewRequest(http.MethodPost, "/alumnos", bytes.NewBufferString("campo=valor")).
+		WithContext(ctx)
+	peticion.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	respuesta := httptest.NewRecorder()
+
+	manejador.ServeHTTP(respuesta, peticion)
+
+	assert.Equal(t, http.StatusForbidden, respuesta.Code)
 }
 
 func TestProteccionCSRF_RechazaTokenIncorrecto(t *testing.T) {

@@ -3,9 +3,12 @@
   "private": true,
   "scripts": {
     "css": "tailwindcss -i ./web/estaticos/css/entrada.css -o ./web/estaticos/css/app.css --minify",
-    "htmx": "node -e \"require('fs').copyFileSync('node_modules/htmx.org/dist/htmx.min.js','web/estaticos/js/htmx.min.js')\""
+    "htmx": "node -e \"require('fs').copyFileSync('node_modules/htmx.org/dist/htmx.min.js','web/estaticos/js/htmx.min.js')\"",
+    "e2e": "playwright test --config=pruebas/e2e/playwright.config.ts",
+    "e2e:instalar": "playwright install chromium"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/cli": "^4.0.0",
     "htmx.org": "2.0.4",
     "tailwindcss": "^4.0.0"

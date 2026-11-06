@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+.env.local
+datos
+node_modules
+tmp
+test-results
+pruebas/e2e/test-results
+web/estaticos/css/app.css
+web/estaticos/js/htmx.min.js

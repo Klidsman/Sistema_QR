@@ -93,3 +93,27 @@ No describe implementación; eso queda en `tasks.md`.
 ## Salud
 
 - `GET /salud` debe responder 200 con el estado de la base de datos cuando el sistema está listo.
+
+## Resultados de la validación
+
+**Fecha**: 2026-11-06 | **Entorno**: Windows, Go 1.27.3, Docker Desktop, PostgreSQL 16 en el puerto
+5433, navegador Chromium mediante Playwright.
+
+| Escenario | Resultado | Evidencia |
+|---|---|---|
+| Preparación del entorno | Cumple | Migraciones aplicadas hasta la versión 8 y semilla con administrador y secciones. |
+| 1. Alta manual de alumno | Cumple | Prueba E2E `el administrador registra un alumno y lo encuentra en el listado`; búsqueda sin tildes verificada. |
+| 2. QR y reemplazo | Cumple | Pruebas de unidad e integración de credenciales; prueba E2E de emisión de QR; consulta a la base sin alumnos con más de un QR activo. |
+| 3. Importación con errores | Cumple | Prueba E2E `importa filas válidas y reporta cada rechazo`; reporte con fila y motivo; XLSX con tildes y ñ cubierto por la prueba de integración. |
+| 4. Carnés en lote | Cumple | Prueba E2E `genera el carné del alumno con QR vigente`; avisos y vista imprimible verificados. |
+| 5. Salidas y cambios de sección | Cumple | Pruebas de integración `salidas_test.go` y `historial_seccion_test.go`; auditoría con acciones `cambiar_seccion` y `trasladar`. |
+| 6. Permisos del director | Cumple | `pruebas/manejadores/permisos_test.go`: todas las rutas POST responden 403 y las rutas de lectura responden 200. |
+| 7. Auditoría | Cumple | Registros presentes para alumno, credencial QR e importación; `UPDATE` manual sobre `auditoria` rechazado por el disparador. |
+| Salud | Cumple | `GET /salud` respondió 200 con `base_datos: correcta`. |
+| Token QR sin datos personales | Cumple | `pruebas/unidad/imagen_qr_test.go` decodifica el PNG y comprueba que el contenido es exactamente el token. |
+| Pruebas automáticas | Cumple | `go build ./...`, `go vet ./...` y `go test ./...` sin errores. |
+| Pruebas E2E | Cumple | 7 pruebas de Playwright aprobadas (alta, importación, carné y vista responsiva en celular, tablet y computadora). |
+| Imagen Docker | Cumple | `docker build -t asistencia:local .` y contenedor con `/salud` en 200 y CSS servido desde la imagen. |
+
+**Observaciones**: las pruebas E2E crean alumnos y secciones de prueba en la base local. Para
+repetirlas en un entorno limpio, ejecutar `make migrar` y `make sembrar` antes de `npm run e2e`.

@@ -249,18 +249,18 @@ su registro se conserva.
 
 **Propósito**: permisos, seguridad, entrega y documentación.
 
-- [ ] T102 [P] Escribir prueba de permisos de director sobre todas las rutas `POST` (403) en `pruebas/manejadores/permisos_test.go`
-- [ ] T103 [P] Escribir prueba de CSRF y cookies seguras en `pruebas/manejadores/seguridad_test.go`
-- [ ] T104 Escribir pruebas E2E con Playwright para alta, importación y carné en `pruebas/e2e/alumnos_test.spec.ts`
-- [ ] T105 Escribir prueba E2E de vista responsiva en celular, tablet y computadora en `pruebas/e2e/responsivo_test.spec.ts`
-- [ ] T106 Crear `Dockerfile` multietapa en `Dockerfile`
-- [ ] T107 Crear el workflow de GitHub Actions con lint, pruebas y construcción de imagen en `.github/workflows/integracion.yml`
-- [ ] T108 Escribir el README de despliegue paso a paso en `docs/despliegue.md`
-- [ ] T109 Escribir la guía de respaldo y restauración en `docs/respaldo_restauracion.md`
-- [ ] T110 [P] Escribir el manual de usuario del administrador en `docs/manual_administrador.md`
-- [ ] T111 [P] Escribir el manual de usuario del director en `docs/manual_director.md`
-- [ ] T112 Ejecutar la validación de `quickstart.md` completa y registrar resultados en `specs/001-gestion-alumnos-qr/quickstart.md`
-- [ ] T113 Revisar que el token QR no contenga datos personales en cualquier salida (pruebas y revisión manual)
+- [X] T102 [P] Escribir prueba de permisos de director sobre todas las rutas `POST` (403) en `pruebas/manejadores/permisos_test.go`
+- [X] T103 [P] Escribir prueba de CSRF y cookies seguras en `pruebas/manejadores/seguridad_test.go`
+- [X] T104 Escribir pruebas E2E con Playwright para alta, importación y carné en `pruebas/e2e/alumnos_test.spec.ts`
+- [X] T105 Escribir prueba E2E de vista responsiva en celular, tablet y computadora en `pruebas/e2e/responsivo_test.spec.ts`
+- [X] T106 Crear `Dockerfile` multietapa en `Dockerfile`
+- [X] T107 Crear el workflow de GitHub Actions con lint, pruebas y construcción de imagen en `.github/workflows/integracion.yml`
+- [X] T108 Escribir el README de despliegue paso a paso en `docs/despliegue.md`
+- [X] T109 Escribir la guía de respaldo y restauración en `docs/respaldo_restauracion.md`
+- [X] T110 [P] Escribir el manual de usuario del administrador en `docs/manual_administrador.md`
+- [X] T111 [P] Escribir el manual de usuario del director en `docs/manual_director.md`
+- [X] T112 Ejecutar la validación de `quickstart.md` completa y registrar resultados en `specs/001-gestion-alumnos-qr/quickstart.md`
+- [X] T113 Revisar que el token QR no contenga datos personales en cualquier salida (pruebas y revisión manual)
 
 ---
 
