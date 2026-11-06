@@ -44,7 +44,7 @@ func (m *Manejador) renderizarUmbrales(respuesta http.ResponseWriter, peticion *
 		return
 	}
 
-	var tardanzas, faltas *UmbralAlerta
+	var tardanzas, faltas, faltasSeguidas *UmbralAlerta
 	var historial []UmbralAlerta
 	if activo != nil {
 		vigentes, err := m.configuracion.UmbralesVigentes(ctx, activo.ID, fechas.Hoy())
@@ -59,6 +59,8 @@ func (m *Manejador) renderizarUmbrales(respuesta http.ResponseWriter, peticion *
 				tardanzas = &vigentes[i]
 			case TipoUmbralFaltas:
 				faltas = &vigentes[i]
+			case TipoUmbralFaltasSeguidas:
+				faltasSeguidas = &vigentes[i]
 			}
 		}
 		historial, err = m.configuracion.ListarUmbrales(ctx, activo.ID)
@@ -76,6 +78,7 @@ func (m *Manejador) renderizarUmbrales(respuesta http.ResponseWriter, peticion *
 		aAnioVista(activo),
 		aUmbralVista(tardanzas),
 		aUmbralVista(faltas),
+		aUmbralVista(faltasSeguidas),
 		aUmbralesVista(historial),
 		formulario,
 		mensajeCorrectoUmbral(codigoCorrecto),
@@ -132,8 +135,12 @@ func aUmbralesVista(umbrales []UmbralAlerta) []vista.UmbralVista {
 }
 
 func etiquetaTipoUmbral(tipo string) string {
-	if tipo == TipoUmbralFaltas {
+	switch tipo {
+	case TipoUmbralFaltas:
 		return "Faltas por mes"
+	case TipoUmbralFaltasSeguidas:
+		return "Faltas seguidas"
+	default:
+		return "Tardanzas por mes"
 	}
-	return "Tardanzas por mes"
 }

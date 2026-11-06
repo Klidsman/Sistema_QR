@@ -12,6 +12,7 @@ func TestValidarUmbral_AceptaValoresEntreUnoYCien(t *testing.T) {
 	for _, valor := range []int{1, 3, 100} {
 		assert.NoError(t, academico.ValidarUmbral(academico.TipoUmbralTardanzas, valor))
 		assert.NoError(t, academico.ValidarUmbral(academico.TipoUmbralFaltas, valor))
+		assert.NoError(t, academico.ValidarUmbral(academico.TipoUmbralFaltasSeguidas, valor))
 	}
 }
 

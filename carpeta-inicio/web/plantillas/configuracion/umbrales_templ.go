@@ -16,7 +16,7 @@ import (
 	"asistencia/web/plantillas/paginas"
 )
 
-func Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, tardanzas *UmbralVista, faltas *UmbralVista, historial []UmbralVista, formulario FormularioUmbral, mensaje string, mensajeError string) templ.Component {
+func Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, tardanzas *UmbralVista, faltas *UmbralVista, faltasSeguidas *UmbralVista, historial []UmbralVista, formulario FormularioUmbral, mensaje string, mensajeError string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -136,6 +136,10 @@ func Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, t
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
+				templ_7745c5c3_Err = tarjetaUmbral("Faltas seguidas", faltasSeguidas).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -148,7 +152,7 @@ func Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, t
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 42, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 43, Col: 61}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 					if templ_7745c5c3_Err != nil {
@@ -158,7 +162,7 @@ func Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, t
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if formulario.Tipo != "faltas" {
+					if formulario.Tipo != "faltas" && formulario.Tipo != "faltas_seguidas" {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " selected")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -174,97 +178,107 @@ func Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, t
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, ">Faltas</option></select></label> <label class=\"block\"><span class=\"text-sm font-medium\">Valor *</span> <input type=\"number\" name=\"valor\" min=\"1\" max=\"100\" value=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, ">Faltas por mes</option> <option value=\"faltas_seguidas\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					if formulario.Tipo == "faltas_seguidas" {
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, " selected")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, ">Faltas seguidas</option></select></label> <label class=\"block\"><span class=\"text-sm font-medium\">Valor *</span> <input type=\"number\" name=\"valor\" min=\"1\" max=\"100\" value=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.NewAttributeExpression(formulario.Valor).Resolve(ctx)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 52, Col: 82}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 54, Col: 82}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" required class=\"mt-1 w-full rounded border border-slate-300 p-2\"></label> <label class=\"block\"><span class=\"text-sm font-medium\">Vigencia desde *</span> <input type=\"date\" name=\"vigente_desde\" value=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" required class=\"mt-1 w-full rounded border border-slate-300 p-2\"></label> <label class=\"block\"><span class=\"text-sm font-medium\">Vigencia desde *</span> <input type=\"date\" name=\"vigente_desde\" value=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templruntime.NewAttributeExpression(valorFecha(formulario.Fecha)).Resolve(ctx)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 56, Col: 82}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 58, Col: 82}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" required class=\"mt-1 w-full rounded border border-slate-300 p-2\"></label><div class=\"flex items-end\"><button type=\"submit\" class=\"rounded bg-blue-700 px-4 py-2 font-semibold text-white\">Guardar umbral</button></div></form>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" required class=\"mt-1 w-full rounded border border-slate-300 p-2\"></label><div class=\"flex items-end\"><button type=\"submit\" class=\"rounded bg-blue-700 px-4 py-2 font-semibold text-white\">Guardar umbral</button></div></form>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, " <h2 class=\"mt-8 text-lg font-semibold\">Historial de umbrales</h2>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, " <h2 class=\"mt-8 text-lg font-semibold\">Historial de umbrales</h2>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if len(historial) == 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<p class=\"mt-2 text-slate-600\">Todavía no hay umbrales configurados.</p>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<p class=\"mt-2 text-slate-600\">Todavía no hay umbrales configurados.</p>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div class=\"mt-3 overflow-x-auto rounded border border-slate-200 bg-white\"><table class=\"w-full text-left text-sm\"><thead class=\"bg-slate-100 text-slate-700\"><tr><th class=\"p-3\">Tipo</th><th class=\"p-3\">Valor</th><th class=\"p-3\">Vigente desde</th></tr></thead> <tbody>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"mt-3 overflow-x-auto rounded border border-slate-200 bg-white\"><table class=\"w-full text-left text-sm\"><thead class=\"bg-slate-100 text-slate-700\"><tr><th class=\"p-3\">Tipo</th><th class=\"p-3\">Valor</th><th class=\"p-3\">Vigente desde</th></tr></thead> <tbody>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					for _, umbral := range historial {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<tr class=\"border-t border-slate-100\"><td class=\"p-3 font-medium\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<tr class=\"border-t border-slate-100\"><td class=\"p-3 font-medium\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var9 string
 						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(umbral.Tipo)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 80, Col: 50}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 82, Col: 50}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</td><td class=\"p-3\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</td><td class=\"p-3\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var10 string
 						templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", umbral.Valor))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 81, Col: 58}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 83, Col: 58}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</td><td class=\"p-3\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</td><td class=\"p-3\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var11 string
 						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fechas.FormatearDia(umbral.VigenteDesde))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 82, Col: 67}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 84, Col: 67}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</td></tr>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</td></tr>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</tbody></table></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</tbody></table></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -297,61 +311,61 @@ func tarjetaUmbral(titulo string, umbral *UmbralVista) templ.Component {
 		}
 		ctx = templ.InitializeContext(ctx)
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"rounded border border-slate-200 bg-white p-4\"><h2 class=\"text-lg font-semibold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"rounded border border-slate-200 bg-white p-4\"><h2 class=\"text-lg font-semibold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(titulo)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 95, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 97, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</h2>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</h2>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if umbral == nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<p class=\"mt-1 text-sm text-slate-600\">Sin configurar.</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<p class=\"mt-1 text-sm text-slate-600\">Sin configurar.</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<p class=\"mt-2 text-2xl font-semibold\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<p class=\"mt-2 text-2xl font-semibold\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", umbral.Valor))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 99, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 101, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</p><p class=\"text-sm text-slate-600\">Vigente desde ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</p><p class=\"text-sm text-slate-600\">Vigente desde ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fechas.FormatearDia(umbral.VigenteDesde))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 100, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/umbrales.templ`, Line: 102, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

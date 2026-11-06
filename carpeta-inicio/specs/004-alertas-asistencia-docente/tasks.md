@@ -70,14 +70,14 @@
 
 **Prueba independiente**: insertar una marcación de tardanza con portero y verificar una única alerta para él.
 
-- [ ] T031 [P] [US1] Escribir pruebas unitarias de destinatario y deduplicación de tardanza en `pruebas/unidad/alertas_tardanza_test.go`
-- [ ] T032 [P] [US1] Escribir pruebas de integración de generación de alerta de tardanza en `pruebas/integracion/alertas_tardanza_test.go`
+- [x] T031 [P] [US1] Escribir pruebas unitarias de destinatario y deduplicación de tardanza en `pruebas/unidad/alertas_tardanza_test.go`
+- [x] T032 [P] [US1] Escribir pruebas de integración de generación de alerta de tardanza en `pruebas/integracion/alertas_tardanza_test.go`
 - [x] T033 [US1] Implementar `ProcesarTardanzas` en `internal/alertas/servicio_procesos.go`
 - [x] T034 [US1] Asignar la alerta al portero de `registrada_por`, o al administrador si falta
 - [x] T035 [US1] Insertar con `ON CONFLICT DO NOTHING` para no duplicar
 - [x] T036 [US1] Auditar `crear_alerta` de tardanza
 - [x] T037 [US1] Implementar el indicador de alertas nuevas en `internal/alertas/manejador_indicador.go`
-- [ ] T038 [US1] Mostrar el indicador en las plantillas base de los roles autorizados en `web/plantillas/paginas/base.templ`
+- [x] T038 [US1] Mostrar el indicador en las plantillas base de los roles autorizados en `web/plantillas/paginas/base.templ`
 - [ ] T039 [US1] Escribir pruebas de manejadores del indicador en `pruebas/manejadores/alertas_indicador_test.go`
 - [ ] T040 [US1] Escribir la prueba E2E de alerta de tardanza para portero en `pruebas/e2e/alertas_tardanza_test.spec.ts`
 
@@ -95,7 +95,7 @@
 - [x] T044 [US2] Crear la alerta de reiteración por tardanzas para cada docente asignado a la sección en `internal/alertas/servicio_alertas.go`
 - [x] T045 [US2] Auditar `crear_alerta` de reiteración por tardanzas
 - [ ] T046 [P] [US2] Escribir pruebas unitarias de faltas seguidas en `pruebas/unidad/alertas_faltas_seguidas_test.go`
-- [ ] T047 [P] [US2] Escribir pruebas de integración de faltas seguidas en `pruebas/integracion/alertas_faltas_seguidas_test.go`
+- [x] T047 [P] [US2] Escribir pruebas de integración de faltas seguidas en `pruebas/integracion/alertas_faltas_seguidas_test.go`
 - [x] T048 [US2] Implementar el cálculo de la racha de días laborables sin marcación en `internal/alertas/servicio_alertas.go`
 - [x] T049 [US2] Excluir fines de semana, feriados y suspensiones del cálculo en `internal/alertas/servicio_alertas.go`
 - [x] T050 [US2] Implementar la interfaz `EsFaltaJustificada` con implementación inicial falsa y punto de extensión para la 005
@@ -132,10 +132,10 @@
 **Objetivo**: configurar tardanzas mensuales y faltas seguidas con vigencia e historial.
 
 - [ ] T067 [P] [US4] Escribir pruebas unitarias de umbrales y vigencia en `pruebas/unidad/alertas_umbrales_test.go`
-- [ ] T068 [P] [US4] Escribir pruebas de integración de umbrales con vigencia en `pruebas/integracion/alertas_umbrales_test.go`
-- [ ] T069 [US4] Ampliar `ValidarUmbral` y el servicio académico para el tipo `faltas_seguidas`
-- [ ] T070 [US4] Agregar la opción “Faltas seguidas” a la plantilla `web/plantillas/configuracion/umbrales.templ`
-- [ ] T071 [US4] Verificar que un cambio de umbral no modifica alertas anteriores en `pruebas/integracion/alertas_umbrales_test.go`
+- [x] T068 [P] [US4] Escribir pruebas de integración de umbrales con vigencia en `pruebas/integracion/alertas_umbrales_test.go`
+- [x] T069 [US4] Ampliar `ValidarUmbral` y el servicio académico para el tipo `faltas_seguidas`
+- [x] T070 [US4] Agregar la opción “Faltas seguidas” a la plantilla `web/plantillas/configuracion/umbrales.templ`
+- [x] T071 [US4] Verificar que un cambio de umbral no modifica alertas anteriores en `pruebas/integracion/alertas_umbrales_test.go`
 - [ ] T072 [US4] Escribir la prueba E2E de configuración de faltas seguidas en `pruebas/e2e/alertas_umbrales_test.spec.ts`
 
 ---

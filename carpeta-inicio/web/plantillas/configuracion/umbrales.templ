@@ -7,7 +7,7 @@ import (
 	"asistencia/web/plantillas/paginas"
 )
 
-templ Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, tardanzas *UmbralVista, faltas *UmbralVista, historial []UmbralVista, formulario FormularioUmbral, mensaje string, mensajeError string) {
+templ Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, tardanzas *UmbralVista, faltas *UmbralVista, faltasSeguidas *UmbralVista, historial []UmbralVista, formulario FormularioUmbral, mensaje string, mensajeError string) {
 	@paginas.BaseSesion("Umbrales de alerta", usuario, rol, tokenCSRF) {
 		<div class="flex flex-wrap items-center justify-between gap-3">
 			<div>
@@ -35,6 +35,7 @@ templ Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, 
 			<div class="mt-6 grid gap-4 sm:grid-cols-2">
 				@tarjetaUmbral("Tardanzas por mes", tardanzas)
 				@tarjetaUmbral("Faltas por mes", faltas)
+				@tarjetaUmbral("Faltas seguidas", faltasSeguidas)
 			</div>
 
 			if rol == "administrador" {
@@ -43,8 +44,9 @@ templ Umbrales(usuario string, rol string, tokenCSRF string, activo *AnioVista, 
 					<label class="block">
 						<span class="text-sm font-medium">Tipo *</span>
 						<select name="tipo" required class="mt-1 w-full rounded border border-slate-300 p-2">
-							<option value="tardanzas" selected?={ formulario.Tipo != "faltas" }>Tardanzas</option>
-							<option value="faltas" selected?={ formulario.Tipo == "faltas" }>Faltas</option>
+							<option value="tardanzas" selected?={ formulario.Tipo != "faltas" && formulario.Tipo != "faltas_seguidas" }>Tardanzas</option>
+							<option value="faltas" selected?={ formulario.Tipo == "faltas" }>Faltas por mes</option>
+							<option value="faltas_seguidas" selected?={ formulario.Tipo == "faltas_seguidas" }>Faltas seguidas</option>
 						</select>
 					</label>
 					<label class="block">

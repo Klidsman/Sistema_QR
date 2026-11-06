@@ -17,8 +17,9 @@ const (
 
 // Tipos de umbral de alerta.
 const (
-	TipoUmbralTardanzas = "tardanzas"
-	TipoUmbralFaltas    = "faltas"
+	TipoUmbralTardanzas      = "tardanzas"
+	TipoUmbralFaltas         = "faltas"
+	TipoUmbralFaltasSeguidas = "faltas_seguidas"
 )
 
 // Turnos devuelve los dos turnos válidos en el orden en que se muestran.
@@ -43,12 +44,12 @@ func TipoExcepcionValido(tipo string) bool {
 
 // TiposUmbral devuelve los tipos de umbral de alerta válidos.
 func TiposUmbral() []string {
-	return []string{TipoUmbralTardanzas, TipoUmbralFaltas}
+	return []string{TipoUmbralTardanzas, TipoUmbralFaltas, TipoUmbralFaltasSeguidas}
 }
 
 // TipoUmbralValido indica si el texto corresponde a un tipo de umbral.
 func TipoUmbralValido(tipo string) bool {
-	return tipo == TipoUmbralTardanzas || tipo == TipoUmbralFaltas
+	return tipo == TipoUmbralTardanzas || tipo == TipoUmbralFaltas || tipo == TipoUmbralFaltasSeguidas
 }
 
 // DiaLaborable indica si un día de la semana genera clases por defecto.

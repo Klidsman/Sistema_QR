@@ -104,15 +104,18 @@ func nuevasFuentesFalsas(seccionID, alumnoID, administradorID int64) fuentesFals
 }
 
 type asistenciaFalsa struct {
-	marcacionEn time.Time
+	marcacionEn     time.Time
+	marcaciones     []alertas.EventoMarcacion
+	contarTardanzas int
+	docentes        []int64
 }
 
 func (a *asistenciaFalsa) MarcacionesDelRango(context.Context, time.Time, time.Time) ([]alertas.EventoMarcacion, error) {
-	return nil, nil
+	return a.marcaciones, nil
 }
 
 func (a *asistenciaFalsa) ContarTardanzas(context.Context, int64, time.Time, time.Time) (int, error) {
-	return 0, nil
+	return a.contarTardanzas, nil
 }
 
 func (a *asistenciaFalsa) TieneMarcacion(_ context.Context, _ int64, fecha time.Time) (bool, error) {
@@ -120,7 +123,7 @@ func (a *asistenciaFalsa) TieneMarcacion(_ context.Context, _ int64, fecha time.
 }
 
 func (a *asistenciaFalsa) DocentesDeSeccionEnFecha(context.Context, int64, time.Time) ([]int64, error) {
-	return nil, nil
+	return a.docentes, nil
 }
 
 type alumnosFalsos struct {
@@ -144,6 +147,7 @@ func (a *alumnosFalsos) AlumnoPorID(context.Context, int64) (alertas.AlumnoEvent
 
 type academicoFalso struct {
 	seccionID int64
+	umbrales  map[string]int
 }
 
 func (a *academicoFalso) SeccionesActivas(context.Context) ([]academico.Seccion, error) {
@@ -154,7 +158,11 @@ func (a *academicoFalso) EsDiaNoLaborable(context.Context, int64, time.Time) (bo
 	return false, nil
 }
 
-func (a *academicoFalso) UmbralVigente(context.Context, string, time.Time) (int, bool, error) {
+func (a *academicoFalso) UmbralVigente(_ context.Context, tipo string, _ time.Time) (int, bool, error) {
+	if a.umbrales != nil {
+		valor, existe := a.umbrales[tipo]
+		return valor, existe, nil
+	}
 	return 1, true, nil
 }
 
