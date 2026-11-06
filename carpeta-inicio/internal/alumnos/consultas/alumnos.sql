@@ -1,0 +1,96 @@
+-- name: CrearAlumno :one
+INSERT INTO alumnos (
+    identificador,
+    nombres,
+    apellidos,
+    nombres_busqueda,
+    apellidos_busqueda,
+    seccion_id,
+    estado,
+    apoderado_nombre,
+    apoderado_telefono,
+    foto_clave
+)
+VALUES ($1, $2, $3, $4, $5, $6, 'activo', $7, $8, $9)
+RETURNING id;
+
+-- name: BuscarAlumnoPorID :one
+SELECT a.id,
+       a.identificador,
+       a.nombres,
+       a.apellidos,
+       a.estado,
+       a.foto_clave,
+       a.apoderado_nombre,
+       a.apoderado_telefono,
+       a.fecha_salida,
+       a.creado_en,
+       a.actualizado_en,
+       s.id AS seccion_id,
+       s.nombre AS seccion_nombre,
+       s.turno,
+       g.id AS grado_id,
+       g.nombre AS grado_nombre,
+       an.id AS anio_escolar_id,
+       an.nombre AS anio_escolar_nombre
+FROM alumnos a
+JOIN secciones s ON s.id = a.seccion_id
+JOIN grados g ON g.id = s.grado_id
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+WHERE a.id = $1;
+
+-- name: BuscarAlumnoPorIdentificador :one
+SELECT id, estado
+FROM alumnos
+WHERE identificador = $1;
+
+-- name: ListarAlumnos :many
+SELECT a.id,
+       a.identificador,
+       a.nombres,
+       a.apellidos,
+       a.estado,
+       a.foto_clave,
+       s.id AS seccion_id,
+       s.nombre AS seccion_nombre,
+       g.nombre AS grado_nombre,
+       an.nombre AS anio_escolar_nombre
+FROM alumnos a
+JOIN secciones s ON s.id = a.seccion_id
+JOIN grados g ON g.id = s.grado_id
+JOIN anios_escolares an ON an.id = g.anio_escolar_id
+WHERE (sqlc.narg('estado')::text IS NULL OR a.estado = sqlc.narg('estado')::text)
+  AND (sqlc.narg('seccion_id')::bigint IS NULL OR a.seccion_id = sqlc.narg('seccion_id')::bigint)
+  AND (sqlc.narg('anio_escolar_id')::bigint IS NULL OR an.id = sqlc.narg('anio_escolar_id')::bigint)
+  AND (
+      sqlc.narg('texto')::text IS NULL
+      OR a.nombres_busqueda LIKE '%' || sqlc.narg('texto')::text || '%'
+      OR a.apellidos_busqueda LIKE '%' || sqlc.narg('texto')::text || '%'
+      OR a.identificador LIKE '%' || sqlc.narg('texto')::text || '%'
+  )
+ORDER BY a.apellidos, a.nombres;
+
+-- name: ActualizarAlumno :exec
+UPDATE alumnos
+SET nombres = $2,
+    apellidos = $3,
+    nombres_busqueda = $4,
+    apellidos_busqueda = $5,
+    seccion_id = $6,
+    apoderado_nombre = $7,
+    apoderado_telefono = $8,
+    actualizado_en = now()
+WHERE id = $1;
+
+-- name: ActualizarFotoAlumno :exec
+UPDATE alumnos
+SET foto_clave = $2,
+    actualizado_en = now()
+WHERE id = $1;
+
+-- name: CambiarEstadoAlumno :exec
+UPDATE alumnos
+SET estado = $2,
+    fecha_salida = $3,
+    actualizado_en = now()
+WHERE id = $1;

@@ -1,0 +1,107 @@
+package vista
+
+import (
+	"fmt"
+	"strconv"
+
+	"asistencia/internal/academico"
+	"asistencia/web/plantillas/paginas"
+)
+
+templ Listado(usuario string, rol string, tokenCSRF string, secciones []academico.Seccion, filtros Filtros, listado []AlumnoListado, mensaje string, mensajeError string) {
+	@paginas.BaseSesion("Alumnos", usuario, rol, tokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<h1 class="text-2xl font-semibold">Alumnos</h1>
+			if rol == "administrador" {
+				<a href="/alumnos/nuevo" class="rounded bg-blue-700 px-4 py-2 font-semibold text-white">Nuevo alumno</a>
+			}
+		</div>
+
+		if mensaje != "" {
+			<p role="status" class="mt-4 rounded bg-green-100 p-3 text-green-800">{ mensaje }</p>
+		}
+		if mensajeError != "" {
+			<p role="alert" class="mt-4 rounded bg-red-100 p-3 text-red-800">{ mensajeError }</p>
+		}
+
+		<form method="get" action="/alumnos" class="mt-6 grid gap-3 rounded border border-slate-200 bg-white p-4 sm:grid-cols-4">
+			<label class="block sm:col-span-2">
+				<span class="text-sm font-medium">Buscar</span>
+				<input type="search" name="texto" value={ filtros.Texto } placeholder="Nombre, apellido o DNI" class="mt-1 w-full rounded border border-slate-300 p-2"/>
+			</label>
+			<label class="block">
+				<span class="text-sm font-medium">Sección</span>
+				<select name="seccion_id" class="mt-1 w-full rounded border border-slate-300 p-2">
+					<option value="">Todas</option>
+					for _, seccion := range secciones {
+						<option value={ strconv.FormatInt(seccion.ID, 10) } selected?={ seccion.ID == filtros.SeccionID }>{ seccion.Etiqueta() }</option>
+					}
+				</select>
+			</label>
+			<label class="block">
+				<span class="text-sm font-medium">Estado</span>
+				<select name="estado" class="mt-1 w-full rounded border border-slate-300 p-2">
+					<option value="" selected?={ filtros.Estado == "" }>Todos</option>
+					<option value="activo" selected?={ filtros.Estado == "activo" }>Activo</option>
+					<option value="desactivado" selected?={ filtros.Estado == "desactivado" }>Desactivado</option>
+					<option value="retirado" selected?={ filtros.Estado == "retirado" }>Retirado</option>
+					<option value="trasladado" selected?={ filtros.Estado == "trasladado" }>Trasladado</option>
+				</select>
+			</label>
+			<div class="flex items-end sm:col-span-4">
+				<button type="submit" class="rounded bg-slate-800 px-4 py-2 font-semibold text-white">Filtrar</button>
+			</div>
+		</form>
+
+		if len(listado) == 0 {
+			<p class="mt-6 rounded border border-dashed border-slate-300 p-6 text-center text-slate-500">No hay alumnos que coincidan.</p>
+		} else {
+			<div class="mt-6 overflow-x-auto rounded border border-slate-200 bg-white">
+				<table class="w-full text-left text-sm">
+					<thead class="bg-slate-100 text-slate-700">
+						<tr>
+							<th class="p-3">Alumno</th>
+							<th class="p-3">DNI o código</th>
+							<th class="p-3">Grado y sección</th>
+							<th class="p-3">Estado</th>
+							<th class="p-3">Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, alumno := range listado {
+							<tr class="border-t border-slate-100">
+								<td class="p-3">
+									<div class="flex items-center gap-3">
+										if alumno.TieneFoto {
+											<img src={ fmt.Sprintf("/alumnos/%d/foto", alumno.ID) } alt="" class="h-10 w-10 rounded-full object-cover"/>
+										} else {
+											<div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-xs text-slate-500">Sin foto</div>
+										}
+										<span class="font-medium">{ alumno.NombreCompleto() }</span>
+									</div>
+								</td>
+								<td class="p-3">{ alumno.Identificador }</td>
+								<td class="p-3">{ alumno.Grado } { alumno.Seccion } · { alumno.AnioEscolar }</td>
+								<td class="p-3"><span class="rounded bg-slate-100 px-2 py-1 text-xs font-medium">{ alumno.Estado }</span></td>
+								<td class="p-3">
+									<div class="flex flex-wrap items-center gap-2">
+										<a href={ fmt.Sprintf("/alumnos/%d", alumno.ID) } class="rounded border border-slate-300 px-3 py-1 font-medium">Ver</a>
+										if rol == "administrador" {
+											<a href={ fmt.Sprintf("/alumnos/%d/editar", alumno.ID) } class="rounded border border-slate-300 px-3 py-1 font-medium">Editar</a>
+											if alumno.Estado == "activo" {
+												<form method="post" action={ fmt.Sprintf("/alumnos/%d/desactivacion", alumno.ID) } onsubmit="return confirm('¿Desactivar a este alumno? Su QR dejará de funcionar.');">
+													<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+													<button type="submit" class="rounded border border-red-300 px-3 py-1 font-medium text-red-700">Desactivar</button>
+												</form>
+											}
+										}
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	}
+}
