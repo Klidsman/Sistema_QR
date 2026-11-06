@@ -9,6 +9,7 @@ import (
 	"asistencia/internal/alumnos"
 	"asistencia/internal/asistencia"
 	"asistencia/internal/autenticacion"
+	"asistencia/internal/justificaciones"
 	"asistencia/internal/plataforma/intermediarios"
 	"asistencia/internal/plataforma/salud"
 	"asistencia/internal/porteria"
@@ -19,14 +20,15 @@ import (
 
 // Dependencias son los componentes que el enrutador necesita para montar las rutas.
 type Dependencias struct {
-	Sesiones      *scs.SessionManager
-	Verificador   salud.Verificador
-	Autenticacion *autenticacion.Manejador
-	Alumnos       *alumnos.Manejador
-	Academico     *academico.Manejador
-	Asistencia    *asistencia.Manejador
-	Alertas       *alertas.Manejador
-	Porteria      *porteria.Manejador
+	Sesiones        *scs.SessionManager
+	Verificador     salud.Verificador
+	Autenticacion   *autenticacion.Manejador
+	Alumnos         *alumnos.Manejador
+	Academico       *academico.Manejador
+	Asistencia      *asistencia.Manejador
+	Alertas         *alertas.Manejador
+	Porteria        *porteria.Manejador
+	Justificaciones *justificaciones.Manejador
 }
 
 // NuevoEnrutador crea el enrutador con sesiones, protección CSRF y las rutas de cada módulo.
@@ -46,6 +48,7 @@ func NuevoEnrutador(dependencias Dependencias) http.Handler {
 	dependencias.Asistencia.Montar(enrutador)
 	dependencias.Alertas.Montar(enrutador)
 	dependencias.Porteria.Montar(enrutador)
+	dependencias.Justificaciones.Montar(enrutador)
 
 	return enrutador
 }

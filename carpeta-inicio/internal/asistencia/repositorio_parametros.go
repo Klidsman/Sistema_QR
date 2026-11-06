@@ -15,8 +15,9 @@ func (r *Repositorio) ObtenerParametros(ctx context.Context) (ParametrosAsistenc
 		return ParametrosAsistencia{}, err
 	}
 	parametros := ParametrosAsistencia{
-		PlazoEdicionHoras: int(fila.PlazoEdicionHoras),
-		ActualizadoEn:     fila.ActualizadoEn.Time,
+		PlazoEdicionHoras:      int(fila.PlazoEdicionHoras),
+		PlazoJustificacionDias: int(fila.PlazoJustificacionDias),
+		ActualizadoEn:          fila.ActualizadoEn.Time,
 	}
 	if fila.ActualizadoPor.Valid {
 		actualizadoPor := fila.ActualizadoPor.Int64
@@ -35,8 +36,30 @@ func (r *Repositorio) ActualizarPlazo(ctx context.Context, horas int, usuarioID 
 		return ParametrosAsistencia{}, err
 	}
 	parametros := ParametrosAsistencia{
-		PlazoEdicionHoras: int(fila.PlazoEdicionHoras),
-		ActualizadoEn:     fila.ActualizadoEn.Time,
+		PlazoEdicionHoras:      int(fila.PlazoEdicionHoras),
+		PlazoJustificacionDias: int(fila.PlazoJustificacionDias),
+		ActualizadoEn:          fila.ActualizadoEn.Time,
+	}
+	if fila.ActualizadoPor.Valid {
+		actualizadoPor := fila.ActualizadoPor.Int64
+		parametros.ActualizadoPor = &actualizadoPor
+	}
+	return parametros, nil
+}
+
+// ActualizarPlazoJustificacion guarda el plazo para presentar justificaciones.
+func (r *Repositorio) ActualizarPlazoJustificacion(ctx context.Context, dias int, usuarioID int64) (ParametrosAsistencia, error) {
+	fila, err := r.consultas.ActualizarPlazoJustificacion(ctx, generado.ActualizarPlazoJustificacionParams{
+		PlazoJustificacionDias: int32(dias),
+		ActualizadoPor:         pgtype.Int8{Int64: usuarioID, Valid: true},
+	})
+	if err != nil {
+		return ParametrosAsistencia{}, err
+	}
+	parametros := ParametrosAsistencia{
+		PlazoEdicionHoras:      int(fila.PlazoEdicionHoras),
+		PlazoJustificacionDias: int(fila.PlazoJustificacionDias),
+		ActualizadoEn:          fila.ActualizadoEn.Time,
 	}
 	if fila.ActualizadoPor.Valid {
 		actualizadoPor := fila.ActualizadoPor.Int64

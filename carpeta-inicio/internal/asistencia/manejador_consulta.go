@@ -94,6 +94,21 @@ func (m *Manejador) configurarParametros(respuesta http.ResponseWriter, peticion
 	http.Redirect(respuesta, peticion, "/configuracion/asistencia?ok=plazo", http.StatusSeeOther)
 }
 
+func (m *Manejador) configurarPlazoJustificacion(respuesta http.ResponseWriter, peticion *http.Request) {
+	dias, err := strconv.Atoi(strings.TrimSpace(peticion.PostFormValue("plazo_justificacion_dias")))
+	if err != nil {
+		m.renderizarParametros(respuesta, peticion, http.StatusUnprocessableEntity, "",
+			mensajeErrorConsulta(ErrPlazoJustificacionFueraDeRango))
+		return
+	}
+	if err := m.servicio.ConfigurarPlazoJustificacion(peticion.Context(), m.usuarioID(peticion.Context()), dias); err != nil {
+		m.renderizarParametros(respuesta, peticion, http.StatusUnprocessableEntity, "",
+			mensajeErrorConsulta(err))
+		return
+	}
+	http.Redirect(respuesta, peticion, "/configuracion/asistencia?ok=justificacion", http.StatusSeeOther)
+}
+
 func (m *Manejador) renderizarParametros(respuesta http.ResponseWriter, peticion *http.Request, estado int, mensaje, mensajeError string) {
 	parametros, err := m.servicio.PlazoEdicion(peticion.Context())
 	if err != nil {
@@ -106,8 +121,9 @@ func (m *Manejador) renderizarParametros(respuesta http.ResponseWriter, peticion
 		intermediarios.RolUsuario(peticion.Context()),
 		m.tokenCSRF(peticion.Context()),
 		vista.ParametrosVista{
-			Plazo:       parametros.PlazoEdicionHoras,
-			Actualizado: fechas.FormatearDia(parametros.ActualizadoEn),
+			Plazo:              parametros.PlazoEdicionHoras,
+			PlazoJustificacion: parametros.PlazoJustificacionDias,
+			Actualizado:        fechas.FormatearDia(parametros.ActualizadoEn),
 		},
 		mensaje,
 		mensajeError,
@@ -145,10 +161,14 @@ func mensajeCorrectoConsulta(codigo string) string {
 }
 
 func mensajeCorrectoParametros(codigo string) string {
-	if codigo == "plazo" {
+	switch codigo {
+	case "plazo":
 		return "El plazo de edición se guardó correctamente."
+	case "justificacion":
+		return "El plazo de justificación se guardó correctamente."
+	default:
+		return ""
 	}
-	return ""
 }
 
 func mensajeErrorConsulta(err error) string {
@@ -166,6 +186,9 @@ func mensajeErrorConsulta(err error) string {
 	}
 	if errors.Is(err, ErrPlazoFueraDeRango) {
 		return "El plazo de edición debe estar entre 1 y 168 horas."
+	}
+	if errors.Is(err, ErrPlazoJustificacionFueraDeRango) {
+		return "El plazo de justificación debe estar entre 1 y 60 días."
 	}
 	return "No se pudo completar la operación. Intente de nuevo."
 }

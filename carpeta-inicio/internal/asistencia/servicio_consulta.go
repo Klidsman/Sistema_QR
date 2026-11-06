@@ -30,6 +30,42 @@ func (s *Servicio) PlazoEdicion(ctx context.Context) (ParametrosAsistencia, erro
 	return s.repositorio.ObtenerParametros(ctx)
 }
 
+// PlazoJustificacion devuelve el plazo configurado para justificaciones.
+func (s *Servicio) PlazoJustificacion(ctx context.Context) (int, error) {
+	parametros, err := s.repositorio.ObtenerParametros(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return parametros.PlazoJustificacionDias, nil
+}
+
+// ConfigurarPlazoJustificacion guarda el plazo de justificaciones y lo audita.
+func (s *Servicio) ConfigurarPlazoJustificacion(ctx context.Context, usuarioID int64, dias int) error {
+	if err := ValidarPlazoJustificacion(dias); err != nil {
+		return err
+	}
+	return s.repositorio.EnTransaccion(ctx, func(consultas *generado.Queries, db generado.DBTX) error {
+		anterior, err := consultas.ObtenerParametrosAsistencia(ctx)
+		if err != nil {
+			return fmt.Errorf("leyendo el plazo anterior: %w", err)
+		}
+		if _, err := consultas.ActualizarPlazoJustificacion(ctx, generado.ActualizarPlazoJustificacionParams{
+			PlazoJustificacionDias: int32(dias),
+			ActualizadoPor:         pgtypeInt8(usuarioID),
+		}); err != nil {
+			return fmt.Errorf("guardando el plazo de justificaciones: %w", err)
+		}
+		return auditoria.Registrar(ctx, db, auditoria.Evento{
+			UsuarioID:     usuarioID,
+			Entidad:       EntidadParametroAsistencia,
+			EntidadID:     1,
+			Accion:        AccionConfigurarPlazo,
+			ValorAnterior: map[string]any{"plazo_justificacion_dias": int(anterior.PlazoJustificacionDias)},
+			ValorNuevo:    map[string]any{"plazo_justificacion_dias": dias},
+		})
+	})
+}
+
 // ConfigurarPlazo guarda el plazo de edición y lo audita.
 func (s *Servicio) ConfigurarPlazo(ctx context.Context, usuarioID int64, horas int) error {
 	if err := ValidarPlazoHoras(horas); err != nil {

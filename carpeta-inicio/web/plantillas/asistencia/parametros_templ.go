@@ -126,38 +126,77 @@ func Parametros(usuario string, rol string, tokenCSRF string, parametros Paramet
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"mt-4 rounded border border-slate-200 bg-white p-4\"><p class=\"text-sm text-slate-500\">Plazo para presentar justificaciones</p><p class=\"mt-1 text-2xl font-semibold\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", parametros.PlazoJustificacion))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/parametros.templ`, Line: 35, Col: 92}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " días</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if rol == "administrador" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<form method=\"post\" action=\"/configuracion/asistencia\" class=\"mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-3\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/parametros.templ`, Line: 35, Col: 60}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <label class=\"block\"><span class=\"text-sm font-medium\">Plazo de edición en horas *</span> <input type=\"number\" name=\"plazo_edicion_horas\" min=\"1\" max=\"168\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<form method=\"post\" action=\"/configuracion/asistencia/justificaciones\" class=\"mt-4 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-3\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", parametros.Plazo)).Resolve(ctx)
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/parametros.templ`, Line: 38, Col: 114}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/parametros.templ`, Line: 40, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" required class=\"mt-1 w-full rounded border border-slate-300 p-2\"></label><div class=\"flex items-end\"><button type=\"submit\" class=\"rounded bg-blue-700 px-4 py-2 font-semibold text-white\">Guardar plazo</button></div></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"> <label class=\"block\"><span class=\"text-sm font-medium\">Plazo de justificación en días *</span> <input type=\"number\" name=\"plazo_justificacion_dias\" min=\"1\" max=\"60\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var9 string
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", parametros.PlazoJustificacion)).Resolve(ctx)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/parametros.templ`, Line: 43, Col: 131}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" required class=\"mt-1 w-full rounded border border-slate-300 p-2\"></label><div class=\"flex items-end\"><button type=\"submit\" class=\"rounded bg-blue-700 px-4 py-2 font-semibold text-white\">Guardar plazo de justificación</button></div></form><form method=\"post\" action=\"/configuracion/asistencia\" class=\"mt-6 grid gap-4 rounded border border-slate-200 bg-white p-4 sm:grid-cols-3\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var10 string
+				templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/parametros.templ`, Line: 50, Col: 60}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"> <label class=\"block\"><span class=\"text-sm font-medium\">Plazo de edición en horas *</span> <input type=\"number\" name=\"plazo_edicion_horas\" min=\"1\" max=\"168\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var11 string
+				templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", parametros.Plazo)).Resolve(ctx)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/parametros.templ`, Line: 53, Col: 114}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" required class=\"mt-1 w-full rounded border border-slate-300 p-2\"></label><div class=\"flex items-end\"><button type=\"submit\" class=\"rounded bg-blue-700 px-4 py-2 font-semibold text-white\">Guardar plazo</button></div></form>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

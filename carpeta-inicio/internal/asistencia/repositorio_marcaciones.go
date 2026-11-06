@@ -2,10 +2,12 @@ package asistencia
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"asistencia/internal/asistencia/generado"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -95,4 +97,35 @@ func (r *Repositorio) ListarMarcacionesPorRangoYAlumnos(ctx context.Context, des
 		})
 	}
 	return marcaciones, nil
+}
+
+// MarcacionDeAlumnoFecha devuelve la marcación del día, si existe.
+func (r *Repositorio) MarcacionDeAlumnoFecha(ctx context.Context, alumnoID int64, fecha time.Time) (Marcacion, bool, error) {
+	fila, err := r.consultas.MarcacionDeAlumnoFecha(ctx, generado.MarcacionDeAlumnoFechaParams{
+		AlumnoID: alumnoID,
+		Fecha:    pgtype.Date{Time: fecha, Valid: true},
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Marcacion{}, false, nil
+	}
+	if err != nil {
+		return Marcacion{}, false, err
+	}
+	return Marcacion{
+		ID:          fila.ID,
+		AlumnoID:    fila.AlumnoID,
+		Fecha:       fila.Fecha.Time,
+		Hora:        fila.Hora.Time,
+		Estado:      fila.Estado,
+		Justificada: fila.Justificada,
+	}, true, nil
+}
+
+// MarcarMarcacionJustificada cambia la marca de justificación de una tardanza.
+func (r *Repositorio) MarcarMarcacionJustificada(ctx context.Context, alumnoID int64, fecha time.Time, justificada bool) error {
+	return r.consultas.MarcarMarcacionJustificada(ctx, generado.MarcarMarcacionJustificadaParams{
+		AlumnoID:    alumnoID,
+		Fecha:       pgtype.Date{Time: fecha, Valid: true},
+		Justificada: justificada,
+	})
 }

@@ -12,7 +12,7 @@ test.describe('Correcciones y plazo de asistencia', () => {
 
     await page.goto('/configuracion/asistencia');
     await page.getByLabel('Plazo de edición en horas *').fill('1');
-    await page.getByRole('button', { name: 'Guardar plazo' }).click();
+    await page.getByRole('button', { name: 'Guardar plazo', exact: true }).click();
     await expect(page.getByText('El plazo de edición se guardó correctamente.')).toBeVisible();
     await expect(page.getByText('1 horas')).toBeVisible();
 

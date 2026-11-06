@@ -187,6 +187,41 @@ type Importacione struct {
 	CreadaEn        pgtype.Timestamptz
 }
 
+type JustificacionAdjunto struct {
+	ID              int64
+	JustificacionID int64
+	Nombre          string
+	Tipo            string
+	Tamano          int64
+	Clave           string
+	CreadoEn        pgtype.Timestamptz
+}
+
+type JustificacionFecha struct {
+	ID              int64
+	JustificacionID int64
+	AlumnoID        int64
+	FechaEvento     pgtype.Date
+	Tipo            string
+	Estado          string
+}
+
+type Justificacione struct {
+	ID              int64
+	AlumnoID        int64
+	SeccionID       int64
+	Motivo          string
+	Estado          string
+	RegistranteID   int64
+	ResueltoPor     pgtype.Int8
+	ResueltoEn      pgtype.Timestamptz
+	Comentario      pgtype.Text
+	AnuladoPor      pgtype.Int8
+	AnuladoEn       pgtype.Timestamptz
+	MotivoAnulacion pgtype.Text
+	CreadaEn        pgtype.Timestamptz
+}
+
 type Marcacione struct {
 	ID            int64
 	AlumnoID      int64
@@ -195,13 +230,15 @@ type Marcacione struct {
 	Estado        string
 	CreadaEn      pgtype.Timestamptz
 	RegistradaPor pgtype.Int8
+	Justificada   bool
 }
 
 type ParametrosAsistencium struct {
-	ID                int16
-	PlazoEdicionHoras int32
-	ActualizadoPor    pgtype.Int8
-	ActualizadoEn     pgtype.Timestamptz
+	ID                     int16
+	PlazoEdicionHoras      int32
+	ActualizadoPor         pgtype.Int8
+	ActualizadoEn          pgtype.Timestamptz
+	PlazoJustificacionDias int32
 }
 
 type RegistrosDocente struct {

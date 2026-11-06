@@ -36,6 +36,7 @@ type ServicioAsistencia interface {
 	CorregirRegistro(ctx context.Context, usuarioID, registroID int64, estado, observacion, motivo string) error
 	PlazoEdicion(ctx context.Context) (ParametrosAsistencia, error)
 	ConfigurarPlazo(ctx context.Context, usuarioID int64, horas int) error
+	ConfigurarPlazoJustificacion(ctx context.Context, usuarioID int64, dias int) error
 	ExportarDocente(ctx context.Context, docenteID int64, desde, hasta time.Time) ([]RegistroExportacion, error)
 	ExportarSeccion(ctx context.Context, seccionID, cursoID int64, desde, hasta time.Time) ([]RegistroExportacion, error)
 }
@@ -79,6 +80,7 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Post("/asistencia/asignaciones/{id}/cierre", m.cerrarAsignacion)
 		escritura.Post("/asistencia/consulta/correccion", m.corregirAsistencia)
 		escritura.Post("/configuracion/asistencia", m.configurarParametros)
+		escritura.Post("/configuracion/asistencia/justificaciones", m.configurarPlazoJustificacion)
 	})
 
 	enrutador.Group(func(exportacion chi.Router) {

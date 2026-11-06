@@ -39,13 +39,15 @@ type Marcacion struct {
 	Estado        string
 	CreadaEn      time.Time
 	RegistradaPor *int64
+	Justificada   bool
 }
 
 // ParametrosAsistencia contiene el plazo de edición del docente.
 type ParametrosAsistencia struct {
-	PlazoEdicionHoras int
-	ActualizadoPor    *int64
-	ActualizadoEn     time.Time
+	PlazoEdicionHoras      int
+	PlazoJustificacionDias int
+	ActualizadoPor         *int64
+	ActualizadoEn          time.Time
 }
 
 // ClaseAsignada es una clase que el docente puede abrir en una fecha.

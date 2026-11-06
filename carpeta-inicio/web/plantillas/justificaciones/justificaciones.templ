@@ -1,0 +1,160 @@
+package justificaciones
+
+import "asistencia/web/plantillas/paginas"
+
+templ PanelJustificaciones(datos Panel) {
+	@paginas.BaseSesion(datos.Titulo, datos.Nombre, datos.Rol, datos.TokenCSRF) {
+		<div class="flex flex-wrap items-center justify-between gap-3">
+			<h1 class="text-2xl font-semibold text-slate-900">{ datos.Titulo }</h1>
+			<a href="/alumnos" class="text-sm font-medium text-blue-700">Ir a alumnos</a>
+		</div>
+
+		if datos.Mensaje != "" {
+			<p role="status" class="mt-4 rounded border border-emerald-200 bg-emerald-50 p-3 text-emerald-800">{ datos.Mensaje }</p>
+		}
+		if datos.Error != "" {
+			<p role="alert" class="mt-4 rounded border border-red-200 bg-red-50 p-3 text-red-800">{ datos.Error }</p>
+		}
+
+		<div class="mt-4 space-y-3">
+			if len(datos.Justificaciones) == 0 {
+				<p class="rounded border border-slate-200 bg-white p-6 text-center text-slate-500">No hay justificaciones para mostrar.</p>
+			}
+			for _, justificacion := range datos.Justificaciones {
+				<article class="rounded border border-slate-200 bg-white p-4">
+					<div class="flex flex-wrap items-start justify-between gap-2">
+						<div>
+							<a href={ "/justificaciones/" + numero(justificacion.ID) } class="text-lg font-semibold text-blue-800">{ justificacion.Alumno }</a>
+							<p class="text-sm text-slate-600">{ justificacion.Seccion } · { justificacion.Motivo }</p>
+						</div>
+						<span class="rounded bg-slate-100 px-2 py-1 text-sm font-medium text-slate-700">{ justificacion.Estado }</span>
+					</div>
+					<p class="mt-2 text-sm text-slate-600">Registrada { justificacion.CreadaEn } por { justificacion.Registrante }</p>
+					<div class="mt-2 flex flex-wrap gap-2 text-sm">
+						for _, fecha := range justificacion.Fechas {
+							<span class="rounded border border-slate-200 px-2 py-1 text-slate-700">{ fecha.Fecha } · { fecha.Tipo } · { fecha.Estado }</span>
+						}
+					</div>
+				</article>
+			}
+		</div>
+	}
+}
+
+templ FormularioJustificacion(datos Formulario) {
+	@paginas.BaseSesion("Nueva justificación", datos.Nombre, datos.Rol, datos.TokenCSRF) {
+		<div class="mx-auto max-w-2xl">
+			<a href={ "/alumnos/" + numero(datos.AlumnoID) } class="text-sm font-medium text-blue-700">← Volver al alumno</a>
+			<h1 class="mt-1 text-2xl font-semibold text-slate-900">Justificar falta o tardanza</h1>
+			<p class="mt-1 text-sm text-slate-600">{ datos.Alumno } · { datos.Seccion }</p>
+
+			if datos.Error != "" {
+				<p role="alert" class="mt-4 rounded border border-red-200 bg-red-50 p-3 text-red-800">{ datos.Error }</p>
+			}
+
+			<form method="post" action="/justificaciones" enctype="multipart/form-data" class="mt-4 space-y-4 rounded border border-slate-200 bg-white p-4">
+				<input type="hidden" name="token_csrf" value={ datos.TokenCSRF }/>
+				<input type="hidden" name="alumno_id" value={ numero(datos.AlumnoID) }/>
+				<label class="block">
+					<span class="text-sm font-medium text-slate-700">Desde *</span>
+					<input type="date" name="desde" value={ datos.Desde } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium text-slate-700">Hasta *</span>
+					<input type="date" name="hasta" value={ datos.Hasta } required class="mt-1 w-full rounded border border-slate-300 p-2"/>
+				</label>
+				<label class="block">
+					<span class="text-sm font-medium text-slate-700">Motivo *</span>
+					<textarea name="motivo" rows="3" required class="mt-1 w-full rounded border border-slate-300 p-2">{ datos.Motivo }</textarea>
+				</label>
+				<div>
+					<p class="text-sm font-medium text-slate-700">Adjuntos (opcional, hasta 3; PDF, JPG o PNG de 5 MB)</p>
+					<input type="file" name="adjunto1" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full text-sm"/>
+					<input type="file" name="adjunto2" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full text-sm"/>
+					<input type="file" name="adjunto3" accept=".pdf,.jpg,.jpeg,.png" class="mt-1 block w-full text-sm"/>
+				</div>
+				<button type="submit" class="w-full rounded bg-blue-700 px-4 py-3 font-semibold text-white">Registrar justificación</button>
+			</form>
+		</div>
+	}
+}
+
+templ DetalleJustificacion(datos Detalle) {
+	@paginas.BaseSesion("Justificación", datos.Nombre, datos.Rol, datos.TokenCSRF) {
+		<a href="/justificaciones" class="text-sm font-medium text-blue-700">← Justificaciones</a>
+		<h1 class="mt-1 text-2xl font-semibold text-slate-900">{ datos.Justificacion.Alumno }</h1>
+		<p class="text-sm text-slate-600">{ datos.Justificacion.Seccion } · { datos.Justificacion.Estado }</p>
+
+		if datos.Mensaje != "" {
+			<p role="status" class="mt-4 rounded border border-emerald-200 bg-emerald-50 p-3 text-emerald-800">{ datos.Mensaje }</p>
+		}
+		if datos.Error != "" {
+			<p role="alert" class="mt-4 rounded border border-red-200 bg-red-50 p-3 text-red-800">{ datos.Error }</p>
+		}
+
+		<div class="mt-4 rounded border border-slate-200 bg-white p-4">
+			<p class="text-sm text-slate-500">Motivo</p>
+			<p class="font-medium">{ datos.Justificacion.Motivo }</p>
+			<p class="mt-3 text-sm text-slate-500">Fechas</p>
+			<div class="mt-1 flex flex-wrap gap-2 text-sm">
+				for _, fecha := range datos.Justificacion.Fechas {
+					<span class="rounded border border-slate-200 px-2 py-1">{ fecha.Fecha } · { fecha.Tipo } · { fecha.Estado }</span>
+				}
+			</div>
+			if datos.Justificacion.Comentario != "" {
+				<p class="mt-3 text-sm text-slate-500">Comentario</p>
+				<p>{ datos.Justificacion.Comentario }</p>
+			}
+			if datos.Justificacion.MotivoAnulacion != "" {
+				<p class="mt-3 text-sm text-slate-500">Motivo de anulación</p>
+				<p>{ datos.Justificacion.MotivoAnulacion }</p>
+			}
+		</div>
+
+		if len(datos.Justificacion.Adjuntos) > 0 {
+			<div class="mt-4 rounded border border-slate-200 bg-white p-4">
+				<h2 class="text-base font-semibold">Documentos</h2>
+				<ul class="mt-2 space-y-1 text-sm">
+					for _, adjunto := range datos.Justificacion.Adjuntos {
+						<li>
+							<a href={ "/justificaciones/adjuntos/" + numero(adjunto.ID) } class="text-blue-700">{ adjunto.Nombre }</a>
+							<span class="text-slate-500">({ adjunto.Tamano })</span>
+						</li>
+					}
+				</ul>
+			</div>
+		}
+
+		if datos.Justificacion.PuedeResolver {
+			<div class="mt-4 grid gap-4 sm:grid-cols-2">
+				<form method="post" action={ "/justificaciones/" + numero(datos.Justificacion.ID) + "/aprobar" } class="rounded border border-emerald-200 bg-emerald-50 p-4">
+					<input type="hidden" name="token_csrf" value={ datos.TokenCSRF }/>
+					<label class="block text-sm">
+						<span class="font-medium text-emerald-900">Comentario (opcional)</span>
+						<textarea name="comentario" rows="2" class="mt-1 w-full rounded border border-emerald-300 p-2"></textarea>
+					</label>
+					<button type="submit" class="mt-2 w-full rounded bg-emerald-700 px-4 py-2 font-semibold text-white">Aprobar</button>
+				</form>
+				<form method="post" action={ "/justificaciones/" + numero(datos.Justificacion.ID) + "/rechazar" } class="rounded border border-red-200 bg-red-50 p-4">
+					<input type="hidden" name="token_csrf" value={ datos.TokenCSRF }/>
+					<label class="block text-sm">
+						<span class="font-medium text-red-900">Comentario obligatorio</span>
+						<textarea name="comentario" rows="2" required class="mt-1 w-full rounded border border-red-300 p-2"></textarea>
+					</label>
+					<button type="submit" class="mt-2 w-full rounded bg-red-700 px-4 py-2 font-semibold text-white">Rechazar</button>
+				</form>
+			</div>
+		}
+
+		if datos.Justificacion.PuedeAnular {
+			<form method="post" action={ "/justificaciones/" + numero(datos.Justificacion.ID) + "/anular" } class="mt-4 rounded border border-amber-200 bg-amber-50 p-4">
+				<input type="hidden" name="token_csrf" value={ datos.TokenCSRF }/>
+				<label class="block text-sm">
+					<span class="font-medium text-amber-900">Motivo de anulación *</span>
+					<textarea name="motivo" rows="2" required class="mt-1 w-full rounded border border-amber-300 p-2"></textarea>
+				</label>
+				<button type="submit" class="mt-2 rounded bg-amber-700 px-4 py-2 font-semibold text-white">Anular justificación</button>
+			</form>
+		}
+	}
+}

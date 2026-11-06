@@ -98,6 +98,12 @@ El sistema aplica dos reglas:
 Si un enlace no aparece en la interfaz, tampoco se puede ejecutar escribiendo la dirección
 directamente.
 
+## Justificaciones
+
+El director puede aprobar o rechazar justificaciones pendientes desde `/justificaciones`. El
+rechazo exige un comentario. No puede anular justificaciones ni resolver las que él mismo registró;
+la anulación corresponde al administrador.
+
 ## Alertas
 
 El director no recibe ni accede al panel de alertas en esta versión. Puede consultar las faltas y

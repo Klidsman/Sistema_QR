@@ -83,3 +83,11 @@ func ValidarPlazoHoras(horas int) error {
 	}
 	return nil
 }
+
+// ValidarPlazoJustificacion exige un plazo entre 1 y 60 días.
+func ValidarPlazoJustificacion(dias int) error {
+	if dias < 1 || dias > 60 {
+		return ErrPlazoJustificacionFueraDeRango
+	}
+	return nil
+}

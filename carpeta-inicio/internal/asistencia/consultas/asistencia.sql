@@ -139,7 +139,27 @@ SELECT count(*)
 FROM marcaciones
 WHERE alumno_id = $1
   AND fecha BETWEEN $2 AND $3
-  AND estado IN ('tardanza', 'tardanza_grave');
+  AND estado IN ('tardanza', 'tardanza_grave')
+  AND NOT justificada;
+
+-- name: MarcacionDeAlumnoFecha :one
+SELECT id, alumno_id, fecha, hora, estado, justificada
+FROM marcaciones
+WHERE alumno_id = $1 AND fecha = $2;
+
+-- name: MarcarMarcacionJustificada :exec
+UPDATE marcaciones
+SET justificada = $3
+WHERE alumno_id = $1 AND fecha = $2;
+
+-- name: DocenteAsignadoASeccionFecha :one
+SELECT EXISTS (
+    SELECT 1 FROM asignaciones_docente
+    WHERE docente_id = $1
+      AND seccion_id = $2
+      AND fecha_inicio <= $3
+      AND (fecha_fin IS NULL OR fecha_fin >= $3)
+);
 
 -- name: ExisteMarcacion :one
 SELECT EXISTS (
@@ -154,7 +174,7 @@ WHERE seccion_id = $1
   AND (fecha_fin IS NULL OR fecha_fin >= $2);
 
 -- name: ObtenerParametrosAsistencia :one
-SELECT plazo_edicion_horas, actualizado_por, actualizado_en
+SELECT plazo_edicion_horas, plazo_justificacion_dias, actualizado_por, actualizado_en
 FROM parametros_asistencia
 WHERE id = 1;
 
@@ -164,4 +184,12 @@ SET plazo_edicion_horas = $1,
     actualizado_por = $2,
     actualizado_en = now()
 WHERE id = 1
-RETURNING plazo_edicion_horas, actualizado_por, actualizado_en;
+RETURNING plazo_edicion_horas, plazo_justificacion_dias, actualizado_por, actualizado_en;
+
+-- name: ActualizarPlazoJustificacion :one
+UPDATE parametros_asistencia
+SET plazo_justificacion_dias = $1,
+    actualizado_por = $2,
+    actualizado_en = now()
+WHERE id = 1
+RETURNING plazo_edicion_horas, plazo_justificacion_dias, actualizado_por, actualizado_en;

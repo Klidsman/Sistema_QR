@@ -63,6 +63,18 @@ sea el mismo curso y la misma sección.
 El archivo incluye fecha, curso, sección, bloque, identificador, alumno, estado, observación, hora
 QR y docente. Como docente solo se exportan tus propios registros.
 
+## Justificaciones
+
+Desde la ficha del alumno puedes abrir **Justificar falta o tardanza**. Indica el motivo y una
+fecha o un rango. Solo se justifican días con falta o tardanza oficial; los días presentes, no
+laborables o ya justificados se omiten y se informan.
+
+La justificación queda **pendiente** hasta que el director o el administrador la resuelvan. Puedes
+adjuntar hasta tres documentos PDF, JPG o PNG de 5 MB. El plazo para presentarla se configura en la
+administración (5 días por defecto).
+
+En **Mis justificaciones** ves su estado y los comentarios de resolución.
+
 ## Alertas
 
 El indicador **Alertas** de la barra superior muestra cuántas alertas nuevas tienes y se actualiza

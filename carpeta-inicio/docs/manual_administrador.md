@@ -204,6 +204,19 @@ configuración anterior ni las asistencias ya registradas.
 El registro del docente es personal y no reemplaza la asistencia oficial del QR. Las correcciones
 del administrador y los cambios de plazo quedan auditados.
 
+## Justificaciones
+
+- **Registro**: el docente de la sección o el administrador registra una justificación con motivo,
+  rango de fechas y hasta tres adjuntos PDF/JPG/PNG de 5 MB.
+- **Resolución**: el director o el administrador aprueba o rechaza. El rechazo exige comentario.
+  Nadie puede resolver una justificación que registró.
+- **Anulación**: solo el administrador anula una justificación aprobada, indicando el motivo. El
+  registro vuelve a su estado original.
+- **Plazo**: se configura en `/configuracion/asistencia` (5 días por defecto). Fuera de plazo la
+  justificación se rechaza al registrarse.
+- **Alertas**: al aprobar, las alertas afectadas se marcan como “situación cambiada” y no se
+  eliminan.
+
 ## Alertas internas
 
 - **Panel** (`/alertas`): muestra todas las alertas del colegio con filtros por fecha, sección,

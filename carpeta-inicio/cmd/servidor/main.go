@@ -25,6 +25,7 @@ import (
 	"asistencia/internal/alumnos"
 	"asistencia/internal/asistencia"
 	"asistencia/internal/autenticacion"
+	"asistencia/internal/justificaciones"
 	"asistencia/internal/plataforma/almacenamiento"
 	"asistencia/internal/plataforma/basedatos"
 	"asistencia/internal/plataforma/configuracion"
@@ -192,12 +193,13 @@ func servir(cfg configuracion.Configuracion) error {
 		Registro: registrador,
 	})
 	servicioImportacion := alumnos.NuevoServicioImportacion(pool, servicioAcademico, cfg.ImportacionMaxFilas)
+	almacen := abrirAlmacen(cfg.Almacenamiento)
 	manejadorAlumnos := alumnos.NuevoManejador(alumnos.Dependencias{
 		Alumnos:             servicioAlumnos,
 		QR:                  servicioAlumnos,
 		Importacion:         servicioImportacion,
 		Secciones:           servicioAcademico,
-		Almacen:             abrirAlmacen(cfg.Almacenamiento),
+		Almacen:             almacen,
 		Sesiones:            sesiones,
 		Registro:            registrador,
 		FotoMaximaMB:        cfg.FotoTamanioMaximoMB,
@@ -218,6 +220,21 @@ func servir(cfg configuracion.Configuracion) error {
 		Sesiones: sesiones,
 		Registro: registrador,
 	})
+	servicioJustificaciones := justificaciones.NuevoServicio(justificaciones.Dependencias{
+		Alumnos:    servicioAlumnos,
+		Academico:  servicioConfiguracion,
+		Asistencia: servicioAsistencia,
+		Alertas:    servicioAlertas,
+		Almacen:    almacen,
+		Repo:       justificaciones.NuevoRepositorio(pool),
+	})
+	servicioAlertas.ConJustificaciones(servicioJustificaciones)
+	manejadorJustificaciones := justificaciones.NuevoManejador(justificaciones.DependenciasManejador{
+		Servicio: servicioJustificaciones,
+		Sesiones: sesiones,
+		Registro: registrador,
+	})
+
 	programadorAlertas := alertas.NuevoProgramador(servicioAlertas, registrador, alertas.OpcionesProgramador{})
 	if err := programadorAlertas.Iniciar(ctx); err != nil {
 		return err
@@ -238,14 +255,15 @@ func servir(cfg configuracion.Configuracion) error {
 	servidor := &http.Server{
 		Addr: fmt.Sprintf(":%d", cfg.Puerto),
 		Handler: rutas.NuevoEnrutador(rutas.Dependencias{
-			Sesiones:      sesiones,
-			Verificador:   pool,
-			Autenticacion: ingreso,
-			Alumnos:       manejadorAlumnos,
-			Academico:     manejadorConfiguracion,
-			Asistencia:    manejadorAsistencia,
-			Alertas:       manejadorAlertas,
-			Porteria:      manejadorPorteria,
+			Sesiones:        sesiones,
+			Verificador:     pool,
+			Autenticacion:   ingreso,
+			Alumnos:         manejadorAlumnos,
+			Academico:       manejadorConfiguracion,
+			Asistencia:      manejadorAsistencia,
+			Alertas:         manejadorAlertas,
+			Porteria:        manejadorPorteria,
+			Justificaciones: manejadorJustificaciones,
 		}),
 		ReadHeaderTimeout: tiempoLecturaEncabezados,
 	}

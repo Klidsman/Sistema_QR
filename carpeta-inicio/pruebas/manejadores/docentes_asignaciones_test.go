@@ -220,6 +220,10 @@ func (a *asistenciaFalsa) PlazoEdicion(context.Context) (asistencia.ParametrosAs
 	return a.plazo, nil
 }
 
+func (a *asistenciaFalsa) ConfigurarPlazoJustificacion(_ context.Context, _ int64, _ int) error {
+	return nil
+}
+
 func (a *asistenciaFalsa) ConfigurarPlazo(_ context.Context, _ int64, horas int) error {
 	a.plazoNuevo = horas
 	return nil

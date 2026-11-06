@@ -114,3 +114,12 @@ func fechaOpcional(fecha *time.Time) pgtype.Date {
 	}
 	return pgtype.Date{Time: *fecha, Valid: true}
 }
+
+// DocenteAsignadoASeccionFecha indica si el docente tiene asignación vigente a la sección.
+func (r *Repositorio) DocenteAsignadoASeccionFecha(ctx context.Context, docenteID, seccionID int64, fecha time.Time) (bool, error) {
+	return r.consultas.DocenteAsignadoASeccionFecha(ctx, generado.DocenteAsignadoASeccionFechaParams{
+		DocenteID:   docenteID,
+		SeccionID:   seccionID,
+		FechaInicio: pgtype.Date{Time: fecha, Valid: true},
+	})
+}

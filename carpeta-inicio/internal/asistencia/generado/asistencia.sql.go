@@ -17,7 +17,7 @@ SET plazo_edicion_horas = $1,
     actualizado_por = $2,
     actualizado_en = now()
 WHERE id = 1
-RETURNING plazo_edicion_horas, actualizado_por, actualizado_en
+RETURNING plazo_edicion_horas, plazo_justificacion_dias, actualizado_por, actualizado_en
 `
 
 type ActualizarPlazoEdicionParams struct {
@@ -26,15 +26,54 @@ type ActualizarPlazoEdicionParams struct {
 }
 
 type ActualizarPlazoEdicionRow struct {
-	PlazoEdicionHoras int32
-	ActualizadoPor    pgtype.Int8
-	ActualizadoEn     pgtype.Timestamptz
+	PlazoEdicionHoras      int32
+	PlazoJustificacionDias int32
+	ActualizadoPor         pgtype.Int8
+	ActualizadoEn          pgtype.Timestamptz
 }
 
 func (q *Queries) ActualizarPlazoEdicion(ctx context.Context, arg ActualizarPlazoEdicionParams) (ActualizarPlazoEdicionRow, error) {
 	row := q.db.QueryRow(ctx, actualizarPlazoEdicion, arg.PlazoEdicionHoras, arg.ActualizadoPor)
 	var i ActualizarPlazoEdicionRow
-	err := row.Scan(&i.PlazoEdicionHoras, &i.ActualizadoPor, &i.ActualizadoEn)
+	err := row.Scan(
+		&i.PlazoEdicionHoras,
+		&i.PlazoJustificacionDias,
+		&i.ActualizadoPor,
+		&i.ActualizadoEn,
+	)
+	return i, err
+}
+
+const actualizarPlazoJustificacion = `-- name: ActualizarPlazoJustificacion :one
+UPDATE parametros_asistencia
+SET plazo_justificacion_dias = $1,
+    actualizado_por = $2,
+    actualizado_en = now()
+WHERE id = 1
+RETURNING plazo_edicion_horas, plazo_justificacion_dias, actualizado_por, actualizado_en
+`
+
+type ActualizarPlazoJustificacionParams struct {
+	PlazoJustificacionDias int32
+	ActualizadoPor         pgtype.Int8
+}
+
+type ActualizarPlazoJustificacionRow struct {
+	PlazoEdicionHoras      int32
+	PlazoJustificacionDias int32
+	ActualizadoPor         pgtype.Int8
+	ActualizadoEn          pgtype.Timestamptz
+}
+
+func (q *Queries) ActualizarPlazoJustificacion(ctx context.Context, arg ActualizarPlazoJustificacionParams) (ActualizarPlazoJustificacionRow, error) {
+	row := q.db.QueryRow(ctx, actualizarPlazoJustificacion, arg.PlazoJustificacionDias, arg.ActualizadoPor)
+	var i ActualizarPlazoJustificacionRow
+	err := row.Scan(
+		&i.PlazoEdicionHoras,
+		&i.PlazoJustificacionDias,
+		&i.ActualizadoPor,
+		&i.ActualizadoEn,
+	)
 	return i, err
 }
 
@@ -113,6 +152,7 @@ FROM marcaciones
 WHERE alumno_id = $1
   AND fecha BETWEEN $2 AND $3
   AND estado IN ('tardanza', 'tardanza_grave')
+  AND NOT justificada
 `
 
 type ContarTardanzasAlumnoRangoParams struct {
@@ -244,6 +284,29 @@ func (q *Queries) DocenteAsignadoAClase(ctx context.Context, arg DocenteAsignado
 		arg.SeccionID,
 		arg.FechaInicio,
 	)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const docenteAsignadoASeccionFecha = `-- name: DocenteAsignadoASeccionFecha :one
+SELECT EXISTS (
+    SELECT 1 FROM asignaciones_docente
+    WHERE docente_id = $1
+      AND seccion_id = $2
+      AND fecha_inicio <= $3
+      AND (fecha_fin IS NULL OR fecha_fin >= $3)
+)
+`
+
+type DocenteAsignadoASeccionFechaParams struct {
+	DocenteID   int64
+	SeccionID   int64
+	FechaInicio pgtype.Date
+}
+
+func (q *Queries) DocenteAsignadoASeccionFecha(ctx context.Context, arg DocenteAsignadoASeccionFechaParams) (bool, error) {
+	row := q.db.QueryRow(ctx, docenteAsignadoASeccionFecha, arg.DocenteID, arg.SeccionID, arg.FechaInicio)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
@@ -465,15 +528,25 @@ type ListarMarcacionesDelRangoParams struct {
 	Fecha_2 pgtype.Date
 }
 
-func (q *Queries) ListarMarcacionesDelRango(ctx context.Context, arg ListarMarcacionesDelRangoParams) ([]Marcacione, error) {
+type ListarMarcacionesDelRangoRow struct {
+	ID            int64
+	AlumnoID      int64
+	Fecha         pgtype.Date
+	Hora          pgtype.Timestamptz
+	Estado        string
+	CreadaEn      pgtype.Timestamptz
+	RegistradaPor pgtype.Int8
+}
+
+func (q *Queries) ListarMarcacionesDelRango(ctx context.Context, arg ListarMarcacionesDelRangoParams) ([]ListarMarcacionesDelRangoRow, error) {
 	rows, err := q.db.Query(ctx, listarMarcacionesDelRango, arg.Fecha, arg.Fecha_2)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Marcacione
+	var items []ListarMarcacionesDelRangoRow
 	for rows.Next() {
-		var i Marcacione
+		var i ListarMarcacionesDelRangoRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.AlumnoID,
@@ -792,21 +865,78 @@ func (q *Queries) ListarRegistrosExportacionSeccion(ctx context.Context, arg Lis
 	return items, nil
 }
 
+const marcacionDeAlumnoFecha = `-- name: MarcacionDeAlumnoFecha :one
+SELECT id, alumno_id, fecha, hora, estado, justificada
+FROM marcaciones
+WHERE alumno_id = $1 AND fecha = $2
+`
+
+type MarcacionDeAlumnoFechaParams struct {
+	AlumnoID int64
+	Fecha    pgtype.Date
+}
+
+type MarcacionDeAlumnoFechaRow struct {
+	ID          int64
+	AlumnoID    int64
+	Fecha       pgtype.Date
+	Hora        pgtype.Timestamptz
+	Estado      string
+	Justificada bool
+}
+
+func (q *Queries) MarcacionDeAlumnoFecha(ctx context.Context, arg MarcacionDeAlumnoFechaParams) (MarcacionDeAlumnoFechaRow, error) {
+	row := q.db.QueryRow(ctx, marcacionDeAlumnoFecha, arg.AlumnoID, arg.Fecha)
+	var i MarcacionDeAlumnoFechaRow
+	err := row.Scan(
+		&i.ID,
+		&i.AlumnoID,
+		&i.Fecha,
+		&i.Hora,
+		&i.Estado,
+		&i.Justificada,
+	)
+	return i, err
+}
+
+const marcarMarcacionJustificada = `-- name: MarcarMarcacionJustificada :exec
+UPDATE marcaciones
+SET justificada = $3
+WHERE alumno_id = $1 AND fecha = $2
+`
+
+type MarcarMarcacionJustificadaParams struct {
+	AlumnoID    int64
+	Fecha       pgtype.Date
+	Justificada bool
+}
+
+func (q *Queries) MarcarMarcacionJustificada(ctx context.Context, arg MarcarMarcacionJustificadaParams) error {
+	_, err := q.db.Exec(ctx, marcarMarcacionJustificada, arg.AlumnoID, arg.Fecha, arg.Justificada)
+	return err
+}
+
 const obtenerParametrosAsistencia = `-- name: ObtenerParametrosAsistencia :one
-SELECT plazo_edicion_horas, actualizado_por, actualizado_en
+SELECT plazo_edicion_horas, plazo_justificacion_dias, actualizado_por, actualizado_en
 FROM parametros_asistencia
 WHERE id = 1
 `
 
 type ObtenerParametrosAsistenciaRow struct {
-	PlazoEdicionHoras int32
-	ActualizadoPor    pgtype.Int8
-	ActualizadoEn     pgtype.Timestamptz
+	PlazoEdicionHoras      int32
+	PlazoJustificacionDias int32
+	ActualizadoPor         pgtype.Int8
+	ActualizadoEn          pgtype.Timestamptz
 }
 
 func (q *Queries) ObtenerParametrosAsistencia(ctx context.Context) (ObtenerParametrosAsistenciaRow, error) {
 	row := q.db.QueryRow(ctx, obtenerParametrosAsistencia)
 	var i ObtenerParametrosAsistenciaRow
-	err := row.Scan(&i.PlazoEdicionHoras, &i.ActualizadoPor, &i.ActualizadoEn)
+	err := row.Scan(
+		&i.PlazoEdicionHoras,
+		&i.PlazoJustificacionDias,
+		&i.ActualizadoPor,
+		&i.ActualizadoEn,
+	)
 	return i, err
 }

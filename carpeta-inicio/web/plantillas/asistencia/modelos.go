@@ -75,9 +75,10 @@ type ConsultaFilaVista struct {
 
 // ParametrosVista son los parámetros de asistencia para mostrar.
 type ParametrosVista struct {
-	Plazo          int
-	Actualizado    string
-	ActualizadoPor string
+	Plazo              int
+	PlazoJustificacion int
+	Actualizado        string
+	ActualizadoPor     string
 }
 
 // AsignacionVista es una asignación preparada para mostrarse.
