@@ -83,7 +83,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 				return templ_7745c5c3_Err
 			}
 			if rol != "docente" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p class=\"mt-6 rounded border border-amber-200 bg-amber-50 p-4 text-amber-900\">Como administrador, abra una clase desde la consulta o desde el enlace de una sección. La vista de registro está pensada para el docente asignado.</p>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<nav class=\"mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4\" aria-label=\"Gestión de asistencia\"><a href=\"/asistencia/asignaciones\" class=\"rounded border border-slate-200 bg-white p-4 hover:border-blue-300\"><span class=\"font-medium text-blue-800\">Asignaciones</span> <span class=\"mt-1 block text-sm text-slate-600\">Docente, curso y sección.</span></a> <a href=\"/asistencia/consulta\" class=\"rounded border border-slate-200 bg-white p-4 hover:border-blue-300\"><span class=\"font-medium text-blue-800\">Consulta de asistencia</span> <span class=\"mt-1 block text-sm text-slate-600\">Registros del docente por fecha.</span></a> <a href=\"/configuracion/asistencia\" class=\"rounded border border-slate-200 bg-white p-4 hover:border-blue-300\"><span class=\"font-medium text-blue-800\">Parámetros</span> <span class=\"mt-1 block text-sm text-slate-600\">Plazo de edición y justificaciones.</span></a> <a href=\"/asistencia/exportar\" class=\"rounded border border-slate-200 bg-white p-4 hover:border-blue-300\"><span class=\"font-medium text-blue-800\">Exportar</span> <span class=\"mt-1 block text-sm text-slate-600\">Descargar registros de asistencia.</span></a></nav>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -95,7 +95,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fecha)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 38, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 52, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -123,7 +123,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(asignacion.Curso)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 50, Col: 63}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 64, Col: 63}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -136,7 +136,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(asignacion.Seccion)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 51, Col: 62}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 65, Col: 62}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -154,7 +154,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 						var templ_7745c5c3_Var8 string
 						templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(len(asignacion.Clases))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 55, Col: 33}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 69, Col: 33}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 						if templ_7745c5c3_Err != nil {
@@ -182,7 +182,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 						var templ_7745c5c3_Var9 string
 						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(asignacion.Mensaje)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 66, Col: 28}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 80, Col: 28}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 						if templ_7745c5c3_Err != nil {
@@ -206,7 +206,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 							var templ_7745c5c3_Var10 string
 							templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.NewAttributeExpression(clase.URL).ResolveURL(ctx)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 74, Col: 29}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 88, Col: 29}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 							if templ_7745c5c3_Err != nil {
@@ -219,7 +219,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 							var templ_7745c5c3_Var11 string
 							templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(clase.Bloque)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 75, Col: 72}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 89, Col: 72}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 							if templ_7745c5c3_Err != nil {
@@ -232,7 +232,7 @@ func Seleccion(usuario string, rol string, tokenCSRF string, fecha string, asign
 							var templ_7745c5c3_Var12 string
 							templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(clase.Horario)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 76, Col: 74}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/seleccion.templ`, Line: 90, Col: 74}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 							if templ_7745c5c3_Err != nil {

@@ -64,6 +64,10 @@ templ BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) {
 						if rol == "administrador" || rol == "director" || rol == "docente" {
 							<a href="/asistencia" class="font-medium text-slate-700 hover:text-blue-700">Asistencia</a>
 						}
+						if rol == "administrador" || rol == "director" {
+							<a href="/asistencia/asignaciones" class="font-medium text-slate-700 hover:text-blue-700">Asignaciones</a>
+							<a href="/asistencia/consulta" class="font-medium text-slate-700 hover:text-blue-700">Consulta de asistencia</a>
+						}
 						if rol == "administrador" || rol == "porteria" {
 							<a href="/porteria" class="font-medium text-slate-700 hover:text-blue-700">Portería</a>
 						}

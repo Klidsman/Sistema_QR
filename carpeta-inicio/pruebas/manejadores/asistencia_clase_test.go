@@ -177,3 +177,17 @@ func TestAsistenciaClase_SinAsignacionesLoExplica(t *testing.T) {
 	require.Equal(t, http.StatusOK, respuesta.Code)
 	assert.Contains(t, respuesta.Body.String(), "No tenés asignaciones vigentes para esa fecha")
 }
+
+func TestAsistenciaClase_AdministradorVeAccesosDeGestion(t *testing.T) {
+	manejador, sesiones := nuevoManejadorAsistencia(t, &asistenciaFalsa{})
+
+	peticion := peticionConSesion(t, sesiones, http.MethodGet, "/asistencia", nil, "", "administrador")
+	respuesta := ejecutarAsistencia(manejador, peticion)
+
+	require.Equal(t, http.StatusOK, respuesta.Code)
+	cuerpo := respuesta.Body.String()
+	assert.Contains(t, cuerpo, `href="/asistencia/asignaciones"`)
+	assert.Contains(t, cuerpo, `href="/asistencia/consulta"`)
+	assert.Contains(t, cuerpo, `href="/configuracion/asistencia"`)
+	assert.Contains(t, cuerpo, `href="/asistencia/exportar"`)
+}

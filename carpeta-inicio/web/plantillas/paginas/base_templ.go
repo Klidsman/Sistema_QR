@@ -171,19 +171,25 @@ func BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) temp
 				return templ_7745c5c3_Err
 			}
 		}
+		if rol == "administrador" || rol == "director" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<a href=\"/asistencia/asignaciones\" class=\"font-medium text-slate-700 hover:text-blue-700\">Asignaciones</a> <a href=\"/asistencia/consulta\" class=\"font-medium text-slate-700 hover:text-blue-700\">Consulta de asistencia</a> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
 		if rol == "administrador" || rol == "porteria" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<a href=\"/porteria\" class=\"font-medium text-slate-700 hover:text-blue-700\">Portería</a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<a href=\"/porteria\" class=\"font-medium text-slate-700 hover:text-blue-700\">Portería</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if rol == "administrador" || rol == "director" || rol == "docente" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<a href=\"/justificaciones\" class=\"font-medium text-slate-700 hover:text-blue-700\">Justificaciones</a> <a href=\"/reportes/diario\" class=\"font-medium text-slate-700 hover:text-blue-700\">Reportes</a> <a href=\"/reportes/panel\" class=\"font-medium text-slate-700 hover:text-blue-700\">Panel del día</a> <a href=\"/reportes/resumen\" class=\"font-medium text-slate-700 hover:text-blue-700\">Resumen</a> <a href=\"/reportes/reiteracion\" class=\"font-medium text-slate-700 hover:text-blue-700\">Reiteración</a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<a href=\"/justificaciones\" class=\"font-medium text-slate-700 hover:text-blue-700\">Justificaciones</a> <a href=\"/reportes/diario\" class=\"font-medium text-slate-700 hover:text-blue-700\">Reportes</a> <a href=\"/reportes/panel\" class=\"font-medium text-slate-700 hover:text-blue-700\">Panel del día</a> <a href=\"/reportes/resumen\" class=\"font-medium text-slate-700 hover:text-blue-700\">Resumen</a> <a href=\"/reportes/reiteracion\" class=\"font-medium text-slate-700 hover:text-blue-700\">Reiteración</a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</nav></div></header><main class=\"mx-auto w-full max-w-6xl p-4 sm:p-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</nav></div></header><main class=\"mx-auto w-full max-w-6xl p-4 sm:p-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -191,7 +197,7 @@ func BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

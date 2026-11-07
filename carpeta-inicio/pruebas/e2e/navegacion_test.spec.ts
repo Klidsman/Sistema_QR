@@ -23,6 +23,9 @@ test.describe('Navegación principal', () => {
     await navegacion.getByRole('link', { name: 'Configuración', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Configuración' })).toBeVisible();
 
+    await navegacion.getByRole('link', { name: 'Asignaciones', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Asignaciones de docente' })).toBeVisible();
+
     await navegacion.getByRole('link', { name: 'Docentes', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Docentes' })).toBeVisible();
 
