@@ -188,402 +188,480 @@ func Clase(usuario string, rol string, tokenCSRF string, cabecera *ClaseVista, f
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"mt-4 flex flex-wrap gap-2\"><form method=\"post\" action=\"/asistencia/clase/todos\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<section id=\"qr-clase\" data-fecha=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var11 string
-				templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
+				templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression(cabecera.FechaISO).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 35, Col: 61}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 34, Col: 34}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"> <input type=\"hidden\" name=\"fecha\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" data-seccion=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var12 string
-				templ_7745c5c3_Var12, templ_7745c5c3_Err = templruntime.NewAttributeExpression(cabecera.FechaISO).Resolve(ctx)
+				templ_7745c5c3_Var12, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.SeccionID)).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 36, Col: 64}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 35, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\"> <input type=\"hidden\" name=\"seccion_id\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" data-curso=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var13 string
-				templ_7745c5c3_Var13, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.SeccionID)).Resolve(ctx)
+				templ_7745c5c3_Var13, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.CursoID)).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 37, Col: 89}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 36, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\"> <input type=\"hidden\" name=\"curso_id\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" data-bloque=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var14 string
-				templ_7745c5c3_Var14, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.CursoID)).Resolve(ctx)
+				templ_7745c5c3_Var14, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.Bloque)).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 38, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 37, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\"> <input type=\"hidden\" name=\"bloque\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"mt-4 rounded border border-slate-200 bg-white p-4\"><h2 class=\"text-base font-semibold\">Escanear QR del alumno</h2><p class=\"mt-1 text-sm text-slate-600\">Escanee el carné para marcar al alumno como presente. Después presione <strong>Guardar asistencia</strong>.</p><div class=\"mt-3 flex flex-wrap gap-2\"><input id=\"qr-token\" type=\"text\" autocomplete=\"off\" placeholder=\"Código QR\" class=\"min-w-0 flex-1 rounded border border-slate-300 p-2\"> <button id=\"qr-buscar\" type=\"button\" class=\"rounded bg-blue-700 px-4 py-2 font-semibold text-white\">Marcar presente</button> <button id=\"qr-camara\" type=\"button\" class=\"rounded border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700\">Activar cámara</button></div><video id=\"qr-video\" class=\"mt-3 hidden w-full rounded bg-black\" playsinline></video><label class=\"mt-3 block\"><span class=\"text-sm font-medium text-slate-700\">O tome una foto del código QR</span> <input id=\"qr-foto\" type=\"file\" accept=\"image/*\" capture=\"environment\" class=\"mt-1 block w-full rounded border border-slate-300 p-2 text-sm\"></label><p id=\"qr-aviso\" role=\"status\" class=\"mt-2 hidden rounded p-2 text-sm\"></p></section><div class=\"mt-4 flex flex-wrap gap-2\"><form method=\"post\" action=\"/asistencia/clase/todos\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var15 string
-				templ_7745c5c3_Var15, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.Bloque)).Resolve(ctx)
+				templ_7745c5c3_Var15, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 39, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 69, Col: 61}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"> <button type=\"submit\" class=\"rounded border border-blue-300 bg-blue-50 px-4 py-2 font-semibold text-blue-800\">Marcar a todos presentes</button></form></div><form method=\"post\" action=\"/asistencia/clase\" class=\"mt-6\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"> <input type=\"hidden\" name=\"fecha\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var16 string
-				templ_7745c5c3_Var16, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
+				templ_7745c5c3_Var16, templ_7745c5c3_Err = templruntime.NewAttributeExpression(cabecera.FechaISO).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 45, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 70, Col: 64}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"> <input type=\"hidden\" name=\"fecha\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"> <input type=\"hidden\" name=\"seccion_id\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var17 string
-				templ_7745c5c3_Var17, templ_7745c5c3_Err = templruntime.NewAttributeExpression(cabecera.FechaISO).Resolve(ctx)
+				templ_7745c5c3_Var17, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.SeccionID)).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 46, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 71, Col: 89}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\"> <input type=\"hidden\" name=\"seccion_id\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\"> <input type=\"hidden\" name=\"curso_id\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var18 string
-				templ_7745c5c3_Var18, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.SeccionID)).Resolve(ctx)
+				templ_7745c5c3_Var18, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.CursoID)).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 47, Col: 88}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 72, Col: 85}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"> <input type=\"hidden\" name=\"curso_id\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"> <input type=\"hidden\" name=\"bloque\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var19 string
-				templ_7745c5c3_Var19, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.CursoID)).Resolve(ctx)
+				templ_7745c5c3_Var19, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.Bloque)).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 48, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 73, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"> <input type=\"hidden\" name=\"bloque\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"> <button type=\"submit\" class=\"rounded border border-blue-300 bg-blue-50 px-4 py-2 font-semibold text-blue-800\">Marcar a todos presentes</button></form></div><form method=\"post\" action=\"/asistencia/clase\" class=\"mt-6\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var20 string
-				templ_7745c5c3_Var20, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.Bloque)).Resolve(ctx)
+				templ_7745c5c3_Var20, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 49, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 79, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"><div class=\"overflow-x-auto rounded border border-slate-200 bg-white\"><table class=\"w-full text-left text-sm\"><thead class=\"bg-slate-100 text-slate-700\"><tr><th class=\"p-3\">Alumno</th><th class=\"p-3\">Identificador</th><th class=\"p-3\">Ingreso QR</th><th class=\"p-3\">Estado del docente</th><th class=\"p-3\">Observación</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"> <input type=\"hidden\" name=\"fecha\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var21 string
+				templ_7745c5c3_Var21, templ_7745c5c3_Err = templruntime.NewAttributeExpression(cabecera.FechaISO).Resolve(ctx)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 80, Col: 63}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"> <input type=\"hidden\" name=\"seccion_id\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var22 string
+				templ_7745c5c3_Var22, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.SeccionID)).Resolve(ctx)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 81, Col: 88}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var22)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\"> <input type=\"hidden\" name=\"curso_id\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var23 string
+				templ_7745c5c3_Var23, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.CursoID)).Resolve(ctx)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 82, Col: 84}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\"> <input type=\"hidden\" name=\"bloque\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var24 string
+				templ_7745c5c3_Var24, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", cabecera.Bloque)).Resolve(ctx)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 83, Col: 81}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"><div class=\"overflow-x-auto rounded border border-slate-200 bg-white\"><table class=\"w-full text-left text-sm\"><thead class=\"bg-slate-100 text-slate-700\"><tr><th class=\"p-3\">Alumno</th><th class=\"p-3\">Identificador</th><th class=\"p-3\">Ingreso QR</th><th class=\"p-3\">Estado del docente</th><th class=\"p-3\">Observación</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, fila := range filas {
 					if fila.Diferencia {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<tr class=\"border-t border-amber-200 bg-amber-50\"><td class=\"p-3 font-medium\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<tr data-alumno-id=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var21 string
-						templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(fila.Nombre)
+						var templ_7745c5c3_Var25 string
+						templ_7745c5c3_Var25, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", fila.ID)).Resolve(ctx)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 66, Col: 51}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 99, Col: 56}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</td><td class=\"p-3\">")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var22 string
-						templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fila.Identificador)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 67, Col: 46}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"border-t border-amber-200 bg-amber-50\"><td class=\"p-3 font-medium\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</td><td class=\"p-3\">")
+						var templ_7745c5c3_Var26 string
+						templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fila.Nombre)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 100, Col: 51}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var23 string
-						templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fila.QRTexto)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 68, Col: 40}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</td><td class=\"p-3\"><select name=\"")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						var templ_7745c5c3_Var24 string
-						templ_7745c5c3_Var24, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("estado_%d", fila.ID)).Resolve(ctx)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 70, Col: 59}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\" class=\"w-full rounded border border-slate-300 p-1\">")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						for _, estado := range estados {
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<option value=\"")
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							var templ_7745c5c3_Var25 string
-							templ_7745c5c3_Var25, templ_7745c5c3_Err = templruntime.NewAttributeExpression(estado.Valor).Resolve(ctx)
-							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 72, Col: 41}
-							}
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\"")
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							if estado.Valor == fila.Estado {
-								templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, " selected")
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
-							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, ">")
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							var templ_7745c5c3_Var26 string
-							templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(estado.Etiqueta)
-							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 72, Col: 103}
-							}
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</option>")
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</select></td><td class=\"p-3\"><input type=\"text\" name=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</td><td class=\"p-3\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var27 string
-						templ_7745c5c3_Var27, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("observacion_%d", fila.ID)).Resolve(ctx)
+						templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(fila.Identificador)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 77, Col: 75}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 101, Col: 46}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var27)
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\" value=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</td><td class=\"p-3\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var28 string
-						templ_7745c5c3_Var28, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fila.Observacion).Resolve(ctx)
+						templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(fila.QRTexto)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 77, Col: 102}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 102, Col: 40}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var28)
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" maxlength=\"300\" class=\"w-full rounded border border-slate-300 p-1\"> <span class=\"block text-xs text-amber-700\">Diferencia con el QR</span></td></tr>")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<tr class=\"border-t border-slate-100\"><td class=\"p-3 font-medium\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</td><td class=\"p-3\"><select name=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var29 string
-						templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fila.Nombre)
+						templ_7745c5c3_Var29, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("estado_%d", fila.ID)).Resolve(ctx)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 83, Col: 51}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 104, Col: 59}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</td><td class=\"p-3\">")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var29)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var30 string
-						templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(fila.Identificador)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 84, Col: 46}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" class=\"w-full rounded border border-slate-300 p-1\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</td><td class=\"p-3\">")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
+						for _, estado := range estados {
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<option value=\"")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var30 string
+							templ_7745c5c3_Var30, templ_7745c5c3_Err = templruntime.NewAttributeExpression(estado.Valor).Resolve(ctx)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 106, Col: 41}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\"")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							if estado.Valor == fila.Estado {
+								templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, " selected")
+								if templ_7745c5c3_Err != nil {
+									return templ_7745c5c3_Err
+								}
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, ">")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var31 string
+							templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(estado.Etiqueta)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 106, Col: 103}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</option>")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
 						}
-						var templ_7745c5c3_Var31 string
-						templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(fila.QRTexto)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 85, Col: 40}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</td><td class=\"p-3\"><select name=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</select></td><td class=\"p-3\"><input type=\"text\" name=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var32 string
-						templ_7745c5c3_Var32, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("estado_%d", fila.ID)).Resolve(ctx)
+						templ_7745c5c3_Var32, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("observacion_%d", fila.ID)).Resolve(ctx)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 87, Col: 59}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 111, Col: 75}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"w-full rounded border border-slate-300 p-1\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" value=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						for _, estado := range estados {
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<option value=\"")
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							var templ_7745c5c3_Var33 string
-							templ_7745c5c3_Var33, templ_7745c5c3_Err = templruntime.NewAttributeExpression(estado.Valor).Resolve(ctx)
-							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 89, Col: 41}
-							}
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\"")
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							if estado.Valor == fila.Estado {
-								templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, " selected")
-								if templ_7745c5c3_Err != nil {
-									return templ_7745c5c3_Err
-								}
-							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, ">")
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							var templ_7745c5c3_Var34 string
-							templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(estado.Etiqueta)
-							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 89, Col: 103}
-							}
-							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</option>")
-							if templ_7745c5c3_Err != nil {
-								return templ_7745c5c3_Err
-							}
+						var templ_7745c5c3_Var33 string
+						templ_7745c5c3_Var33, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fila.Observacion).Resolve(ctx)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 111, Col: 102}
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</select></td><td class=\"p-3\"><input type=\"text\" name=\"")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" maxlength=\"300\" class=\"w-full rounded border border-slate-300 p-1\"> <span class=\"block text-xs text-amber-700\">Diferencia con el QR</span></td></tr>")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+					} else {
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<tr data-alumno-id=\"")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var34 string
+						templ_7745c5c3_Var34, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("%d", fila.ID)).Resolve(ctx)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 116, Col: 56}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" class=\"border-t border-slate-100\"><td class=\"p-3 font-medium\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var35 string
-						templ_7745c5c3_Var35, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("observacion_%d", fila.ID)).Resolve(ctx)
+						templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(fila.Nombre)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 94, Col: 75}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 117, Col: 51}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\" value=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</td><td class=\"p-3\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var36 string
-						templ_7745c5c3_Var36, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fila.Observacion).Resolve(ctx)
+						templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(fila.Identificador)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 94, Col: 102}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 118, Col: 46}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var36)
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" maxlength=\"300\" class=\"w-full rounded border border-slate-300 p-1\"></td></tr>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</td><td class=\"p-3\">")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var37 string
+						templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(fila.QRTexto)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 119, Col: 40}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</td><td class=\"p-3\"><select name=\"")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var38 string
+						templ_7745c5c3_Var38, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("estado_%d", fila.ID)).Resolve(ctx)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 121, Col: 59}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\" class=\"w-full rounded border border-slate-300 p-1\">")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						for _, estado := range estados {
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<option value=\"")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var39 string
+							templ_7745c5c3_Var39, templ_7745c5c3_Err = templruntime.NewAttributeExpression(estado.Valor).Resolve(ctx)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 123, Col: 41}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\"")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							if estado.Valor == fila.Estado {
+								templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, " selected")
+								if templ_7745c5c3_Err != nil {
+									return templ_7745c5c3_Err
+								}
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, ">")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var40 string
+							templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(estado.Etiqueta)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 123, Col: 103}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</option>")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "</select></td><td class=\"p-3\"><input type=\"text\" name=\"")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var41 string
+						templ_7745c5c3_Var41, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("observacion_%d", fila.ID)).Resolve(ctx)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 128, Col: 75}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var41)
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\" value=\"")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var42 string
+						templ_7745c5c3_Var42, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fila.Observacion).Resolve(ctx)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/asistencia/clase.templ`, Line: 128, Col: 102}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var42)
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "\" maxlength=\"300\" class=\"w-full rounded border border-slate-300 p-1\"></td></tr>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</tbody></table></div><div class=\"mt-4\"><button type=\"submit\" class=\"rounded bg-blue-700 px-4 py-2 font-semibold text-white\">Guardar asistencia</button></div></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</tbody></table></div><div class=\"mt-4\"><button type=\"submit\" class=\"rounded bg-blue-700 px-4 py-2 font-semibold text-white\">Guardar asistencia</button></div></form><script src=\"/estaticos/js/jsqr.js\" defer></script> <script>\n\t\t\t\t(function () {\n\t\t\t\t\tconst seccion = document.getElementById('qr-clase');\n\t\t\t\t\tif (!seccion) return;\n\t\t\t\t\tconst campo = document.getElementById('qr-token');\n\t\t\t\t\tconst boton = document.getElementById('qr-buscar');\n\t\t\t\t\tconst botonCamara = document.getElementById('qr-camara');\n\t\t\t\t\tconst video = document.getElementById('qr-video');\n\t\t\t\t\tconst foto = document.getElementById('qr-foto');\n\t\t\t\t\tconst aviso = document.getElementById('qr-aviso');\n\t\t\t\t\tconst lienzo = document.createElement('canvas');\n\n\t\t\t\t\tconst datos = {\n\t\t\t\t\t\tfecha: seccion.dataset.fecha,\n\t\t\t\t\t\tseccion_id: seccion.dataset.seccion,\n\t\t\t\t\t\tcurso_id: seccion.dataset.curso,\n\t\t\t\t\t\tbloque: seccion.dataset.bloque,\n\t\t\t\t\t};\n\t\t\t\t\tconst puedeUsarCamara = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);\n\t\t\t\t\tconst contextoInseguro = !window.isSecureContext;\n\t\t\t\t\tlet flujo = null;\n\t\t\t\t\tlet detector = null;\n\t\t\t\t\tlet animando = false;\n\t\t\t\t\tlet ultimoCodigo = '';\n\t\t\t\t\tlet ultimoIntento = 0;\n\n\t\t\t\t\tfunction mostrar(texto, correcto) {\n\t\t\t\t\t\taviso.textContent = texto;\n\t\t\t\t\t\taviso.classList.remove('hidden', 'bg-red-50', 'text-red-800', 'bg-emerald-50', 'text-emerald-800');\n\t\t\t\t\t\taviso.classList.add(correcto ? 'bg-emerald-50' : 'bg-red-50', correcto ? 'text-emerald-800' : 'text-red-800');\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction detenerCamara() {\n\t\t\t\t\t\tanimando = false;\n\t\t\t\t\t\tif (flujo) {\n\t\t\t\t\t\t\tflujo.getTracks().forEach(function (pista) { pista.stop(); });\n\t\t\t\t\t\t\tflujo = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tvideo.classList.add('hidden');\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction marcarPresente(alumnoID, nombre) {\n\t\t\t\t\t\tconst selector = 'select[name=\"estado_' + alumnoID + '\"]';\n\t\t\t\t\t\tconst select = document.querySelector(selector);\n\t\t\t\t\t\tif (!select) {\n\t\t\t\t\t\t\tmostrar('El alumno no está en la lista de esta clase.', false);\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tselect.value = 'presente';\n\t\t\t\t\t\tconst fila = select.closest('tr');\n\t\t\t\t\t\tif (fila) {\n\t\t\t\t\t\t\tfila.classList.add('ring-2', 'ring-emerald-400', 'bg-emerald-50');\n\t\t\t\t\t\t\tfila.scrollIntoView({ behavior: 'smooth', block: 'center' });\n\t\t\t\t\t\t\tsetTimeout(function () {\n\t\t\t\t\t\t\t\tfila.classList.remove('ring-2', 'ring-emerald-400', 'bg-emerald-50');\n\t\t\t\t\t\t\t}, 2500);\n\t\t\t\t\t\t}\n\t\t\t\t\t\tmostrar(nombre + ' marcado como presente.', true);\n\t\t\t\t\t}\n\n\t\t\t\t\tasync function buscar(codigo) {\n\t\t\t\t\t\tconst limpio = (codigo || '').trim();\n\t\t\t\t\t\tif (!limpio) return;\n\t\t\t\t\t\tconst ahora = Date.now();\n\t\t\t\t\t\tif (limpio === ultimoCodigo && ahora - ultimoIntento < 3000) return;\n\t\t\t\t\t\tultimoCodigo = limpio;\n\t\t\t\t\t\tultimoIntento = ahora;\n\t\t\t\t\t\tconst parametros = new URLSearchParams(datos);\n\t\t\t\t\t\tparametros.set('token', limpio);\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tconst respuesta = await fetch('/asistencia/clase/qr?' + parametros.toString(), {\n\t\t\t\t\t\t\t\theaders: { Accept: 'application/json' },\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\tconst cuerpo = await respuesta.json().catch(function () { return {}; });\n\t\t\t\t\t\t\tif (!respuesta.ok) {\n\t\t\t\t\t\t\t\tmostrar(cuerpo.error || 'No se pudo leer el código QR.', false);\n\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tmarcarPresente(cuerpo.alumno_id, cuerpo.nombre);\n\t\t\t\t\t\t\tcampo.value = '';\n\t\t\t\t\t\t} catch (error) {\n\t\t\t\t\t\t\tmostrar('No se pudo consultar el código. Revise la conexión.', false);\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction crearDetector() {\n\t\t\t\t\t\tif (!('BarcodeDetector' in window)) return null;\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\treturn new BarcodeDetector({ formats: ['qr_code'] });\n\t\t\t\t\t\t} catch (error) {\n\t\t\t\t\t\t\treturn null;\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction decodificarLienzo(ancho, alto) {\n\t\t\t\t\t\tif (typeof window.jsQR !== 'function') return null;\n\t\t\t\t\t\tconst contexto = lienzo.getContext('2d', { willReadFrequently: true });\n\t\t\t\t\t\tconst imagen = contexto.getImageData(0, 0, ancho, alto);\n\t\t\t\t\t\tconst resultado = window.jsQR(imagen.data, ancho, alto, { inversionAttempts: 'attemptBoth' });\n\t\t\t\t\t\treturn resultado ? resultado.data : null;\n\t\t\t\t\t}\n\n\t\t\t\t\tasync function leerVideo() {\n\t\t\t\t\t\tif (!animando) return;\n\t\t\t\t\t\tlet codigo = null;\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tif (detector) {\n\t\t\t\t\t\t\t\tconst codigos = await detector.detect(video);\n\t\t\t\t\t\t\t\tif (codigos.length > 0) codigo = codigos[0].rawValue;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tif (!codigo && typeof window.jsQR === 'function' && video.videoWidth > 0) {\n\t\t\t\t\t\t\t\tlienzo.width = video.videoWidth;\n\t\t\t\t\t\t\t\tlienzo.height = video.videoHeight;\n\t\t\t\t\t\t\t\tlienzo.getContext('2d', { willReadFrequently: true }).drawImage(video, 0, 0, lienzo.width, lienzo.height);\n\t\t\t\t\t\t\t\tcodigo = decodificarLienzo(lienzo.width, lienzo.height);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t} catch (error) {\n\t\t\t\t\t\t\tcodigo = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (codigo) {\n\t\t\t\t\t\t\tawait buscar(codigo);\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (animando) setTimeout(leerVideo, 250);\n\t\t\t\t\t}\n\n\t\t\t\t\tasync function activarCamara() {\n\t\t\t\t\t\tif (!puedeUsarCamara || contextoInseguro) {\n\t\t\t\t\t\t\tmostrar('La cámara en vivo no está disponible por HTTP. Use \"Tomar foto\" o un lector USB, o abra la página por HTTPS.', false);\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tflujo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } });\n\t\t\t\t\t\t\tvideo.srcObject = flujo;\n\t\t\t\t\t\t\tvideo.classList.remove('hidden');\n\t\t\t\t\t\t\tawait video.play();\n\t\t\t\t\t\t\tdetector = crearDetector();\n\t\t\t\t\t\t\tanimando = true;\n\t\t\t\t\t\t\tleerVideo();\n\t\t\t\t\t\t} catch (error) {\n\t\t\t\t\t\t\tmostrar('No se pudo activar la cámara. Revise los permisos o use \"Tomar foto\".', false);\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction cargarImagen(archivo) {\n\t\t\t\t\t\tif ('createImageBitmap' in window) {\n\t\t\t\t\t\t\treturn createImageBitmap(archivo);\n\t\t\t\t\t\t}\n\t\t\t\t\t\treturn new Promise(function (resolver, rechazar) {\n\t\t\t\t\t\t\tconst imagen = new Image();\n\t\t\t\t\t\t\timagen.onload = function () { resolver(imagen); };\n\t\t\t\t\t\t\timagen.onerror = rechazar;\n\t\t\t\t\t\t\timagen.src = URL.createObjectURL(archivo);\n\t\t\t\t\t\t});\n\t\t\t\t\t}\n\n\t\t\t\t\tasync function leerFoto(archivo) {\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tif (typeof window.jsQR !== 'function') {\n\t\t\t\t\t\t\t\tmostrar('No se pudo cargar el lector de QR. Recargue la página.', false);\n\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tconst imagen = await cargarImagen(archivo);\n\t\t\t\t\t\t\tlienzo.width = imagen.width;\n\t\t\t\t\t\t\tlienzo.height = imagen.height;\n\t\t\t\t\t\t\tlienzo.getContext('2d', { willReadFrequently: true }).drawImage(imagen, 0, 0, imagen.width, imagen.height);\n\t\t\t\t\t\t\tconst codigo = decodificarLienzo(imagen.width, imagen.height);\n\t\t\t\t\t\t\tif (!codigo) {\n\t\t\t\t\t\t\t\tmostrar('No se encontró un código QR en la imagen. Intente con más luz.', false);\n\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tawait buscar(codigo);\n\t\t\t\t\t\t} catch (error) {\n\t\t\t\t\t\t\tmostrar('No se pudo leer la imagen. Intente de nuevo.', false);\n\t\t\t\t\t\t} finally {\n\t\t\t\t\t\t\tfoto.value = '';\n\t\t\t\t\t\t}\n\t\t\t\t\t}\n\n\t\t\t\t\tboton.addEventListener('click', function () { buscar(campo.value); });\n\t\t\t\t\tcampo.addEventListener('keydown', function (evento) {\n\t\t\t\t\t\tif (evento.key === 'Enter') {\n\t\t\t\t\t\t\tevento.preventDefault();\n\t\t\t\t\t\t\tbuscar(campo.value);\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t\tbotonCamara.addEventListener('click', activarCamara);\n\t\t\t\t\tfoto.addEventListener('change', function () {\n\t\t\t\t\t\tconst archivo = foto.files && foto.files[0];\n\t\t\t\t\t\tif (archivo) leerFoto(archivo);\n\t\t\t\t\t});\n\n\t\t\t\t\tif (!puedeUsarCamara || contextoInseguro) {\n\t\t\t\t\t\tbotonCamara.classList.add('hidden');\n\t\t\t\t\t\tmostrar('Para escanear en vivo abra la página por HTTPS. Mientras tanto, use \"Tomar foto\" o un lector USB.', false);\n\t\t\t\t\t}\n\t\t\t\t}());\n\t\t\t</script>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

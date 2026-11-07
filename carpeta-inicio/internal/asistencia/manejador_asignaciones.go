@@ -30,6 +30,7 @@ type ServicioAsistencia interface {
 	CursosDisponibles(ctx context.Context) ([]academico.Curso, error)
 	ClasesAsignadas(ctx context.Context, docenteID int64, fecha time.Time) ([]ClaseAsignada, error)
 	AsignacionesDelDia(ctx context.Context, docenteID int64, fecha time.Time) ([]ResumenAsignacion, error)
+	AlumnoPorTokenEnClase(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int, token string) (AlumnoClase, error)
 	ListarClase(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int) (ClaseDetalle, error)
 	GuardarRegistros(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int, cambios []CambioRegistro) error
 	MarcarTodosPresentes(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int) (int, error)
@@ -96,6 +97,7 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 			intermediarios.RolAdministrador, intermediarios.RolDocente))
 		clase.Get("/asistencia", m.seleccionClase)
 		clase.Get("/asistencia/clase", m.verClase)
+		clase.Get("/asistencia/clase/qr", m.escanearClaseQR)
 		clase.Post("/asistencia/clase", m.guardarClase)
 		clase.Post("/asistencia/clase/todos", m.marcarTodos)
 	})

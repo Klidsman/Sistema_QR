@@ -83,6 +83,16 @@ func TestAsistenciaClase_ListaGuardaMarcasYDiferencias(t *testing.T) {
 		alumnoConQR, fechaSQL(hoy), hoy.Add(7*time.Hour+42*time.Minute))
 	require.NoError(t, err)
 
+	credencial, err := servicioAlumnos.EmitirQR(ctx, usuarioID, alumnoConQR)
+	require.NoError(t, err)
+	encontrado, err := servicio.AlumnoPorTokenEnClase(ctx, docenteID, false, hoy, seccionID, cursoID, 1, credencial.Token)
+	require.NoError(t, err)
+	assert.Equal(t, alumnoConQR, encontrado.Alumno.ID)
+	assert.Equal(t, "Ríos, Ana", encontrado.Alumno.NombreCompleto())
+
+	_, err = servicio.AlumnoPorTokenEnClase(ctx, docenteID, false, hoy, seccionID, cursoID, 1, "token-inexistente")
+	assert.ErrorIs(t, err, asistencia.ErrTokenQRInvalido)
+
 	detalle, err := servicio.ListarClase(ctx, docenteID, false, hoy, seccionID, cursoID, 1)
 	require.NoError(t, err)
 	require.Len(t, detalle.Alumnos, 2)

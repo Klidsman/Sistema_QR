@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"asistencia/internal/academico"
@@ -105,6 +106,31 @@ func (s *Servicio) ListarClase(ctx context.Context, usuarioID int64, administrad
 		})
 	}
 	return detalle, nil
+}
+
+// AlumnoPorTokenEnClase resuelve un QR y comprueba que el alumno pertenezca a la clase.
+func (s *Servicio) AlumnoPorTokenEnClase(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int, token string) (AlumnoClase, error) {
+	detalle, err := s.ListarClase(ctx, usuarioID, administrador, fecha, seccionID, cursoID, bloque)
+	if err != nil {
+		return AlumnoClase{}, err
+	}
+	token = strings.TrimSpace(token)
+	if token == "" {
+		return AlumnoClase{}, ErrTokenQRInvalido
+	}
+	alumno, err := s.alumnos.AlumnoPorToken(ctx, token, fecha)
+	if errors.Is(err, alumnos.ErrAlumnoNoEncontrado) {
+		return AlumnoClase{}, ErrTokenQRInvalido
+	}
+	if err != nil {
+		return AlumnoClase{}, err
+	}
+	for _, item := range detalle.Alumnos {
+		if item.Alumno.ID == alumno.ID {
+			return item, nil
+		}
+	}
+	return AlumnoClase{}, ErrTokenQRInvalido
 }
 
 // GuardarRegistros guarda los estados de los alumnos de una clase.

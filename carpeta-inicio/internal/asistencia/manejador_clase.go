@@ -1,6 +1,7 @@
 package asistencia
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -48,6 +49,36 @@ func (m *Manejador) verClase(respuesta http.ResponseWriter, peticion *http.Reque
 		return
 	}
 	m.renderizarClase(respuesta, peticion, http.StatusOK, &detalle, "")
+}
+
+func (m *Manejador) escanearClaseQR(respuesta http.ResponseWriter, peticion *http.Request) {
+	parametros, err := leerParametrosClase(peticion)
+	if err != nil {
+		responderJSONError(respuesta, http.StatusUnprocessableEntity, mensajeErrorClase(err))
+		return
+	}
+	alumno, err := m.servicio.AlumnoPorTokenEnClase(peticion.Context(), m.usuarioID(peticion.Context()),
+		m.esAdministrador(peticion), parametros.Fecha, parametros.SeccionID, parametros.CursoID,
+		parametros.Bloque, peticion.URL.Query().Get("token"))
+	if err != nil {
+		estado := http.StatusUnprocessableEntity
+		if errors.Is(err, ErrDocenteSinAsignacion) {
+			estado = http.StatusForbidden
+		}
+		responderJSONError(respuesta, estado, mensajeErrorClase(err))
+		return
+	}
+	respuesta.Header().Set("Content-Type", "application/json; charset=utf-8")
+	_ = json.NewEncoder(respuesta).Encode(map[string]any{
+		"alumno_id": alumno.Alumno.ID,
+		"nombre":    alumno.Alumno.NombreCompleto(),
+	})
+}
+
+func responderJSONError(respuesta http.ResponseWriter, estado int, mensaje string) {
+	respuesta.Header().Set("Content-Type", "application/json; charset=utf-8")
+	respuesta.WriteHeader(estado)
+	_ = json.NewEncoder(respuesta).Encode(map[string]string{"error": mensaje})
 }
 
 func (m *Manejador) guardarClase(respuesta http.ResponseWriter, peticion *http.Request) {
@@ -287,6 +318,9 @@ func mensajeErrorClase(err error) string {
 	}
 	if errors.Is(err, ErrAlumnoFueraDeSeccion) {
 		return "El alumno no pertenece a la sección en la fecha indicada."
+	}
+	if errors.Is(err, ErrTokenQRInvalido) {
+		return "El código QR no es válido o el alumno no pertenece a esta clase."
 	}
 	if errors.Is(err, ErrPlazoVencido) {
 		return "El plazo de edición terminó. Solo un administrador puede corregir este registro."

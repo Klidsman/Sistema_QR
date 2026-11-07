@@ -191,3 +191,42 @@ func TestAsistenciaClase_AdministradorVeAccesosDeGestion(t *testing.T) {
 	assert.Contains(t, cuerpo, `href="/configuracion/asistencia"`)
 	assert.Contains(t, cuerpo, `href="/asistencia/exportar"`)
 }
+
+func TestAsistenciaClase_EscaneaQREnClase(t *testing.T) {
+	falso := &asistenciaFalsa{alumnoQR: asistencia.AlumnoClase{
+		Alumno: alumnos.AlumnoEnClase{ID: 10, Identificador: "80001111", Nombres: "Ana", Apellidos: "Ríos"},
+	}}
+	manejador, sesiones := nuevoManejadorAsistencia(t, falso)
+
+	parametros := url.Values{
+		"fecha":      {fechas.FormatearISO(fechas.Hoy())},
+		"seccion_id": {"5"},
+		"curso_id":   {"2"},
+		"bloque":     {"1"},
+		"token":      {"token-qr"},
+	}
+	peticion := peticionConSesion(t, sesiones, http.MethodGet, "/asistencia/clase/qr?"+parametros.Encode(), nil, "", "docente")
+	respuesta := ejecutarAsistencia(manejador, peticion)
+
+	require.Equal(t, http.StatusOK, respuesta.Code)
+	assert.Contains(t, respuesta.Body.String(), `"alumno_id":10`)
+	assert.Contains(t, respuesta.Body.String(), "Ríos, Ana")
+}
+
+func TestAsistenciaClase_RechazaQRAjenoALaClase(t *testing.T) {
+	falso := &asistenciaFalsa{qrErr: asistencia.ErrTokenQRInvalido}
+	manejador, sesiones := nuevoManejadorAsistencia(t, falso)
+
+	parametros := url.Values{
+		"fecha":      {fechas.FormatearISO(fechas.Hoy())},
+		"seccion_id": {"5"},
+		"curso_id":   {"2"},
+		"bloque":     {"1"},
+		"token":      {"otro-token"},
+	}
+	peticion := peticionConSesion(t, sesiones, http.MethodGet, "/asistencia/clase/qr?"+parametros.Encode(), nil, "", "docente")
+	respuesta := ejecutarAsistencia(manejador, peticion)
+
+	require.Equal(t, http.StatusUnprocessableEntity, respuesta.Code)
+	assert.Contains(t, respuesta.Body.String(), "El código QR no es válido")
+}

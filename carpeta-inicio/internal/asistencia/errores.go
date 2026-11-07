@@ -22,4 +22,5 @@ var (
 	ErrPlazoJustificacionFueraDeRango = errors.New("el plazo de justificación debe estar entre 1 y 60 días")
 	ErrCursoNoVinculado               = errors.New("el curso no está vinculado al grado de la sección")
 	ErrAsignacionFueraDeRango         = errors.New("las fechas de la asignación no son válidas")
+	ErrTokenQRInvalido                = errors.New("el código QR no es válido o no pertenece a esta clase")
 )

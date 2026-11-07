@@ -28,6 +28,18 @@ Si una asignación no aparece, revisa con el administrador que:
 - El curso esté en el horario semanal de ese día.
 - La fecha no sea un feriado o suspensión.
 
+## Escanear QR en clase
+
+Dentro de una clase, arriba de la lista, está **Escanear QR del alumno**:
+
+1. Escanear el carné con **Activar cámara** (requiere HTTPS o `localhost`).
+2. O usar **Tomar foto del código QR** desde el celular (funciona también por HTTP).
+3. O pegar/digitar el código en el campo y pulsar **Marcar presente**.
+
+El alumno se marca como **presente** automáticamente y su fila se resalta. Después de escanear,
+presionar **Guardar asistencia** para confirmar los cambios. Si el QR no pertenece a esa clase,
+se muestra un aviso y no se modifica a ningún alumno.
+
 ## Registrar la asistencia
 
 En la lista de la clase verás, por cada alumno:

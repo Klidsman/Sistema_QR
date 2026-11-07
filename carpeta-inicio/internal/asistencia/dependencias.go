@@ -26,6 +26,7 @@ type ResolutorClase interface {
 type ListadorAlumnos interface {
 	ListarAlumnosDeSeccionEnFecha(ctx context.Context, seccionID int64, fecha time.Time) ([]alumnos.AlumnoEnClase, error)
 	AlumnosPorIDs(ctx context.Context, ids []int64) ([]alumnos.AlumnoEnClase, error)
+	AlumnoPorToken(ctx context.Context, token string, fecha time.Time) (alumnos.Alumno, error)
 }
 
 // BuscadorDocente valida el rol y el estado de un docente.
