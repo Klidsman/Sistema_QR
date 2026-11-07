@@ -166,9 +166,12 @@ escolar y todo lo que necesita el registro de asistencia.
 - **Año escolar** (`/configuracion/anio`): crea el año con fecha de inicio y fin, muestra el
   historial y permite cerrarlo. Solo puede existir un año activo; al cerrarlo queda de solo
   lectura.
-- **Grados** (`/configuracion/grados`): niveles del año activo.
+- **Grados** (`/configuracion/grados`): niveles del año activo. Un grado solo se puede eliminar si
+  no tiene secciones, cursos ni excepciones de calendario asociados.
 - **Secciones** (`/configuracion/secciones`): alta de secciones por grado, turno inicial y cambio
-  de turno con fecha de vigencia.
+  de turno con fecha de vigencia. Una sección solo se puede eliminar si no tiene alumnos,
+  asignaciones ni registros de asistencia. Las filas con dependencias muestran el motivo al
+  intentar eliminarlas.
 - **Turnos** (`/configuracion/turnos`): hora de ingreso, tolerancia, límite de tardanza y cierre.
   Cada cambio indica desde qué fecha aplica y conserva el historial.
 - **Calendario** (`/configuracion/calendario`): feriados, días no laborables y suspensiones, con

@@ -46,7 +46,9 @@ type ServicioAcademico interface {
 	CrearAnio(ctx context.Context, usuarioID int64, datos DatosAnio) (int64, error)
 	CerrarAnio(ctx context.Context, usuarioID, anioID int64) error
 	CrearGrado(ctx context.Context, usuarioID int64, datos DatosGrado) (int64, error)
+	EliminarGrado(ctx context.Context, usuarioID, gradoID int64) error
 	CrearSeccion(ctx context.Context, usuarioID int64, datos DatosSeccion) (int64, error)
+	EliminarSeccion(ctx context.Context, usuarioID, seccionID int64) error
 	CambiarTurno(ctx context.Context, usuarioID, seccionID int64, turno string, vigenteDesde time.Time) error
 }
 
@@ -103,7 +105,9 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Post("/configuracion/anio", m.crearAnio)
 		escritura.Post("/configuracion/anio/cierre", m.cerrarAnio)
 		escritura.Post("/configuracion/grados", m.crearGrado)
+		escritura.Post("/configuracion/grados/{id}/eliminacion", m.eliminarGrado)
 		escritura.Post("/configuracion/secciones", m.crearSeccion)
+		escritura.Post("/configuracion/secciones/{id}/eliminacion", m.eliminarSeccion)
 		escritura.Post("/configuracion/secciones/{id}/turno", m.cambiarTurno)
 		escritura.Post("/configuracion/bloques", m.crearBloque)
 		escritura.Post("/configuracion/cursos", m.crearCurso)
@@ -215,6 +219,34 @@ func (m *Manejador) crearSeccion(respuesta http.ResponseWriter, peticion *http.R
 		return
 	}
 	http.Redirect(respuesta, peticion, "/configuracion/secciones?ok=creado", http.StatusSeeOther)
+}
+
+func (m *Manejador) eliminarGrado(respuesta http.ResponseWriter, peticion *http.Request) {
+	gradoID, err := strconv.ParseInt(chi.URLParam(peticion, "id"), 10, 64)
+	if err != nil || gradoID <= 0 {
+		m.renderizarGrados(respuesta, peticion, http.StatusUnprocessableEntity,
+			mensajeDeError(ErrGradoNoEncontrado), "", "")
+		return
+	}
+	if err := m.configuracion.EliminarGrado(peticion.Context(), m.usuarioID(peticion.Context()), gradoID); err != nil {
+		m.renderizarGrados(respuesta, peticion, http.StatusUnprocessableEntity, mensajeDeError(err), "", "")
+		return
+	}
+	http.Redirect(respuesta, peticion, "/configuracion/grados?ok=eliminado", http.StatusSeeOther)
+}
+
+func (m *Manejador) eliminarSeccion(respuesta http.ResponseWriter, peticion *http.Request) {
+	seccionID, err := strconv.ParseInt(chi.URLParam(peticion, "id"), 10, 64)
+	if err != nil || seccionID <= 0 {
+		m.renderizarSecciones(respuesta, peticion, http.StatusUnprocessableEntity,
+			mensajeDeError(ErrSeccionNoEncontrada), "", "")
+		return
+	}
+	if err := m.configuracion.EliminarSeccion(peticion.Context(), m.usuarioID(peticion.Context()), seccionID); err != nil {
+		m.renderizarSecciones(respuesta, peticion, http.StatusUnprocessableEntity, mensajeDeError(err), "", "")
+		return
+	}
+	http.Redirect(respuesta, peticion, "/configuracion/secciones?ok=eliminada", http.StatusSeeOther)
 }
 
 func (m *Manejador) cambiarTurno(respuesta http.ResponseWriter, peticion *http.Request) {
@@ -698,8 +730,12 @@ func mensajeDeError(err error) string {
 		return "El grado indicado no existe en el año activo."
 	case errors.Is(err, ErrGradoExistente):
 		return "Ya existe un grado con ese nombre en el año."
+	case errors.Is(err, ErrGradoConDependencias):
+		return "No se puede eliminar el grado: tiene secciones, cursos o excepciones asociados."
 	case errors.Is(err, ErrSeccionExistente):
 		return "Ya existe una sección con ese nombre en el grado."
+	case errors.Is(err, ErrSeccionConDependencias):
+		return "No se puede eliminar la sección: tiene alumnos, asignaciones o registros asociados."
 	case errors.Is(err, ErrFechasAnioInvalidas):
 		return "La fecha de fin debe ser posterior a la fecha de inicio."
 	case errors.Is(err, ErrVigenciaPasada):
@@ -771,10 +807,14 @@ func mensajeCorrectoAnio(codigo string) string {
 }
 
 func mensajeCorrectoGrado(codigo string) string {
-	if codigo == "creado" {
+	switch codigo {
+	case "creado":
 		return "El grado se creó correctamente."
+	case "eliminado":
+		return "El grado se eliminó correctamente."
+	default:
+		return ""
 	}
-	return ""
 }
 
 func aAnioVista(anio *AnioEscolar) *vista.AnioVista {
@@ -831,6 +871,8 @@ func mensajeCorrectoSeccion(codigo string) string {
 		return "La sección se creó correctamente."
 	case "turno":
 		return "El turno de la sección se actualizó correctamente."
+	case "eliminada":
+		return "La sección se eliminó correctamente."
 	default:
 		return ""
 	}

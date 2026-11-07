@@ -1,6 +1,8 @@
 package vista
 
 import (
+	"fmt"
+
 	"asistencia/web/plantillas/paginas"
 )
 
@@ -46,7 +48,15 @@ templ Grados(usuario string, rol string, tokenCSRF string, activo *AnioVista, gr
 			} else {
 				<ul class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
 					for _, grado := range grados {
-						<li class="rounded border border-slate-200 bg-white p-3 font-medium">{ grado.Nombre }</li>
+						<li class="flex items-center justify-between gap-3 rounded border border-slate-200 bg-white p-3">
+							<span class="font-medium">{ grado.Nombre }</span>
+							if rol == "administrador" {
+								<form method="post" action={ fmt.Sprintf("/configuracion/grados/%d/eliminacion", grado.ID) } onsubmit="return confirm('Se eliminará el grado. Solo es posible si no tiene secciones, cursos ni excepciones. ¿Continuar?');">
+									<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+									<button type="submit" class="rounded border border-red-300 px-3 py-1 text-sm font-medium text-red-700">Eliminar</button>
+								</form>
+							}
+						</li>
 					}
 				</ul>
 			}

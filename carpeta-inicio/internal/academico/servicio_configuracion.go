@@ -21,15 +21,17 @@ const codigoViolacionUnica = "23505"
 
 // Errores de negocio de la configuración académica.
 var (
-	ErrAnioActivoExistente = errors.New("ya existe un año escolar activo")
-	ErrAnioNombreExistente = errors.New("ya existe un año escolar con ese nombre")
-	ErrAnioNoEncontrado    = errors.New("el año escolar no existe")
-	ErrAnioCerrado         = errors.New("el año escolar está cerrado y no admite cambios")
-	ErrGradoNoEncontrado   = errors.New("el grado no existe")
-	ErrGradoExistente      = errors.New("ya existe un grado con ese nombre en el año")
-	ErrSeccionExistente    = errors.New("ya existe una sección con ese nombre en el grado")
-	ErrHorarioNoEncontrado = errors.New("no hay un horario vigente para ese turno en la fecha")
-	ErrBloqueNoEncontrado  = errors.New("el bloque de clase no existe")
+	ErrAnioActivoExistente    = errors.New("ya existe un año escolar activo")
+	ErrAnioNombreExistente    = errors.New("ya existe un año escolar con ese nombre")
+	ErrAnioNoEncontrado       = errors.New("el año escolar no existe")
+	ErrAnioCerrado            = errors.New("el año escolar está cerrado y no admite cambios")
+	ErrGradoNoEncontrado      = errors.New("el grado no existe")
+	ErrGradoExistente         = errors.New("ya existe un grado con ese nombre en el año")
+	ErrGradoConDependencias   = errors.New("el grado tiene secciones, cursos o excepciones asociados")
+	ErrSeccionExistente       = errors.New("ya existe una sección con ese nombre en el grado")
+	ErrSeccionConDependencias = errors.New("la sección tiene alumnos o registros asociados")
+	ErrHorarioNoEncontrado    = errors.New("no hay un horario vigente para ese turno en la fecha")
+	ErrBloqueNoEncontrado     = errors.New("el bloque de clase no existe")
 )
 
 // Reloj devuelve la fecha y hora actuales. Se inyecta en los servicios y en las pruebas.

@@ -26,4 +26,5 @@ const (
 	AccionCrearBloque        = "crear_bloque"
 	AccionAjustarBloque      = "ajustar_bloque"
 	AccionAsignarHorario     = "asignar_horario"
+	AccionEliminar           = "eliminar"
 )

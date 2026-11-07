@@ -24,7 +24,9 @@ type configuracionFalsa struct {
 	secciones          []academico.Seccion
 	crearAnio          func(academico.DatosAnio) (int64, error)
 	crearGrado         func(academico.DatosGrado) (int64, error)
+	eliminarGrado      func(int64) error
 	crearSeccion       func(academico.DatosSeccion) (int64, error)
+	eliminarSeccion    func(int64) error
 	cambiarTurno       func(int64, string, time.Time) error
 	cerrarAnio         func() error
 	horarios           map[string]academico.HorarioTurno
@@ -191,6 +193,20 @@ func (c configuracionFalsa) CrearSeccion(_ context.Context, _ int64, datos acade
 		return c.crearSeccion(datos)
 	}
 	return 1, c.err
+}
+
+func (c configuracionFalsa) EliminarGrado(_ context.Context, _, gradoID int64) error {
+	if c.eliminarGrado != nil {
+		return c.eliminarGrado(gradoID)
+	}
+	return c.err
+}
+
+func (c configuracionFalsa) EliminarSeccion(_ context.Context, _, seccionID int64) error {
+	if c.eliminarSeccion != nil {
+		return c.eliminarSeccion(seccionID)
+	}
+	return c.err
 }
 
 func (c configuracionFalsa) CambiarTurno(_ context.Context, _ int64, seccionID int64, turno string, vigenteDesde time.Time) error {

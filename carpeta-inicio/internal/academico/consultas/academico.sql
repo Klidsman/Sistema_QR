@@ -60,6 +60,10 @@ FROM grados
 WHERE anio_escolar_id = $1
 ORDER BY nombre;
 
+-- name: EliminarGrado :execrows
+DELETE FROM grados
+WHERE id = $1;
+
 -- name: CrearSeccion :one
 INSERT INTO secciones (grado_id, nombre)
 VALUES ($1, $2)
@@ -98,6 +102,18 @@ SELECT id, seccion_id, turno, vigente_desde
 FROM turnos_seccion
 WHERE seccion_id = $1
 ORDER BY vigente_desde DESC;
+
+-- name: EliminarTurnosSeccion :exec
+DELETE FROM turnos_seccion
+WHERE seccion_id = $1;
+
+-- name: EliminarHorarioSeccion :exec
+DELETE FROM horario_seccion
+WHERE seccion_id = $1;
+
+-- name: EliminarSeccion :execrows
+DELETE FROM secciones
+WHERE id = $1;
 
 -- name: ListarSecciones :many
 SELECT s.id,

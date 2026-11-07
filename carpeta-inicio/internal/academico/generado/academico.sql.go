@@ -600,6 +600,52 @@ func (q *Queries) DesactivarCurso(ctx context.Context, id int64) (int64, error) 
 	return result.RowsAffected(), nil
 }
 
+const eliminarGrado = `-- name: EliminarGrado :execrows
+DELETE FROM grados
+WHERE id = $1
+`
+
+func (q *Queries) EliminarGrado(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.Exec(ctx, eliminarGrado, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const eliminarHorarioSeccion = `-- name: EliminarHorarioSeccion :exec
+DELETE FROM horario_seccion
+WHERE seccion_id = $1
+`
+
+func (q *Queries) EliminarHorarioSeccion(ctx context.Context, seccionID int64) error {
+	_, err := q.db.Exec(ctx, eliminarHorarioSeccion, seccionID)
+	return err
+}
+
+const eliminarSeccion = `-- name: EliminarSeccion :execrows
+DELETE FROM secciones
+WHERE id = $1
+`
+
+func (q *Queries) EliminarSeccion(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.Exec(ctx, eliminarSeccion, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const eliminarTurnosSeccion = `-- name: EliminarTurnosSeccion :exec
+DELETE FROM turnos_seccion
+WHERE seccion_id = $1
+`
+
+func (q *Queries) EliminarTurnosSeccion(ctx context.Context, seccionID int64) error {
+	_, err := q.db.Exec(ctx, eliminarTurnosSeccion, seccionID)
+	return err
+}
+
 const excepcionesQueAlcanzanSeccion = `-- name: ExcepcionesQueAlcanzanSeccion :many
 SELECT e.id,
        e.anio_escolar_id,

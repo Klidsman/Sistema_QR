@@ -81,6 +81,9 @@ templ Secciones(usuario string, rol string, tokenCSRF string, activo *AnioVista,
 								<th class="p-3">Sección</th>
 								<th class="p-3">Turno vigente</th>
 								<th class="p-3">Cambiar turno</th>
+								if rol == "administrador" {
+									<th class="p-3">Acciones</th>
+								}
 							</tr>
 						</thead>
 						<tbody>
@@ -106,6 +109,14 @@ templ Secciones(usuario string, rol string, tokenCSRF string, activo *AnioVista,
 											<button type="submit" class="rounded border border-slate-300 px-3 py-1 font-medium">Cambiar</button>
 										</form>
 									</td>
+									if rol == "administrador" {
+										<td class="p-3">
+											<form method="post" action={ fmt.Sprintf("/configuracion/secciones/%d/eliminacion", seccion.ID) } onsubmit="return confirm('Se eliminará la sección. Solo es posible si no tiene alumnos ni registros. ¿Continuar?');">
+												<input type="hidden" name="token_csrf" value={ tokenCSRF }/>
+												<button type="submit" class="rounded border border-red-300 px-3 py-1 text-sm font-medium text-red-700">Eliminar</button>
+											</form>
+										</td>
+									}
 								</tr>
 							}
 						</tbody>

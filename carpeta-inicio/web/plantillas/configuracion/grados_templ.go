@@ -10,6 +10,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"fmt"
+
 	"asistencia/web/plantillas/paginas"
 )
 
@@ -54,7 +56,7 @@ func Grados(usuario string, rol string, tokenCSRF string, activo *AnioVista, gra
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(activo.Nombre)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 14, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 16, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -77,7 +79,7 @@ func Grados(usuario string, rol string, tokenCSRF string, activo *AnioVista, gra
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(mensaje)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 20, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 22, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -100,7 +102,7 @@ func Grados(usuario string, rol string, tokenCSRF string, activo *AnioVista, gra
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(mensajeError)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 23, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 25, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -128,7 +130,7 @@ func Grados(usuario string, rol string, tokenCSRF string, activo *AnioVista, gra
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 33, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 35, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 				if templ_7745c5c3_Err != nil {
@@ -141,7 +143,7 @@ func Grados(usuario string, rol string, tokenCSRF string, activo *AnioVista, gra
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templruntime.NewAttributeExpression(nombre).Resolve(ctx)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 36, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 38, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 				if templ_7745c5c3_Err != nil {
@@ -154,7 +156,7 @@ func Grados(usuario string, rol string, tokenCSRF string, activo *AnioVista, gra
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(activo.Nombre)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 43, Col: 73}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 45, Col: 73}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -175,25 +177,61 @@ func Grados(usuario string, rol string, tokenCSRF string, activo *AnioVista, gra
 						return templ_7745c5c3_Err
 					}
 					for _, grado := range grados {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<li class=\"rounded border border-slate-200 bg-white p-3 font-medium\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<li class=\"flex items-center justify-between gap-3 rounded border border-slate-200 bg-white p-3\"><span class=\"font-medium\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var9 string
 						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(grado.Nombre)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 49, Col: 89}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 52, Col: 47}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</li>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span> ")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						if rol == "administrador" {
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<form method=\"post\" action=\"")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var10 string
+							templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.NewAttributeExpression(fmt.Sprintf("/configuracion/grados/%d/eliminacion", grado.ID)).ResolveURL(ctx)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 54, Col: 98}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" onsubmit=\"return confirm('Se eliminará el grado. Solo es posible si no tiene secciones, cursos ni excepciones. ¿Continuar?');\"><input type=\"hidden\" name=\"token_csrf\" value=\"")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							var templ_7745c5c3_Var11 string
+							templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
+							if templ_7745c5c3_Err != nil {
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/configuracion/grados.templ`, Line: 55, Col: 65}
+							}
+							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"> <button type=\"submit\" class=\"rounded border border-red-300 px-3 py-1 text-sm font-medium text-red-700\">Eliminar</button></form>")
+							if templ_7745c5c3_Err != nil {
+								return templ_7745c5c3_Err
+							}
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</li>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</ul>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</ul>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
