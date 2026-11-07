@@ -65,6 +65,40 @@ func TestJustificaciones_SoloResolutoresAprobanyAnulan(t *testing.T) {
 	assert.Equal(t, http.StatusSeeOther, respuesta.Code)
 }
 
+func TestJustificaciones_AdministradorPuedeResolverLaSuya(t *testing.T) {
+	servicio := &servicioJustificacionesFalso{
+		justificacion: justificaciones.Justificacion{
+			ID: 4, AlumnoID: 5, SeccionID: 2, Estado: justificaciones.EstadoPendiente,
+			RegistranteID: 9, CreadaEn: time.Now(),
+		},
+	}
+	manejador, sesiones := nuevoManejadorJustificaciones(servicio)
+
+	peticion := peticionConSesion(t, sesiones, http.MethodGet, "/justificaciones/4", nil, "", "administrador")
+	respuesta := ejecutarJustificaciones(manejador, sesiones, peticion, false)
+
+	require.Equal(t, http.StatusOK, respuesta.Code)
+	cuerpo := respuesta.Body.String()
+	assert.Contains(t, cuerpo, `action="/justificaciones/4/aprobar"`)
+	assert.Contains(t, cuerpo, `action="/justificaciones/4/rechazar"`)
+}
+
+func TestJustificaciones_DirectorNoResuelveLaSuya(t *testing.T) {
+	servicio := &servicioJustificacionesFalso{
+		justificacion: justificaciones.Justificacion{
+			ID: 4, AlumnoID: 5, SeccionID: 2, Estado: justificaciones.EstadoPendiente,
+			RegistranteID: 9, CreadaEn: time.Now(),
+		},
+	}
+	manejador, sesiones := nuevoManejadorJustificaciones(servicio)
+
+	peticion := peticionConSesion(t, sesiones, http.MethodGet, "/justificaciones/4", nil, "", "director")
+	respuesta := ejecutarJustificaciones(manejador, sesiones, peticion, false)
+
+	require.Equal(t, http.StatusOK, respuesta.Code)
+	assert.NotContains(t, respuesta.Body.String(), `action="/justificaciones/4/aprobar"`)
+}
+
 func TestJustificaciones_ExigeCSRF(t *testing.T) {
 	manejador, sesiones := nuevoManejadorJustificaciones(&servicioJustificacionesFalso{})
 

@@ -38,13 +38,19 @@ func TestJustificaciones_FlujoCompleto(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, justificaciones.EstadoPendiente, justificacion.Estado)
 
-	err = servicio.Resolver(ctx, adminID, "administrador", resultado.JustificacionID, true, "")
-	assert.ErrorIs(t, err, justificaciones.ErrAutoresolucion)
-
-	require.NoError(t, servicio.Resolver(ctx, directorID, "director", resultado.JustificacionID, true, "Aprobado"))
+	require.NoError(t, servicio.Resolver(ctx, adminID, "administrador", resultado.JustificacionID, true, "Aprobado por administración"))
 	justificado, err := servicio.EsFaltaJustificada(ctx, datos.alumnoID, fechaFalta)
 	require.NoError(t, err)
 	assert.True(t, justificado)
+
+	// El director tampoco puede resolver una justificación que registró él mismo.
+	otraFecha := fechaFalta.AddDate(0, 0, 1)
+	resultadoDirector, err := servicio.Registrar(ctx, directorID, "director", datos.alumnoID,
+		"Trámite presentado por dirección", otraFecha, otraFecha, nil)
+	require.NoError(t, err)
+	assert.ErrorIs(t, servicio.Resolver(ctx, directorID, "director", resultadoDirector.JustificacionID, true, ""),
+		justificaciones.ErrAutoresolucion)
+	require.NoError(t, servicio.Resolver(ctx, adminID, "administrador", resultadoDirector.JustificacionID, true, ""))
 }
 
 func TestJustificaciones_TardanzaAprobadaYAnulada(t *testing.T) {

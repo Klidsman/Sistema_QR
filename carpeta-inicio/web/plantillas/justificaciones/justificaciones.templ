@@ -35,6 +35,11 @@ templ PanelJustificaciones(datos Panel) {
 							<span class="rounded border border-slate-200 px-2 py-1 text-slate-700">{ fecha.Fecha } · { fecha.Tipo } · { fecha.Estado }</span>
 						}
 					</div>
+					if justificacion.Pendiente && (datos.Rol == "administrador" || datos.Rol == "director") {
+						<a href={ "/justificaciones/" + numero(justificacion.ID) } class="mt-3 inline-block rounded bg-blue-700 px-4 py-2 text-sm font-semibold text-white">
+							Revisar y resolver
+						</a>
+					}
 				</article>
 			}
 		</div>

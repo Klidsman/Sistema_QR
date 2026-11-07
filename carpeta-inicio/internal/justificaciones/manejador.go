@@ -358,7 +358,8 @@ func (m *Manejador) aVista(detalle JustificacionDetalle, rol string, usuarioID i
 		})
 	}
 	puedeResolver := detalle.Estado == EstadoPendiente &&
-		(rol == "administrador" || rol == "director") && detalle.RegistranteID != usuarioID
+		(rol == "administrador" || rol == "director") &&
+		(detalle.RegistranteID != usuarioID || rol == "administrador")
 	return vista.JustificacionVista{
 		ID:              detalle.ID,
 		Alumno:          detalle.Alumno,

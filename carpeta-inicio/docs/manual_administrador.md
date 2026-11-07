@@ -228,9 +228,11 @@ Los feriados y días no laborables se excluyen del porcentaje. Los docentes solo
 ## Justificaciones
 
 - **Registro**: el docente de la sección o el administrador registra una justificación con motivo,
-  rango de fechas y hasta tres adjuntos PDF/JPG/PNG de 5 MB.
-- **Resolución**: el director o el administrador aprueba o rechaza. El rechazo exige comentario.
-  Nadie puede resolver una justificación que registró.
+  rango de fechas y hasta tres adjuntos PDF/JPG/PNG de 5 MB. No existe cuenta de apoderado: la
+  familia entrega el documento y el personal lo registra desde la ficha del alumno.
+- **Resolución**: el director o el administrador aprueba o rechaza desde el detalle de la
+  justificación (`Revisar y resolver`). El rechazo exige comentario. El director no puede resolver
+  una justificación que registró; el administrador sí puede, y la acción queda auditada.
 - **Anulación**: solo el administrador anula una justificación aprobada, indicando el motivo. El
   registro vuelve a su estado original.
 - **Plazo**: se configura en `/configuracion/asistencia` (5 días por defecto). Fuera de plazo la

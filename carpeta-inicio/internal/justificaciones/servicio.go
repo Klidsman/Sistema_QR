@@ -164,7 +164,7 @@ func (s *Servicio) Resolver(ctx context.Context, usuarioID int64, rol string, id
 	if justificacion.Estado != EstadoPendiente {
 		return ErrYaResuelta
 	}
-	if justificacion.RegistranteID == usuarioID {
+	if justificacion.RegistranteID == usuarioID && rol != "administrador" {
 		return ErrAutoresolucion
 	}
 
