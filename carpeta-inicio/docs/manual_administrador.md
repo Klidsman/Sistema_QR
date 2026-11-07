@@ -193,6 +193,9 @@ configuración anterior ni las asistencias ya registradas.
 
 - **Docentes** (`/docentes`): crea cuentas con nombre, correo y contraseña, restablece la clave y
   desactiva cuentas sin borrarlas.
+- **Porteros** (`/porteros`): crea cuentas con rol `porteria` con nombre, correo y contraseña,
+  restablece la clave y desactiva cuentas. Estas cuentas solo pueden ingresar a `/porteria` y
+  `/alertas` para registrar la asistencia de entrada con cámara o escáner.
 - **Asignaciones** (`/asistencia/asignaciones`): vincula un docente con un curso y una sección
   desde una fecha. Marca **Titular** o desmárcalo para un reemplazo con fecha de fin.
 - **Consulta** (`/asistencia/consulta`): revisa los registros del docente por fecha y sección,

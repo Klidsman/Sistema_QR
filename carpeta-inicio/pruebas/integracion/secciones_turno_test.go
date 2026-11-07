@@ -55,6 +55,6 @@ func TestSecciones_TurnoVigenteSeDerivaDelHistorial(t *testing.T) {
 }
 
 func fechaDeHoy() time.Time {
-	ahora := time.Now()
+	ahora := time.Now().UTC()
 	return time.Date(ahora.Year(), ahora.Month(), ahora.Day(), 0, 0, 0, 0, time.UTC)
 }

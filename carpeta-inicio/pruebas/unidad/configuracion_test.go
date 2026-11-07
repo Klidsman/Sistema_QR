@@ -38,6 +38,17 @@ func TestCargar_Valida(t *testing.T) {
 	assert.Equal(t, 2, cfg.FotoTamanioMaximoMB)
 	assert.Equal(t, 5000, cfg.ImportacionMaxFilas)
 	assert.Equal(t, "disco", cfg.Almacenamiento.Tipo)
+	assert.True(t, cfg.CookieSegura, "por defecto la cookie debe ser segura")
+}
+
+func TestCargar_PermiteDesactivarCookieSegura(t *testing.T) {
+	valores := variablesValidas()
+	valores["COOKIE_SEGURA"] = "false"
+
+	cfg, err := configuracion.Cargar(obtenerDesde(valores))
+	require.NoError(t, err)
+
+	assert.False(t, cfg.CookieSegura)
 }
 
 func TestCargar_FaltaBaseDatos(t *testing.T) {

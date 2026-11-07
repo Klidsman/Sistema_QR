@@ -9,20 +9,21 @@ import (
 	"context"
 )
 
-const actualizarClaveDocente = `-- name: ActualizarClaveDocente :execrows
+const actualizarClaveCuenta = `-- name: ActualizarClaveCuenta :execrows
 UPDATE usuarios
 SET contrasenia_hash = $2
 WHERE id = $1
-  AND rol = 'docente'
+  AND rol = $3
 `
 
-type ActualizarClaveDocenteParams struct {
+type ActualizarClaveCuentaParams struct {
 	ID              int64
 	ContraseniaHash string
+	Rol             string
 }
 
-func (q *Queries) ActualizarClaveDocente(ctx context.Context, arg ActualizarClaveDocenteParams) (int64, error) {
-	result, err := q.db.Exec(ctx, actualizarClaveDocente, arg.ID, arg.ContraseniaHash)
+func (q *Queries) ActualizarClaveCuenta(ctx context.Context, arg ActualizarClaveCuentaParams) (int64, error) {
+	result, err := q.db.Exec(ctx, actualizarClaveCuenta, arg.ID, arg.ContraseniaHash, arg.Rol)
 	if err != nil {
 		return 0, err
 	}
@@ -126,30 +127,35 @@ func (q *Queries) CrearUsuario(ctx context.Context, arg CrearUsuarioParams) (int
 	return id, err
 }
 
-const desactivarDocente = `-- name: DesactivarDocente :execrows
+const desactivarCuenta = `-- name: DesactivarCuenta :execrows
 UPDATE usuarios
 SET activo = false
 WHERE id = $1
-  AND rol = 'docente'
+  AND rol = $2
   AND activo
 `
 
-func (q *Queries) DesactivarDocente(ctx context.Context, id int64) (int64, error) {
-	result, err := q.db.Exec(ctx, desactivarDocente, id)
+type DesactivarCuentaParams struct {
+	ID  int64
+	Rol string
+}
+
+func (q *Queries) DesactivarCuenta(ctx context.Context, arg DesactivarCuentaParams) (int64, error) {
+	result, err := q.db.Exec(ctx, desactivarCuenta, arg.ID, arg.Rol)
 	if err != nil {
 		return 0, err
 	}
 	return result.RowsAffected(), nil
 }
 
-const listarDocentes = `-- name: ListarDocentes :many
+const listarCuentasPorRol = `-- name: ListarCuentasPorRol :many
 SELECT id, correo, nombre_completo, rol, activo
 FROM usuarios
-WHERE rol = 'docente'
+WHERE rol = $1
 ORDER BY nombre_completo
 `
 
-type ListarDocentesRow struct {
+type ListarCuentasPorRolRow struct {
 	ID             int64
 	Correo         string
 	NombreCompleto string
@@ -157,15 +163,15 @@ type ListarDocentesRow struct {
 	Activo         bool
 }
 
-func (q *Queries) ListarDocentes(ctx context.Context) ([]ListarDocentesRow, error) {
-	rows, err := q.db.Query(ctx, listarDocentes)
+func (q *Queries) ListarCuentasPorRol(ctx context.Context, rol string) ([]ListarCuentasPorRolRow, error) {
+	rows, err := q.db.Query(ctx, listarCuentasPorRol, rol)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListarDocentesRow
+	var items []ListarCuentasPorRolRow
 	for rows.Next() {
-		var i ListarDocentesRow
+		var i ListarCuentasPorRolRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Correo,

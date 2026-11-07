@@ -38,7 +38,7 @@ func Ingreso(tokenCSRF string, mensaje string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"mx-auto w-full max-w-sm p-6 sm:mt-12\"><h1 class=\"text-2xl font-semibold\">Ingreso al sistema</h1>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main class=\"mx-auto w-full max-w-sm p-6 sm:mt-12\"><a href=\"/\" class=\"text-sm font-medium text-blue-700\">← Volver al inicio</a><p class=\"mt-4 text-xs font-semibold uppercase tracking-wide text-red-700\">IEP María Parado de Bellido</p><h1 class=\"mt-1 text-2xl font-semibold\">Ingreso al sistema</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -50,7 +50,7 @@ func Ingreso(tokenCSRF string, mensaje string) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(mensaje)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/ingreso.templ`, Line: 8, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/ingreso.templ`, Line: 10, Col: 78}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -68,7 +68,7 @@ func Ingreso(tokenCSRF string, mensaje string) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.NewAttributeExpression(tokenCSRF).Resolve(ctx)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/ingreso.templ`, Line: 11, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/plantillas/paginas/ingreso.templ`, Line: 13, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 			if templ_7745c5c3_Err != nil {

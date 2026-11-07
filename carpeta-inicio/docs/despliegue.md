@@ -15,6 +15,7 @@ Render. La aplicación es un monolito Go que sirve HTML, CSS y JavaScript desde 
 |---|---|---|
 | `BASE_DATOS_URL` | Sí | Cadena de conexión PostgreSQL. |
 | `CLAVE_SESION` | Sí | Clave de al menos 32 caracteres para firmar sesiones. |
+| `COOKIE_SEGURA` | No | `true` (por defecto) con HTTPS. `false` solo para probar por HTTP en la red local. |
 | `PUERTO` | No | Puerto HTTP. Por defecto `8080`. |
 | `ALMACENAMIENTO_TIPO` | No | `disco` (por defecto) o `s3`. |
 | `ALMACENAMIENTO_RUTA` | No | Carpeta de fotos cuando se usa disco. |
@@ -88,6 +89,29 @@ la imagen Docker no necesita el compilador de templ.
 
 En Linux, `--network host` permite que el contenedor llegue al PostgreSQL del host. En Docker
 Desktop (Windows o macOS) use `host.docker.internal` en lugar de `localhost`.
+
+### Acceso desde un celular u otro equipo de la red local
+
+1. Iniciar sesión en el mismo router o red Wi-Fi que el equipo servidor.
+2. Averiguar la IP local del servidor (`ipconfig` en Windows, `ip addr` en Linux) y abrir
+   `http://IP_LOCAL:8080/ingreso`, por ejemplo `http://192.168.1.34:8080/ingreso`.
+3. Si el navegador no conecta, permitir el puerto 8080 en el cortafuegos. En Windows, con una
+   consola de administrador:
+
+   ```powershell
+   New-NetFirewallRule -DisplayName "ASISTENCIA 8080" -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow
+   ```
+
+4. Para que la sesión funcione por HTTP (sin HTTPS), definir `COOKIE_SEGURA=false` en el entorno
+   del servidor. Con HTTPS, dejar `COOKIE_SEGURA=true`.
+5. Si la red se detecta como "Pública", Windows puede seguir bloqueando el puerto; cambiar la red
+   a "Privada" o permitir la regla para el perfil público.
+
+La cámara en vivo (`getUserMedia`) también requiere que la página se sirva por HTTPS o desde
+`localhost`; en `http://IP_LOCAL` algunos navegadores bloquean el acceso. En ese caso use **Tomar
+foto del código QR**, que abre la cámara nativa del celular y decodifica la imagen localmente, o un
+lector USB. Para usar la cámara en vivo desde el celular, publique el servicio con un túnel o
+certificado HTTPS.
 
 ## Despliegue en Render
 
@@ -168,7 +192,7 @@ el bucket como público.
 | Síntoma | Causa probable | Acción |
 |---|---|---|
 | `/salud` responde 503 | Base de datos inaccesible | Revisar `BASE_DATOS_URL` y la red del servicio. |
-| El ingreso redirige en bucle | Cookies `Secure` sobre HTTP | Publicar con HTTPS o usar localhost. |
+| El ingreso redirige en bucle | Cookies `Secure` sobre HTTP | Publicar con HTTPS o, solo en red local, usar `COOKIE_SEGURA=false`. |
 | Error al guardar la contraseña inicial | `CLAVE_SESION` corta | Usar 32 caracteres o más. |
 | Las fotos desaparecen tras un despliegue | Falta el disco persistente | Montar `/app/datos/fotos` o configurar S3. |
 | Importación rechaza todas las filas | Encabezados o sección inexistente | Revisar el reporte y el año escolar activo. |

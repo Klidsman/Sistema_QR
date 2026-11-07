@@ -21,35 +21,37 @@ import (
 )
 
 type docentesFalso struct {
-	docentes      []autenticacion.Docente
-	creado        *autenticacion.DatosDocente
+	docentes      []autenticacion.Cuenta
+	creado        *autenticacion.DatosCuenta
+	rolCreado     string
 	desactivado   int64
 	claveCambiada int64
 }
 
-func (d *docentesFalso) ListarDocentes(context.Context) ([]autenticacion.Docente, error) {
+func (d *docentesFalso) ListarCuentasPorRol(_ context.Context, _ string) ([]autenticacion.Cuenta, error) {
 	return d.docentes, nil
 }
 
-func (d *docentesFalso) CrearDocente(_ context.Context, _ int64, datos autenticacion.DatosDocente) (int64, error) {
+func (d *docentesFalso) CrearCuenta(_ context.Context, _ int64, rol string, datos autenticacion.DatosCuenta) (int64, error) {
 	d.creado = &datos
+	d.rolCreado = rol
 	return 7, nil
 }
 
-func (d *docentesFalso) DesactivarDocente(_ context.Context, _, docenteID int64) error {
-	d.desactivado = docenteID
+func (d *docentesFalso) DesactivarCuenta(_ context.Context, _, cuentaID int64, _ string) error {
+	d.desactivado = cuentaID
 	return nil
 }
 
-func (d *docentesFalso) RestablecerClave(_ context.Context, _, docenteID int64, _ string) error {
-	d.claveCambiada = docenteID
+func (d *docentesFalso) RestablecerClaveCuenta(_ context.Context, _, cuentaID int64, _, _ string) error {
+	d.claveCambiada = cuentaID
 	return nil
 }
 
 func nuevoManejadorDocentes(t *testing.T, docentes *docentesFalso) (*autenticacion.Manejador, *scs.SessionManager) {
 	t.Helper()
 	sesiones := scs.New()
-	manejador := autenticacion.NuevoManejadorConDocentes(nil, docentes, sesiones, nil,
+	manejador := autenticacion.NuevoManejadorConCuentas(nil, docentes, sesiones, nil,
 		slog.New(slog.NewTextHandler(io.Discard, nil)))
 	return manejador, sesiones
 }
@@ -91,7 +93,7 @@ func (r *textoReader) Read(destino []byte) (int, error) {
 }
 
 func TestDocentes_ListadoVisibleParaAdministradorYDirector(t *testing.T) {
-	falso := &docentesFalso{docentes: []autenticacion.Docente{{
+	falso := &docentesFalso{docentes: []autenticacion.Cuenta{{
 		ID: 3, Nombre: "Docente Uno", Correo: "docente@colegio.pe", Activo: true, Rol: "docente",
 	}}}
 	manejador, sesiones := nuevoManejadorDocentes(t, falso)

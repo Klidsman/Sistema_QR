@@ -3,7 +3,8 @@
 ## Ingreso
 
 1. Abrir `/ingreso` en el navegador del equipo de portería.
-2. Ingresar con el correo y la contraseña asignados por el administrador.
+2. Ingresar con el correo y la contraseña asignados por el administrador en **Porteros**
+   (`/porteros`).
 3. Si aparece un error de credenciales, verificar mayúsculas y consultar al administrador.
 
 ## Registrar un ingreso
@@ -11,6 +12,14 @@
 1. Abrir `/porteria`.
 2. Escanear el QR del carné con la cámara o pegar su contenido en **Código QR**.
 3. Presionar **Registrar ingreso**.
+
+La pantalla ofrece tres formas de leer el carné:
+
+- **Activar cámara**: lectura en vivo con `BarcodeDetector` o, si el navegador no lo tiene, con
+  `jsQR`. Requiere HTTPS o `localhost`.
+- **Tomar foto del código QR**: abre la cámara del celular y decodifica la foto. Funciona también
+  por HTTP en la red local y es la opción recomendada desde el celular.
+- **Código QR**: pegar o digitar el código, útil con lectores USB o el código de respaldo.
 
 La pantalla muestra el nombre del alumno, su sección, la hora y el estado: **Puntual**,
 **Tardanza** o **Tardanza grave**. Si el escaneo se rechaza, se muestra el motivo y se puede

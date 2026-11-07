@@ -63,6 +63,11 @@ func NombreUsuario(ctx context.Context, sesiones *scs.SessionManager) string {
 	return sesiones.GetString(ctx, claveNombre)
 }
 
+// RolEnSesion devuelve el rol guardado en la sesión, o vacío si no hay sesión.
+func RolEnSesion(ctx context.Context, sesiones *scs.SessionManager) string {
+	return sesiones.GetString(ctx, claveRol)
+}
+
 // CerrarSesionUsuario destruye la sesión completa, incluida la URL de retorno.
 func CerrarSesionUsuario(ctx context.Context, sesiones *scs.SessionManager) error {
 	sesiones.Remove(ctx, claveRetorno)

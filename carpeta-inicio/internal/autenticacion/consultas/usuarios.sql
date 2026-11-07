@@ -16,24 +16,24 @@ WHERE rol = 'administrador'
 ORDER BY id
 LIMIT 1;
 
--- name: ListarDocentes :many
+-- name: ListarCuentasPorRol :many
 SELECT id, correo, nombre_completo, rol, activo
 FROM usuarios
-WHERE rol = 'docente'
+WHERE rol = $1
 ORDER BY nombre_completo;
 
--- name: DesactivarDocente :execrows
+-- name: DesactivarCuenta :execrows
 UPDATE usuarios
 SET activo = false
 WHERE id = $1
-  AND rol = 'docente'
+  AND rol = $2
   AND activo;
 
--- name: ActualizarClaveDocente :execrows
+-- name: ActualizarClaveCuenta :execrows
 UPDATE usuarios
 SET contrasenia_hash = $2
 WHERE id = $1
-  AND rol = 'docente';
+  AND rol = $3;
 
 -- name: CrearUsuario :one
 INSERT INTO usuarios (correo, contrasenia_hash, nombre_completo, rol)

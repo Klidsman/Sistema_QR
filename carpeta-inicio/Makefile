@@ -3,6 +3,7 @@
 web:
 	npm run css
 	npm run htmx
+	npm run qr
 
 templ:
 	templ generate ./web/plantillas

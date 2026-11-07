@@ -160,7 +160,7 @@ func BaseSesion(titulo string, nombre string, rol string, tokenCSRF string) temp
 			}
 		}
 		if rol == "administrador" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<a href=\"/docentes\" class=\"font-medium text-slate-700 hover:text-blue-700\">Docentes</a> <a href=\"/carnets\" class=\"font-medium text-slate-700 hover:text-blue-700\">Carnés</a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<a href=\"/docentes\" class=\"font-medium text-slate-700 hover:text-blue-700\">Docentes</a> <a href=\"/porteros\" class=\"font-medium text-slate-700 hover:text-blue-700\">Porteros</a> <a href=\"/carnets\" class=\"font-medium text-slate-700 hover:text-blue-700\">Carnés</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

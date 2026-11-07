@@ -7,19 +7,30 @@ import "errors"
 // No distingue cuál de los dos es incorrecto, para no revelar cuentas existentes.
 var ErrCredencialesInvalidas = errors.New("correo o contraseña incorrectos")
 
-// Errores de gestión de docentes.
+// Errores de gestión de cuentas.
 var (
-	ErrDocenteExistente      = errors.New("ya existe una cuenta con ese correo")
-	ErrDocenteNoEncontrado   = errors.New("el docente no existe")
-	ErrDatosDocenteInvalidos = errors.New("los datos del docente no son válidos")
+	ErrCuentaExistente      = errors.New("ya existe una cuenta con ese correo")
+	ErrCuentaNoEncontrada   = errors.New("la cuenta no existe")
+	ErrDatosCuentaInvalidos = errors.New("los datos de la cuenta no son válidos")
+	ErrRolNoPermitido       = errors.New("solo se pueden crear cuentas de docente o de portería")
 )
 
-// DatosDocente son los datos para crear una cuenta de docente.
-type DatosDocente struct {
+// Compatibilidad con el módulo de docentes.
+var (
+	ErrDocenteExistente      = ErrCuentaExistente
+	ErrDocenteNoEncontrado   = ErrCuentaNoEncontrada
+	ErrDatosDocenteInvalidos = ErrDatosCuentaInvalidos
+)
+
+// DatosCuenta son los datos para crear una cuenta de docente o de portería.
+type DatosCuenta struct {
 	Correo      string
 	Nombre      string
 	Contrasenia string
 }
+
+// DatosDocente se mantiene como alias de DatosCuenta.
+type DatosDocente = DatosCuenta
 
 // Usuario es la identidad autenticada que usa la aplicación.
 type Usuario struct {

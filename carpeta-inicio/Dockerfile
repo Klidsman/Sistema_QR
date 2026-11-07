@@ -9,7 +9,8 @@ COPY web/plantillas ./web/plantillas
 COPY web/estaticos/css/entrada.css ./web/estaticos/css/entrada.css
 RUN mkdir -p web/estaticos/js \
     && npm run css \
-    && npm run htmx
+    && npm run htmx \
+    && npm run qr
 
 # Etapa 2: compila el binario de Go sin dependencias del sistema.
 FROM golang:1.27-alpine AS compilacion

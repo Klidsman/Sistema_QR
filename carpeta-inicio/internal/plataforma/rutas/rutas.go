@@ -41,9 +41,6 @@ func NuevoEnrutador(dependencias Dependencias) http.Handler {
 
 	enrutador.Handle("/estaticos/*", http.StripPrefix("/estaticos/", http.FileServer(http.Dir("web/estaticos"))))
 	enrutador.Get("/salud", salud.Manejador(dependencias.Verificador))
-	enrutador.Get("/", func(respuesta http.ResponseWriter, peticion *http.Request) {
-		http.Redirect(respuesta, peticion, "/ingreso", http.StatusSeeOther)
-	})
 	dependencias.Autenticacion.Montar(enrutador)
 	dependencias.Alumnos.Montar(enrutador)
 	dependencias.Academico.Montar(enrutador)

@@ -17,18 +17,18 @@ import (
 const mensajeIngresoInvalido = "Correo o contraseña incorrectos."
 const mensajeDemasiadosIntentos = "Demasiados intentos fallidos. Espere 15 minutos e intente de nuevo."
 
-// ServicioDocentes son las operaciones de cuentas docentes que usa el manejador.
-type ServicioDocentes interface {
-	ListarDocentes(ctx context.Context) ([]Docente, error)
-	CrearDocente(ctx context.Context, usuarioID int64, datos DatosDocente) (int64, error)
-	DesactivarDocente(ctx context.Context, usuarioID, docenteID int64) error
-	RestablecerClave(ctx context.Context, usuarioID, docenteID int64, clave string) error
+// ServicioCuentas son las operaciones de cuentas docentes y de portería que usa el manejador.
+type ServicioCuentas interface {
+	ListarCuentasPorRol(ctx context.Context, rol string) ([]Cuenta, error)
+	CrearCuenta(ctx context.Context, usuarioID int64, rol string, datos DatosCuenta) (int64, error)
+	DesactivarCuenta(ctx context.Context, usuarioID, cuentaID int64, rol string) error
+	RestablecerClaveCuenta(ctx context.Context, usuarioID, cuentaID int64, rol, clave string) error
 }
 
-// Manejador atiende las pantallas y acciones de ingreso, salida y docentes.
+// Manejador atiende las pantallas y acciones de ingreso, salida y cuentas.
 type Manejador struct {
 	servicio *Servicio
-	docentes ServicioDocentes
+	cuentas  ServicioCuentas
 	sesiones *scs.SessionManager
 	limite   *intermediarios.LimiteIntentos
 	registro *slog.Logger
@@ -36,18 +36,24 @@ type Manejador struct {
 
 // NuevoManejador crea el manejador de ingreso con sus dependencias.
 func NuevoManejador(servicio *Servicio, sesiones *scs.SessionManager, limite *intermediarios.LimiteIntentos, registro *slog.Logger) *Manejador {
-	return &Manejador{servicio: servicio, docentes: servicio, sesiones: sesiones, limite: limite, registro: registro}
+	return &Manejador{servicio: servicio, cuentas: servicio, sesiones: sesiones, limite: limite, registro: registro}
 }
 
-// NuevoManejadorConDocentes permite inyectar el servicio de docentes en las pruebas.
-func NuevoManejadorConDocentes(servicio *Servicio, docentes ServicioDocentes, sesiones *scs.SessionManager, limite *intermediarios.LimiteIntentos, registro *slog.Logger) *Manejador {
+// NuevoManejadorConCuentas permite inyectar el servicio de cuentas en las pruebas.
+func NuevoManejadorConCuentas(servicio *Servicio, cuentas ServicioCuentas, sesiones *scs.SessionManager, limite *intermediarios.LimiteIntentos, registro *slog.Logger) *Manejador {
 	manejador := NuevoManejador(servicio, sesiones, limite, registro)
-	manejador.docentes = docentes
+	manejador.cuentas = cuentas
 	return manejador
 }
 
-// Montar registra las rutas de ingreso y salida en el enrutador.
+// NuevoManejadorConDocentes se mantiene por compatibilidad con las pruebas existentes.
+func NuevoManejadorConDocentes(servicio *Servicio, cuentas ServicioCuentas, sesiones *scs.SessionManager, limite *intermediarios.LimiteIntentos, registro *slog.Logger) *Manejador {
+	return NuevoManejadorConCuentas(servicio, cuentas, sesiones, limite, registro)
+}
+
+// Montar registra las rutas de ingreso, salida y gestión de cuentas en el enrutador.
 func (m *Manejador) Montar(enrutador chi.Router) {
+	enrutador.Get("/", m.inicio)
 	enrutador.Get("/ingreso", m.mostrarIngreso)
 	enrutador.Post("/ingreso", m.procesarIngreso)
 	enrutador.Post("/salir", m.salir)
@@ -63,6 +69,14 @@ func (m *Manejador) Montar(enrutador chi.Router) {
 		escritura.Post("/docentes", m.crearDocente)
 		escritura.Post("/docentes/{id}/clave", m.restablecerClaveDocente)
 		escritura.Post("/docentes/{id}/desactivacion", m.desactivarDocente)
+	})
+
+	enrutador.Group(func(porteros chi.Router) {
+		porteros.Use(intermediarios.RequerirRol(m.sesiones, intermediarios.RolAdministrador))
+		porteros.Get("/porteros", m.listarPorteros)
+		porteros.Post("/porteros", m.crearPortero)
+		porteros.Post("/porteros/{id}/clave", m.restablecerClavePortero)
+		porteros.Post("/porteros/{id}/desactivacion", m.desactivarPortero)
 	})
 }
 

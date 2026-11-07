@@ -54,13 +54,20 @@ func TestProteccionCSRF_AceptaTokenEnFormularioMultipart(t *testing.T) {
 }
 
 func TestSesion_CookiesSonSeguras(t *testing.T) {
-	sesiones := intermediarios.NuevaSesion(nil, 8*time.Hour)
+	sesiones := intermediarios.NuevaSesion(nil, 8*time.Hour, true)
 
 	assert.Equal(t, "sesion_asistencia", sesiones.Cookie.Name)
 	assert.True(t, sesiones.Cookie.HttpOnly)
 	assert.True(t, sesiones.Cookie.Secure)
 	assert.Equal(t, http.SameSiteStrictMode, sesiones.Cookie.SameSite)
 	assert.Equal(t, 8*time.Hour, sesiones.Lifetime)
+}
+
+func TestSesion_PermiteCookiesSinSecureParaRedLocal(t *testing.T) {
+	sesiones := intermediarios.NuevaSesion(nil, 8*time.Hour, false)
+
+	assert.True(t, sesiones.Cookie.HttpOnly)
+	assert.False(t, sesiones.Cookie.Secure)
 }
 
 func TestProteccionCSRF_RechazaSolicitudSinToken(t *testing.T) {

@@ -6,4 +6,5 @@ test-results/
 playwright-report/
 datos/
 web/estaticos/js/htmx.min.js
+web/estaticos/js/jsqr.js
 web/estaticos/css/app.css

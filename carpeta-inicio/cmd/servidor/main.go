@@ -169,7 +169,7 @@ func servir(cfg configuracion.Configuracion) error {
 	}
 	defer pool.Close()
 
-	sesiones := intermediarios.NuevaSesion(intermediarios.NuevoAlmacenSesion(pool), duracionSesion)
+	sesiones := intermediarios.NuevaSesion(intermediarios.NuevoAlmacenSesion(pool), duracionSesion, cfg.CookieSegura)
 	limite := intermediarios.NuevoLimiteIntentos(maximoIntentos, ventanaIntentos, time.Now)
 	servicioAuth := autenticacion.NuevoServicio(pool)
 	ingreso := autenticacion.NuevoManejador(servicioAuth, sesiones, limite, registrador)

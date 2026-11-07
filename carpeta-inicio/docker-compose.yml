@@ -10,6 +10,30 @@ services:
       - "5433:5432"
     volumes:
       - datos_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U asistencia -d asistencia"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      BASE_DATOS_URL: postgres://asistencia:${DB_PASSWORD}@postgres:5432/asistencia?sslmode=disable
+      CLAVE_SESION: ${CLAVE_SESION}
+      COOKIE_SEGURA: ${COOKIE_SEGURA:-true}
+      PUERTO: 8080
+      ALMACENAMIENTO_TIPO: disco
+      ALMACENAMIENTO_RUTA: /app/datos/fotos
+    ports:
+      - "8080:8080"
+    volumes:
+      - datos_fotos:/app/datos/fotos
 
 volumes:
   datos_postgres:
+  datos_fotos:

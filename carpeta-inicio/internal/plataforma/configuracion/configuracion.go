@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -29,6 +30,7 @@ type Configuracion struct {
 	BaseDatosURL        string
 	Puerto              int
 	ClaveSesion         string
+	CookieSegura        bool
 	CarnetAnchoMM       int
 	CarnetAltoMM        int
 	FotoTamanioMaximoMB int
@@ -48,6 +50,7 @@ func Cargar(obtener func(string) string) (Configuracion, error) {
 	cfg := Configuracion{
 		BaseDatosURL: obtener("BASE_DATOS_URL"),
 		ClaveSesion:  obtener("CLAVE_SESION"),
+		CookieSegura: booleano(obtener("COOKIE_SEGURA"), true),
 		Almacenamiento: Almacenamiento{
 			Tipo:         valorOTexto(obtener("ALMACENAMIENTO_TIPO"), tipoAlmacenamientoDisco),
 			Ruta:         valorOTexto(obtener("ALMACENAMIENTO_RUTA"), "./datos/fotos"),
@@ -112,6 +115,18 @@ func valorOTexto(valor, porDefecto string) string {
 		return porDefecto
 	}
 	return valor
+}
+
+// booleano interpreta valores como false, 0, no o desactivado como falso.
+func booleano(valor string, porDefecto bool) bool {
+	switch strings.ToLower(strings.TrimSpace(valor)) {
+	case "":
+		return porDefecto
+	case "false", "0", "no", "desactivado":
+		return false
+	default:
+		return true
+	}
 }
 
 func enteroEnRango(obtener func(string) string, clave string, porDefecto, maximo int) (int, error) {

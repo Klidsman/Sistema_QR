@@ -31,19 +31,19 @@ func (r *Repositorio) BuscarAdministradorActivo(ctx context.Context) (int64, err
 	return r.consultas.BuscarAdministradorActivo(ctx)
 }
 
-// ListarDocentes devuelve las cuentas con rol docente.
-func (r *Repositorio) ListarDocentes(ctx context.Context) ([]generado.ListarDocentesRow, error) {
-	return r.consultas.ListarDocentes(ctx)
+// ListarCuentasPorRol devuelve las cuentas activas e inactivas de un rol.
+func (r *Repositorio) ListarCuentasPorRol(ctx context.Context, rol string) ([]generado.ListarCuentasPorRolRow, error) {
+	return r.consultas.ListarCuentasPorRol(ctx, rol)
 }
 
-// DesactivarDocente desactiva una cuenta de docente y devuelve cuántas filas cambió.
-func (r *Repositorio) DesactivarDocente(ctx context.Context, id int64) (int64, error) {
-	return r.consultas.DesactivarDocente(ctx, id)
+// DesactivarCuenta desactiva una cuenta del rol indicado y devuelve cuántas filas cambió.
+func (r *Repositorio) DesactivarCuenta(ctx context.Context, id int64, rol string) (int64, error) {
+	return r.consultas.DesactivarCuenta(ctx, generado.DesactivarCuentaParams{ID: id, Rol: rol})
 }
 
-// ActualizarClaveDocente cambia el hash de contraseña de un docente.
-func (r *Repositorio) ActualizarClaveDocente(ctx context.Context, parametros generado.ActualizarClaveDocenteParams) (int64, error) {
-	return r.consultas.ActualizarClaveDocente(ctx, parametros)
+// ActualizarClaveCuenta cambia el hash de contraseña de una cuenta del rol indicado.
+func (r *Repositorio) ActualizarClaveCuenta(ctx context.Context, parametros generado.ActualizarClaveCuentaParams) (int64, error) {
+	return r.consultas.ActualizarClaveCuenta(ctx, parametros)
 }
 
 // Crear inserta un usuario y devuelve su identificador.
