@@ -146,6 +146,20 @@ func (s *Servicio) ListarAsignaciones(ctx context.Context) ([]AsignacionVista, e
 
 // ClasesAsignadas devuelve las horas de clase que el docente puede abrir en la fecha.
 func (s *Servicio) ClasesAsignadas(ctx context.Context, docenteID int64, fecha time.Time) ([]ClaseAsignada, error) {
+	resumen, err := s.AsignacionesDelDia(ctx, docenteID, fecha)
+	if err != nil {
+		return nil, err
+	}
+	clases := make([]ClaseAsignada, 0)
+	for _, asignacion := range resumen {
+		clases = append(clases, asignacion.Clases...)
+	}
+	return clases, nil
+}
+
+// AsignacionesDelDia devuelve las asignaciones vigentes del docente en la fecha, incluso
+// cuando no tienen clases programadas, para explicar qué falta configurar.
+func (s *Servicio) AsignacionesDelDia(ctx context.Context, docenteID int64, fecha time.Time) ([]ResumenAsignacion, error) {
 	if err := ValidarFechaNoFutura(fecha, s.hoy()); err != nil {
 		return nil, err
 	}
@@ -153,16 +167,9 @@ func (s *Servicio) ClasesAsignadas(ctx context.Context, docenteID int64, fecha t
 	if err != nil {
 		return nil, fmt.Errorf("listando las asignaciones del docente: %w", err)
 	}
-	clases := make([]ClaseAsignada, 0)
+	resumen := make([]ResumenAsignacion, 0, len(asignaciones))
 	for _, asignacion := range asignaciones {
-		noLaborable, err := s.academico.EsDiaNoLaborable(ctx, asignacion.SeccionID, fecha)
-		if err != nil {
-			return nil, err
-		}
-		if noLaborable {
-			continue
-		}
-		bloques, err := s.academico.HorarioDelDia(ctx, asignacion.SeccionID, fecha)
+		curso, err := s.academico.NombreCurso(ctx, asignacion.CursoID)
 		if err != nil {
 			return nil, err
 		}
@@ -170,7 +177,29 @@ func (s *Servicio) ClasesAsignadas(ctx context.Context, docenteID int64, fecha t
 		if err != nil {
 			return nil, err
 		}
-		curso, err := s.academico.NombreCurso(ctx, asignacion.CursoID)
+		item := ResumenAsignacion{
+			AsignacionDocente: asignacion,
+			Curso:             curso,
+			Seccion:           seccion,
+			Clases:            make([]ClaseAsignada, 0),
+		}
+
+		noLaborable, err := s.academico.EsDiaNoLaborable(ctx, asignacion.SeccionID, fecha)
+		if err != nil {
+			return nil, err
+		}
+		if noLaborable {
+			item.Estado = AsignacionNoLaborable
+			resumen = append(resumen, item)
+			continue
+		}
+
+		bloques, err := s.academico.HorarioDelDia(ctx, asignacion.SeccionID, fecha)
+		if errors.Is(err, academico.ErrSeccionSinTurno) {
+			item.Estado = AsignacionSinTurno
+			resumen = append(resumen, item)
+			continue
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -178,7 +207,7 @@ func (s *Servicio) ClasesAsignadas(ctx context.Context, docenteID int64, fecha t
 			if bloque.CursoID != asignacion.CursoID {
 				continue
 			}
-			clases = append(clases, ClaseAsignada{
+			item.Clases = append(item.Clases, ClaseAsignada{
 				AsignacionDocente: asignacion,
 				Curso:             curso,
 				Seccion:           seccion,
@@ -188,8 +217,14 @@ func (s *Servicio) ClasesAsignadas(ctx context.Context, docenteID int64, fecha t
 				Fecha:             fecha,
 			})
 		}
+		if len(item.Clases) == 0 {
+			item.Estado = AsignacionSinHorario
+		} else {
+			item.Estado = AsignacionConClases
+		}
+		resumen = append(resumen, item)
 	}
-	return clases, nil
+	return resumen, nil
 }
 
 // DocentesDisponibles devuelve las cuentas de docente para asignar.

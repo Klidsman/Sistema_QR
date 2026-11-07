@@ -36,6 +36,19 @@ export function fechaEnLima(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Lima' }).format(new Date());
 }
 
+// fechaEnLimaConDias devuelve la fecha de Lima desplazada en días.
+export function fechaEnLimaConDias(dias: number): string {
+  const [anio, mes, dia] = fechaEnLima().split('-').map(Number);
+  const fecha = new Date(Date.UTC(anio, mes - 1, dia + dias));
+  return fecha.toISOString().slice(0, 10);
+}
+
+// indiceDiaLima devuelve el día de la semana de Lima: 0 domingo, 6 sábado.
+export function indiceDiaLima(): number {
+  const [anio, mes, dia] = fechaEnLima().split('-').map(Number);
+  return new Date(Date.UTC(anio, mes - 1, dia)).getUTCDay();
+}
+
 export async function configurarTurnoManana(
   page: Page,
   ingreso: string,

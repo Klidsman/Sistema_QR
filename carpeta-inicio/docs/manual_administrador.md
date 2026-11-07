@@ -197,7 +197,9 @@ configuración anterior ni las asistencias ya registradas.
   restablece la clave y desactiva cuentas. Estas cuentas solo pueden ingresar a `/porteria` y
   `/alertas` para registrar la asistencia de entrada con cámara o escáner.
 - **Asignaciones** (`/asistencia/asignaciones`): vincula un docente con un curso y una sección
-  desde una fecha. Marca **Titular** o desmárcalo para un reemplazo con fecha de fin.
+  desde una fecha. Marca **Titular** o desmárcalo para un reemplazo con fecha de fin. La asignación
+  por sí sola no crea clases: el curso también debe estar cargado en el **Horario semanal** de la
+  sección para el día correspondiente. Cada fila tiene el enlace **Ver horario**.
 - **Consulta** (`/asistencia/consulta`): revisa los registros del docente por fecha y sección,
   con el ingreso QR y las diferencias. Puedes corregir un registro indicando estado, observación y
   **motivo obligatorio**.

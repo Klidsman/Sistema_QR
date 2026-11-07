@@ -29,6 +29,7 @@ type ServicioAsistencia interface {
 	SeccionesDisponibles(ctx context.Context) ([]academico.Seccion, error)
 	CursosDisponibles(ctx context.Context) ([]academico.Curso, error)
 	ClasesAsignadas(ctx context.Context, docenteID int64, fecha time.Time) ([]ClaseAsignada, error)
+	AsignacionesDelDia(ctx context.Context, docenteID int64, fecha time.Time) ([]ResumenAsignacion, error)
 	ListarClase(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int) (ClaseDetalle, error)
 	GuardarRegistros(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int, cambios []CambioRegistro) error
 	MarcarTodosPresentes(ctx context.Context, usuarioID int64, administrador bool, fecha time.Time, seccionID, cursoID int64, bloque int) (int, error)
@@ -215,7 +216,7 @@ func datosAsignacionDeFormulario(peticion *http.Request) (DatosAsignacion, error
 func mensajeCorrectoAsignacion(codigo string) string {
 	switch codigo {
 	case "creada":
-		return "La asignación se creó correctamente."
+		return "La asignación se creó correctamente. Recordá cargar el curso en el horario semanal de la sección para que el docente vea sus clases."
 	case "cerrada":
 		return "La asignación se cerró correctamente."
 	default:
@@ -309,14 +310,15 @@ func aAsignacionesVista(asignaciones []AsignacionVista) []vista.AsignacionVista 
 			estado = "Vigente"
 		}
 		resultado = append(resultado, vista.AsignacionVista{
-			ID:      asignacion.ID,
-			Docente: asignacion.Docente,
-			Curso:   asignacion.Curso,
-			Seccion: asignacion.Seccion,
-			Inicio:  fechas.FormatearDia(asignacion.FechaInicio),
-			Fin:     fin,
-			Tipo:    tipo,
-			Estado:  estado,
+			ID:        asignacion.ID,
+			SeccionID: asignacion.SeccionID,
+			Docente:   asignacion.Docente,
+			Curso:     asignacion.Curso,
+			Seccion:   asignacion.Seccion,
+			Inicio:    fechas.FormatearDia(asignacion.FechaInicio),
+			Fin:       fin,
+			Tipo:      tipo,
+			Estado:    estado,
 		})
 	}
 	return resultado

@@ -27,6 +27,14 @@ type ClaseSeleccionVista struct {
 	URL     string
 }
 
+// AsignacionSeleccionVista agrupa las clases de una asignación y explica si falta algo.
+type AsignacionSeleccionVista struct {
+	Curso   string
+	Seccion string
+	Mensaje string
+	Clases  []ClaseSeleccionVista
+}
+
 // ClaseVista es la cabecera de una hora de clase.
 type ClaseVista struct {
 	SeccionID  int64
@@ -83,12 +91,13 @@ type ParametrosVista struct {
 
 // AsignacionVista es una asignación preparada para mostrarse.
 type AsignacionVista struct {
-	ID      int64
-	Docente string
-	Curso   string
-	Seccion string
-	Inicio  string
-	Fin     string
-	Tipo    string
-	Estado  string
+	ID        int64
+	SeccionID int64
+	Docente   string
+	Curso     string
+	Seccion   string
+	Inicio    string
+	Fin       string
+	Tipo      string
+	Estado    string
 }

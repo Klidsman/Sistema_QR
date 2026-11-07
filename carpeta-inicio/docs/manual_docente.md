@@ -17,10 +17,12 @@ ingreso se bloquea durante 15 minutos.
 
 1. Abrir `/asistencia`.
 2. Elegir la fecha y pulsar **Ver clases**.
-3. Verás únicamente las clases de los cursos y secciones que tienes asignados ese día.
-4. Abrir una clase.
+3. Verás cada curso y sección que tenés asignados ese día. Si una asignación no tiene clase,
+   la pantalla indica el motivo: fecha no laborable, sección sin turno o curso sin bloque en el
+   horario de ese día.
+4. Abrir una clase para registrar la asistencia.
 
-Si no aparece ninguna clase, revisa con el administrador que:
+Si una asignación no aparece, revisa con el administrador que:
 - Tengas una asignación vigente para el curso y la sección.
 - La sección tenga turno y bloques configurados.
 - El curso esté en el horario semanal de ese día.

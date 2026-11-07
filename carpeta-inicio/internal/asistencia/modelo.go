@@ -61,3 +61,20 @@ type ClaseAsignada struct {
 	HoraFin      time.Time
 	Fecha        time.Time
 }
+
+// Estados de una asignación del docente en una fecha.
+const (
+	AsignacionConClases   = "con_clases"
+	AsignacionSinTurno    = "sin_turno"
+	AsignacionSinHorario  = "sin_horario"
+	AsignacionNoLaborable = "no_laborable"
+)
+
+// ResumenAsignacion describe una asignación vigente y las clases que tiene en un día.
+type ResumenAsignacion struct {
+	AsignacionDocente
+	Curso   string
+	Seccion string
+	Estado  string
+	Clases  []ClaseAsignada
+}

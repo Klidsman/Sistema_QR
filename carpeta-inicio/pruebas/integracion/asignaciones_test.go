@@ -102,6 +102,13 @@ func TestAsignaciones_CreaCierraYControlaAccesoPorFecha(t *testing.T) {
 	assert.Equal(t, "Matemática", clases[0].Curso)
 	assert.Equal(t, 1, clases[0].BloqueNumero)
 
+	resumen, err := servicio.AsignacionesDelDia(ctx, titularID, hoy)
+	require.NoError(t, err)
+	require.Len(t, resumen, 1)
+	assert.Equal(t, asistencia.AsignacionConClases, resumen[0].Estado)
+	assert.Equal(t, "Matemática", resumen[0].Curso)
+	assert.Len(t, resumen[0].Clases, 1)
+
 	clases, err = servicio.ClasesAsignadas(ctx, ajenoID, hoy)
 	require.NoError(t, err)
 	assert.Empty(t, clases, "un docente sin asignación no debe ver la clase")
@@ -135,6 +142,26 @@ func TestAsignaciones_CreaCierraYControlaAccesoPorFecha(t *testing.T) {
 	assert.Len(t, vistas, 2)
 	assert.NotEqual(t, int64(0), reemplazoAsignacion)
 
+	cursoSinHorarioID, err := configuracion.CrearCurso(ctx, usuarioID, academico.DatosCurso{
+		AnioEscolarID: anioID, Nombre: "Física", Grados: []int64{gradoID},
+	})
+	require.NoError(t, err)
+	_, err = servicio.CrearAsignacion(ctx, usuarioID, asistencia.DatosAsignacion{
+		DocenteID: titularID, CursoID: cursoSinHorarioID, SeccionID: seccionID,
+		FechaInicio: hoy, Titular: true,
+	})
+	require.NoError(t, err)
+
+	resumen, err = servicio.AsignacionesDelDia(ctx, titularID, hoy)
+	require.NoError(t, err)
+	require.Len(t, resumen, 2)
+	estados := map[string]bool{}
+	for _, item := range resumen {
+		estados[item.Estado] = true
+	}
+	assert.True(t, estados[asistencia.AsignacionConClases])
+	assert.True(t, estados[asistencia.AsignacionSinHorario], "la asignación sin bloque debe explicarse")
+
 	futuro := hoy.AddDate(0, 0, 5)
 	_, err = servicio.ClasesAsignadas(ctx, titularID, futuro)
 	assert.ErrorIs(t, err, asistencia.ErrFechaFutura)
@@ -146,6 +173,6 @@ func TestAsignaciones_CreaCierraYControlaAccesoPorFecha(t *testing.T) {
 	require.NoError(t, pool.QueryRow(ctx,
 		`SELECT count(*) FROM auditoria WHERE entidad = $1 AND accion = $2`,
 		asistencia.EntidadAsignacionDocente, asistencia.AccionCerrarAsignacion).Scan(&cerradas))
-	assert.Equal(t, 2, creadas)
+	assert.Equal(t, 3, creadas)
 	assert.Equal(t, 1, cerradas)
 }

@@ -1,12 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-import { ingresarComoAdministrador } from './ayudas';
+import { fechaEnLima, indiceDiaLima, ingresarComoAdministrador } from './ayudas';
 
 const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-
-function hoyISO(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 test.describe('Registro de asistencia del docente', () => {
   test('el docente marca a todos presentes y corrige una excepción', async ({ page }) => {
@@ -29,7 +25,7 @@ test.describe('Registro de asistencia del docente', () => {
     await horario.getByLabel('Tolerancia en minutos (Mañana) *').fill('10');
     await horario.getByLabel('Hora límite de tardanza (Mañana) *').fill('08:00');
     await horario.getByLabel('Hora de cierre (Mañana) *').fill('12:30');
-    await horario.getByLabel('Vigencia desde (Mañana) *').fill(hoyISO());
+    await horario.getByLabel('Vigencia desde (Mañana) *').fill(fechaEnLima());
     await horario.getByRole('button', { name: 'Guardar horario' }).click();
     await expect(page.getByText('El horario del turno se guardó correctamente.')).toBeVisible();
 
@@ -37,23 +33,23 @@ test.describe('Registro de asistencia del docente', () => {
     await page.getByLabel('Número de bloque *').fill('1');
     await page.getByLabel('Hora de inicio *').fill('07:45');
     await page.getByLabel('Hora de fin *').fill('08:30');
-    await page.getByLabel('Vigencia desde *').fill(hoyISO());
+    await page.getByLabel('Vigencia desde *').fill(fechaEnLima());
     await page.getByRole('button', { name: 'Agregar bloque' }).click();
     await expect(page.getByText('El bloque de clase se creó correctamente.')).toBeVisible();
 
     await page.getByLabel('Número de bloque *').fill('2');
     await page.getByLabel('Hora de inicio *').fill('08:30');
     await page.getByLabel('Hora de fin *').fill('09:15');
-    await page.getByLabel('Vigencia desde *').fill(hoyISO());
+    await page.getByLabel('Vigencia desde *').fill(fechaEnLima());
     await page.getByRole('button', { name: 'Agregar bloque' }).click();
     await expect(page.getByText('El bloque de clase se creó correctamente.')).toBeVisible();
 
     await page.goto('/configuracion/horarios');
     await page.getByLabel('Sección').selectOption({ label: '1.° A' });
-    await page.getByLabel('Fecha').fill(hoyISO());
+    await page.getByLabel('Fecha').fill(fechaEnLima());
     await page.getByRole('button', { name: 'Ver horario' }).click();
-    await page.getByLabel(`${dias[new Date().getDay()]} bloque 1`).selectOption({ label: curso });
-    await page.getByLabel(`${dias[new Date().getDay()]} bloque 2`).selectOption({ label: curso });
+    await page.getByLabel(`${dias[indiceDiaLima()]} bloque 1`).selectOption({ label: curso });
+    await page.getByLabel(`${dias[indiceDiaLima()]} bloque 2`).selectOption({ label: curso });
     await page.getByRole('button', { name: 'Guardar horario' }).click();
     await page.waitForLoadState('load');
     const confirmar = page.getByRole('button', { name: 'Confirmar reemplazo' });
@@ -83,7 +79,7 @@ test.describe('Registro de asistencia del docente', () => {
     await page.getByLabel('Docente *').selectOption({ label: docente });
     await page.getByLabel('Curso *').selectOption({ label: curso });
     await page.getByLabel('Sección *').selectOption({ label: '1.° A (2026)' });
-    await page.getByLabel('Desde *').fill(hoyISO());
+    await page.getByLabel('Desde *').fill(fechaEnLima());
     await page.getByRole('button', { name: 'Crear asignación' }).click();
     await expect(page.getByText('La asignación se creó correctamente.')).toBeVisible();
 

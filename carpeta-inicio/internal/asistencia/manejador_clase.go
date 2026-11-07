@@ -22,17 +22,17 @@ type parametrosClase struct {
 
 func (m *Manejador) seleccionClase(respuesta http.ResponseWriter, peticion *http.Request) {
 	fecha := fechaDeConsulta(peticion)
-	var clases []ClaseAsignada
+	var asignaciones []ResumenAsignacion
 	if intermediarios.RolUsuario(peticion.Context()) == intermediarios.RolDocente {
 		var err error
-		clases, err = m.servicio.ClasesAsignadas(peticion.Context(), m.usuarioID(peticion.Context()), fecha)
+		asignaciones, err = m.servicio.AsignacionesDelDia(peticion.Context(), m.usuarioID(peticion.Context()), fecha)
 		if err != nil {
 			m.renderizarSeleccion(respuesta, peticion, http.StatusUnprocessableEntity,
 				fecha, nil, mensajeErrorClase(err))
 			return
 		}
 	}
-	m.renderizarSeleccion(respuesta, peticion, http.StatusOK, fecha, clases, "")
+	m.renderizarSeleccion(respuesta, peticion, http.StatusOK, fecha, asignaciones, "")
 }
 
 func (m *Manejador) verClase(respuesta http.ResponseWriter, peticion *http.Request) {
@@ -99,16 +99,25 @@ func (m *Manejador) marcarTodos(respuesta http.ResponseWriter, peticion *http.Re
 	http.Redirect(respuesta, peticion, urlClase(parametros)+"&ok=todos", http.StatusSeeOther)
 }
 
-func (m *Manejador) renderizarSeleccion(respuesta http.ResponseWriter, peticion *http.Request, estado int, fecha time.Time, clases []ClaseAsignada, mensajeError string) {
-	vistas := make([]vista.ClaseSeleccionVista, 0, len(clases))
-	for _, clase := range clases {
-		vistas = append(vistas, vista.ClaseSeleccionVista{
-			Curso:   clase.Curso,
-			Seccion: clase.Seccion,
-			Horario: fechas.FormatearHora(clase.HoraInicio) + " – " + fechas.FormatearHora(clase.HoraFin),
-			Bloque:  clase.BloqueNumero,
-			URL: "/asistencia/clase?" + parametrosURL(fecha, clase.SeccionID,
-				clase.CursoID, clase.BloqueNumero),
+func (m *Manejador) renderizarSeleccion(respuesta http.ResponseWriter, peticion *http.Request, estado int, fecha time.Time, asignaciones []ResumenAsignacion, mensajeError string) {
+	vistas := make([]vista.AsignacionSeleccionVista, 0, len(asignaciones))
+	for _, asignacion := range asignaciones {
+		clases := make([]vista.ClaseSeleccionVista, 0, len(asignacion.Clases))
+		for _, clase := range asignacion.Clases {
+			clases = append(clases, vista.ClaseSeleccionVista{
+				Curso:   clase.Curso,
+				Seccion: clase.Seccion,
+				Horario: fechas.FormatearHora(clase.HoraInicio) + " – " + fechas.FormatearHora(clase.HoraFin),
+				Bloque:  clase.BloqueNumero,
+				URL: "/asistencia/clase?" + parametrosURL(fecha, clase.SeccionID,
+					clase.CursoID, clase.BloqueNumero),
+			})
+		}
+		vistas = append(vistas, vista.AsignacionSeleccionVista{
+			Curso:   asignacion.Curso,
+			Seccion: asignacion.Seccion,
+			Mensaje: mensajeEstadoAsignacion(asignacion.Estado),
+			Clases:  clases,
 		})
 	}
 	m.renderizar(respuesta, peticion, estado, vista.Seleccion(
@@ -119,6 +128,19 @@ func (m *Manejador) renderizarSeleccion(respuesta http.ResponseWriter, peticion 
 		vistas,
 		mensajeError,
 	))
+}
+
+func mensajeEstadoAsignacion(estado string) string {
+	switch estado {
+	case AsignacionNoLaborable:
+		return "La fecha no es laborable para esta sección."
+	case AsignacionSinTurno:
+		return "La sección no tiene turno configurado. Avisá al administrador."
+	case AsignacionSinHorario:
+		return "No hay un bloque de este curso en el horario de hoy. El administrador debe cargarlo en Configuración → Horario semanal."
+	default:
+		return ""
+	}
 }
 
 func (m *Manejador) renderizarClase(respuesta http.ResponseWriter, peticion *http.Request, estado int, detalle *ClaseDetalle, mensajeError string) {

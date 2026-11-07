@@ -1,12 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { ingresarComoAdministrador } from './ayudas';
-
-function fechaEnDias(dias: number): string {
-  const fecha = new Date();
-  fecha.setDate(fecha.getDate() + dias);
-  return fecha.toISOString().slice(0, 10);
-}
+import { fechaEnLimaConDias, ingresarComoAdministrador } from './ayudas';
 
 test.describe('Asignaciones de docente', () => {
   test('asigna un titular y un reemplazo por un día', async ({ page }) => {
@@ -35,7 +29,7 @@ test.describe('Asignaciones de docente', () => {
     await page.getByLabel('Docente *').selectOption({ label: titular });
     await page.getByLabel('Curso *').selectOption({ label: curso });
     await page.getByLabel('Sección *').selectOption({ label: '1.° A (2026)' });
-    await page.getByLabel('Desde *').fill(fechaEnDias(0));
+    await page.getByLabel('Desde *').fill(fechaEnLimaConDias(0));
     await page.getByRole('button', { name: 'Crear asignación' }).click();
 
     await expect(page.getByText('La asignación se creó correctamente.')).toBeVisible();
@@ -46,8 +40,8 @@ test.describe('Asignaciones de docente', () => {
     await page.getByLabel('Docente *').selectOption({ label: reemplazo });
     await page.getByLabel('Curso *').selectOption({ label: curso });
     await page.getByLabel('Sección *').selectOption({ label: '1.° A (2026)' });
-    await page.getByLabel('Desde *').fill(fechaEnDias(1));
-    await page.getByLabel('Hasta (opcional)').fill(fechaEnDias(1));
+    await page.getByLabel('Desde *').fill(fechaEnLimaConDias(1));
+    await page.getByLabel('Hasta (opcional)').fill(fechaEnLimaConDias(1));
     await page.getByLabel('Titular (desmarcar para reemplazo)').uncheck();
     await page.getByRole('button', { name: 'Crear asignación' }).click();
 

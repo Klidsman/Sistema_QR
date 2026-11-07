@@ -71,6 +71,14 @@ templ Asignaciones(usuario string, rol string, tokenCSRF string, docentes []Doce
 			</form>
 		}
 
+		if rol == "administrador" || rol == "director" {
+			<p class="mt-4 rounded border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+				Para que el docente vea sus clases del día, además de la asignación el curso debe estar
+				cargado en el horario semanal de la sección.
+				<a href="/configuracion/horarios" class="font-semibold underline">Abrir horarios</a>.
+			</p>
+		}
+
 		<h2 class="mt-8 text-lg font-semibold">Asignaciones registradas</h2>
 		if len(asignaciones) == 0 {
 			<p class="mt-2 text-slate-600">Todavía no hay asignaciones.</p>
@@ -86,6 +94,7 @@ templ Asignaciones(usuario string, rol string, tokenCSRF string, docentes []Doce
 							<th class="p-3">Hasta</th>
 							<th class="p-3">Tipo</th>
 							<th class="p-3">Estado</th>
+							<th class="p-3">Horario</th>
 							if rol == "administrador" {
 								<th class="p-3">Cerrar</th>
 							}
@@ -101,6 +110,9 @@ templ Asignaciones(usuario string, rol string, tokenCSRF string, docentes []Doce
 								<td class="p-3">{ asignacion.Fin }</td>
 								<td class="p-3">{ asignacion.Tipo }</td>
 								<td class="p-3">{ asignacion.Estado }</td>
+								<td class="p-3">
+									<a href={ fmt.Sprintf("/configuracion/horarios?seccion_id=%d", asignacion.SeccionID) } class="font-medium text-blue-700">Ver horario</a>
+								</td>
 								if rol == "administrador" {
 									<td class="p-3">
 										if asignacion.Estado == "Vigente" {

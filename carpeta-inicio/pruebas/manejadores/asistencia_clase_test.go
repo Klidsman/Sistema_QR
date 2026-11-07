@@ -49,14 +49,22 @@ func detalleClaseDePrueba(t *testing.T) asistencia.ClaseDetalle {
 }
 
 func TestAsistenciaClase_SeleccionYLista(t *testing.T) {
+	clase := asistencia.ClaseAsignada{
+		AsignacionDocente: asistencia.AsignacionDocente{ID: 1},
+		Curso:             "Matemática",
+		Seccion:           "3.° A (2026)",
+		BloqueNumero:      1,
+		HoraInicio:        mustHora(t, "07:45"),
+		HoraFin:           mustHora(t, "08:30"),
+	}
 	falso := &asistenciaFalsa{
-		clases: []asistencia.ClaseAsignada{{
+		clases: []asistencia.ClaseAsignada{clase},
+		resumen: []asistencia.ResumenAsignacion{{
 			AsignacionDocente: asistencia.AsignacionDocente{ID: 1},
 			Curso:             "Matemática",
 			Seccion:           "3.° A (2026)",
-			BloqueNumero:      1,
-			HoraInicio:        mustHora(t, "07:45"),
-			HoraFin:           mustHora(t, "08:30"),
+			Estado:            asistencia.AsignacionConClases,
+			Clases:            []asistencia.ClaseAsignada{clase},
 		}},
 		detalle: detalleClaseDePrueba(t),
 	}
@@ -66,6 +74,7 @@ func TestAsistenciaClase_SeleccionYLista(t *testing.T) {
 	respuesta := ejecutarAsistencia(manejador, peticion)
 	assert.Equal(t, http.StatusOK, respuesta.Code)
 	assert.Contains(t, respuesta.Body.String(), "Matemática")
+	assert.Contains(t, respuesta.Body.String(), "1 clase(s) hoy")
 
 	parametros := url.Values{
 		"fecha":      {fechas.FormatearISO(fechas.Hoy())},
@@ -137,4 +146,34 @@ func TestAsistenciaClase_DirectorNoAccedeAlRegistro(t *testing.T) {
 	respuesta := ejecutarAsistencia(manejador, peticion)
 
 	assert.Equal(t, http.StatusForbidden, respuesta.Code)
+}
+
+func TestAsistenciaClase_MuestraAsignacionSinHorario(t *testing.T) {
+	falso := &asistenciaFalsa{resumen: []asistencia.ResumenAsignacion{{
+		AsignacionDocente: asistencia.AsignacionDocente{ID: 1},
+		Curso:             "Matemática",
+		Seccion:           "3.° A (2026)",
+		Estado:            asistencia.AsignacionSinHorario,
+	}}}
+	manejador, sesiones := nuevoManejadorAsistencia(t, falso)
+
+	peticion := peticionConSesion(t, sesiones, http.MethodGet, "/asistencia", nil, "", "docente")
+	respuesta := ejecutarAsistencia(manejador, peticion)
+
+	require.Equal(t, http.StatusOK, respuesta.Code)
+	cuerpo := respuesta.Body.String()
+	assert.Contains(t, cuerpo, "Matemática")
+	assert.Contains(t, cuerpo, "3.° A (2026)")
+	assert.Contains(t, cuerpo, "Sin clase hoy")
+	assert.Contains(t, cuerpo, "No hay un bloque de este curso en el horario de hoy")
+}
+
+func TestAsistenciaClase_SinAsignacionesLoExplica(t *testing.T) {
+	manejador, sesiones := nuevoManejadorAsistencia(t, &asistenciaFalsa{})
+
+	peticion := peticionConSesion(t, sesiones, http.MethodGet, "/asistencia", nil, "", "docente")
+	respuesta := ejecutarAsistencia(manejador, peticion)
+
+	require.Equal(t, http.StatusOK, respuesta.Code)
+	assert.Contains(t, respuesta.Body.String(), "No tenés asignaciones vigentes para esa fecha")
 }

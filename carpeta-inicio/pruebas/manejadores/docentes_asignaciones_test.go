@@ -151,6 +151,7 @@ type asistenciaFalsa struct {
 	detalle           asistencia.ClaseDetalle
 	guardados         []asistencia.CambioRegistro
 	marcarCreados     int
+	resumen           []asistencia.ResumenAsignacion
 	consulta          []asistencia.ConsultaRegistro
 	corregido         *asistencia.ConsultaRegistro
 	correccionErr     error
@@ -190,6 +191,10 @@ func (a *asistenciaFalsa) CursosDisponibles(context.Context) ([]academico.Curso,
 
 func (a *asistenciaFalsa) ClasesAsignadas(_ context.Context, _ int64, _ time.Time) ([]asistencia.ClaseAsignada, error) {
 	return a.clases, nil
+}
+
+func (a *asistenciaFalsa) AsignacionesDelDia(_ context.Context, _ int64, _ time.Time) ([]asistencia.ResumenAsignacion, error) {
+	return a.resumen, nil
 }
 
 func (a *asistenciaFalsa) ListarClase(_ context.Context, _ int64, _ bool, _ time.Time, _, _ int64, _ int) (asistencia.ClaseDetalle, error) {
